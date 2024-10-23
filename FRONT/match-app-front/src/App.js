@@ -1,24 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import RoutesApp from './Routes/routes';
+import Cadastro from './Components/Cadastro';
+
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Exo 2, sans-serif',
+  },
+  palette: {
+    primary: {
+      main: '#309F5C', 
+      light: '#5EBF8E',
+      dark: '#1E6B3B', 
+      contrastText: '#FFFFFF', 
+    },
+    secondary: {
+      main: '#FFFFFF', 
+    }
+  }
+});
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <RoutesApp/>
+    </ThemeProvider>
   );
 }
 

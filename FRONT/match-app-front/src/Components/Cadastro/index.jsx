@@ -6,6 +6,7 @@ import logo from '../../Assets/imgs/logo.png';
 import { Link } from 'react-router-dom';
 
 const Cadastro = () => {
+  console.log('Compoente montado')
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');

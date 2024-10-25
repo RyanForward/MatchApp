@@ -5,7 +5,6 @@ import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../../firebase';
 import { Link } from 'react-router-dom';
 import logo from '../../Assets/imgs/logo-completo.png';
-import GoogleButton from 'react-google-button';
 import googleLogo from '../../Assets/imgs/google_logo.png'
 
 const Cadastro = () => {

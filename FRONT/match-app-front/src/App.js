@@ -16,6 +16,15 @@ const theme = createTheme({
     secondary: {
       main: '#FFFFFF', 
     }
+  },
+  components: {
+    MuiGrid: {
+      styleOverrides: {
+        root: {
+          padding: 0,
+        },
+      },
+    },
   }
 });
 

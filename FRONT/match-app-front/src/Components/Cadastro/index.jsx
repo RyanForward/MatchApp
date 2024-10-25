@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { TextField, Button, Grid, Typography, Container, Box, InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import './cadastro.css';
-import logo from '../../Assets/imgs/logo.png';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, provider } from '../../firebase';
 import { Link } from 'react-router-dom';
+import logo from '../../Assets/imgs/logo-completo.png';
+import GoogleButton from 'react-google-button';
+import googleLogo from '../../Assets/imgs/google_logo.png'
 
 const Cadastro = () => {
   const [nome, setNome] = useState('');
@@ -13,6 +16,7 @@ const Cadastro = () => {
   const [error, setError] = useState('');
   const [showSenha, setShowSenha] = useState(false);
 
+  //logar sem google
   const handleSubmit = (e) => {
     e.preventDefault();
     if (senha !== confirmarSenha) {
@@ -23,13 +27,19 @@ const Cadastro = () => {
     }
   };
 
+  //logar com google
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      console.log('Usuário logado com Google: ', result.user);
+      // redireciona
+    } catch (error) {
+      console.error('Erro ao fazer login com Google: ', error);
+    }
+  };
+
   return (
-    <Container 
-      maxWidth="sm" 
-      sx={{
-        backgroundColor: '#ffffff',
-      }}
-    >
+    <Container maxWidth="sm" sx={{ backgroundColor: '#ffffff' }}>
       <Box 
         display="flex" 
         justifyContent="center" 
@@ -42,7 +52,7 @@ const Cadastro = () => {
           <img 
             src={logo} 
             alt="Descrição da imagem"
-            style={{ width: '100%', height: 'auto', maxWidth: '300px' }}
+            style={{ width: '100%', height: 'auto' }}
           />
         </Box>
         <Typography variant="h4" component="h1" gutterBottom paddingBottom={10}>
@@ -123,11 +133,6 @@ const Cadastro = () => {
                   fontWeight: 'bold', 
                   fontSize: '1.1em',
                   borderRadius: '10.7px',
-                  backgroundColor: (theme) => theme.palette.primary.main,
-                  color: (theme) => theme.palette.primary.contrastText,
-                  '&:hover': { backgroundColor: (theme) => theme.palette.primary.light },
-                  '&:active': { backgroundColor: (theme) => theme.palette.primary.dark },
-                  '&:disabled': { backgroundColor: (theme) => theme.palette.grey[400], color: (theme) => theme.palette.grey[700] },
                 }}
               >
                 Cadastrar
@@ -135,6 +140,50 @@ const Cadastro = () => {
             </Grid>
           </Grid>
         </form>
+
+        <Grid item xs={18} sx={{ marginTop: 2 }}>
+        <Button
+          variant="outlined"
+          fullWidth
+          onClick={handleGoogleLogin}
+          sx={{
+            backgroundColor: '#fff',
+            color: '#000',
+            borderColor: '#7a7a7a',
+            fontSize: '1em',
+            textTransform: 'none',
+            padding: '10px 20px',
+            borderRadius: '25px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: {
+              xs: '290px',
+              sm: '500px',
+              md: '500px', 
+              lg: '500px', 
+            },
+            '&:hover': {
+              backgroundColor: '#adffb5',
+              borderColor: 'black'
+            },
+          }}
+          
+        >
+          <Box
+            component="img"
+            src={googleLogo}
+            alt="Google logo"
+            sx={{
+              width: '25px',
+              height: '25px',
+              marginRight: '10px',
+            }}
+          />
+          Login com Google
+        </Button>
+        </Grid>
+
         <Typography
           component={Link}
           to="/login" 
@@ -142,6 +191,7 @@ const Cadastro = () => {
             margin: '10px',
             color: 'black', 
             textAlign: 'center', 
+            fontSize: '1.05em',
             textDecoration: 'none', 
             '&:hover': { textDecoration: 'underline' }
           }}

@@ -6,9 +6,6 @@ function RoutesApp(){
         <BrowserRouter>
         <Routes>
             <Route path='/signup' element={<Cadastro/>}/>
-            {/* <Route path='/signup' element={<Cadastro/>}/> */}
-            {/* <Route path='/admin' element={<Private><Admin/></Private>}/>
-            <Route path='/cards' element={<Cards/>}/> */}
         </Routes>
         </BrowserRouter>
     )

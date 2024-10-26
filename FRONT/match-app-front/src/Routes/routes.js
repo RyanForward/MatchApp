@@ -2,8 +2,10 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Cadastro from '../Pages/Cadastro';
 import Login from '../Pages/Login';
 import HistoricoPartidas from '../Pages/Historico';
-import { AuthProvider } from './AuthContext'; // Importe o AuthProvider
-import ProtectedRoute from './ProtectedRoute'; // Importe a ProtectedRoute
+import { AuthProvider } from './AuthContext'; 
+import ProtectedRoute from './ProtectedRoute';
+import PrivacyPolicy from '../Pages/PoliticaPrivacidade';
+import TermsOfUse from '../Pages/TermosDeUso';
 
 function RoutesApp() {
   return (
@@ -13,6 +15,8 @@ function RoutesApp() {
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Cadastro />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfUse />} />
           <Route
             path="/historico"
             element={

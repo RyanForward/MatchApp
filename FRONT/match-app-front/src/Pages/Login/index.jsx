@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import googleLogo from '../../Assets/imgs/google_logo.png';
-import { useAuth } from '../../Routes/AuthContext'; // Apenas o useAuth, não o login
+import { useAuth } from '../../Routes/AuthContext';
 import './login.css';
 
 const Login = () => {
@@ -14,7 +14,7 @@ const Login = () => {
     const [showSenha, setShowSenha] = useState(false);
     const [error, setError] = useState('');
     const auth = getAuth();
-    const { login } = useAuth(); // Mantenha aqui
+    const { login } = useAuth(); 
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {

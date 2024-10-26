@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { TextField, Button, Grid, Typography, Container, Box, InputAdornment, IconButton } from '@mui/material';
+import { TextField, Button, Typography, Container, Box, Grid2, InputAdornment, IconButton, Grid } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { signInWithPopup } from 'firebase/auth';
-import { auth, provider } from '../../firebase';
-import { Link } from 'react-router-dom';
+import { auth } from '../../firebase';
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { useAuth } from '../../Routes/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../Assets/imgs/logo-completo.png';
-import GoogleButton from 'react-google-button';
-import googleLogo from '../../Assets/imgs/google_logo.png'
+import googleLogo from '../../Assets/imgs/google_logo.png';
+import './cadastro.css';
 
 const Cadastro = () => {
   const [nome, setNome] = useState('');
@@ -15,8 +16,10 @@ const Cadastro = () => {
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [error, setError] = useState('');
   const [showSenha, setShowSenha] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth(); 
 
-  //logar sem google
+  // logar sem google
   const handleSubmit = (e) => {
     e.preventDefault();
     if (senha !== confirmarSenha) {
@@ -27,40 +30,46 @@ const Cadastro = () => {
     }
   };
 
-  //logar com google
+  // logar com google
   const handleGoogleLogin = async () => {
     try {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
       const result = await signInWithPopup(auth, provider);
       console.log('Usuário logado com Google: ', result.user);
-      // redireciona
+      login()
+      navigate('/historico');
     } catch (error) {
       console.error('Erro ao fazer login com Google: ', error);
     }
   };
 
   return (
-    <Container maxWidth="sm" sx={{ backgroundColor: '#ffffff' }}>
+    <Container maxWidth="sm" sx={{ backgroundColor: '#ffffff', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Box 
         display="flex" 
         justifyContent="center" 
         alignItems="center" 
         flexDirection="column"
-        height="100vh"
+        flexGrow={1} // faz o conteúdo crescer para preencher a altura da tela
         padding={2}
+        sx={{ overflowY: 'auto' }} // habilita o scroll quando necessário
       >
-        <Box mb={2}>
+        <Box mb={2} sx={{ flexShrink: 0 }}>
           <img 
             src={logo} 
             alt="Descrição da imagem"
             style={{ width: '100%', height: 'auto' }}
           />
         </Box>
-        <Typography variant="h4" component="h1" gutterBottom paddingBottom={10}>
+        <Typography variant="h4" component="h1" gutterBottom paddingBottom={2}>
           Seja bem-vindo!
         </Typography>
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
+          <Grid2 container spacing={2} fullWidth display="flex" justifyContent="center">
+            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
               <TextField
                 label="Nome"
                 variant="outlined"
@@ -68,9 +77,11 @@ const Cadastro = () => {
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 required
+                sx={{ maxWidth: '100%' }}
               />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+
+            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
               <TextField
                 label="Email"
                 variant="outlined"
@@ -79,9 +90,11 @@ const Cadastro = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                sx={{ maxWidth: '100%' }}
               />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+
+            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
               <TextField
                 label="Senha"
                 variant="outlined"
@@ -102,9 +115,11 @@ const Cadastro = () => {
                     </InputAdornment>
                   ),
                 }}
+                sx={{ maxWidth: '100%' }}
               />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid2>
+
+            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
               <TextField
                 label="Confirmar Senha"
                 variant="outlined"
@@ -115,14 +130,17 @@ const Cadastro = () => {
                 required
                 error={senha !== confirmarSenha}
                 helperText={senha !== confirmarSenha ? 'As senhas não coincidem' : ''}
+                sx={{ maxWidth: '100%' }}
               />
-            </Grid>
+            </Grid2>
+
             {error && (
-              <Grid item xs={12}>
+              <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
                 <Typography color="error">{error}</Typography>
-              </Grid>
+              </Grid2>
             )}
-            <Grid item xs={12}>
+
+            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
               <Button 
                 type="submit" 
                 variant="contained" 
@@ -133,56 +151,49 @@ const Cadastro = () => {
                   fontWeight: 'bold', 
                   fontSize: '1.1em',
                   borderRadius: '10.7px',
+                  maxWidth: '100%',
                 }}
               >
                 Cadastrar
               </Button>
-            </Grid>
-          </Grid>
+            </Grid2>
+            <Grid2 item xs={12} minWidth="350px">
+              <Button
+                variant="outlined"
+                fullWidth
+                onClick={handleGoogleLogin}
+                sx={{
+                  backgroundColor: '#fff',
+                  color: '#000',
+                  borderColor: '#7a7a7a',
+                  fontSize: '1em',
+                  textTransform: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '25px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  '&:hover': {
+                    backgroundColor: '#adffb5',
+                    borderColor: 'black'
+                  },
+                }}
+              >
+                <Box
+                  component="img"
+                  src={googleLogo}
+                  alt="Google logo"
+                  sx={{
+                    width: '25px',
+                    height: '25px',
+                    marginRight: '10px',
+                  }}
+                />
+                Cadastro com Google
+              </Button>
+            </Grid2>
+          </Grid2>
         </form>
-
-        <Grid item xs={18} sx={{ marginTop: 2 }}>
-        <Button
-          variant="outlined"
-          fullWidth
-          onClick={handleGoogleLogin}
-          sx={{
-            backgroundColor: '#fff',
-            color: '#000',
-            borderColor: '#7a7a7a',
-            fontSize: '1em',
-            textTransform: 'none',
-            padding: '10px 20px',
-            borderRadius: '25px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: {
-              xs: '290px',
-              sm: '500px',
-              md: '500px', 
-              lg: '500px', 
-            },
-            '&:hover': {
-              backgroundColor: '#adffb5',
-              borderColor: 'black'
-            },
-          }}
-          
-        >
-          <Box
-            component="img"
-            src={googleLogo}
-            alt="Google logo"
-            sx={{
-              width: '25px',
-              height: '25px',
-              marginRight: '10px',
-            }}
-          />
-          Login com Google
-        </Button>
-        </Grid>
 
         <Typography
           component={Link}

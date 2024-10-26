@@ -1,7 +1,6 @@
-import React from 'react';
+  import React from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import RoutesApp from './Routes/routes';
-import Cadastro from './Components/Cadastro';
 
 const theme = createTheme({
   typography: {
@@ -17,6 +16,15 @@ const theme = createTheme({
     secondary: {
       main: '#FFFFFF', 
     }
+  },
+  components: {
+    MuiGrid: {
+      styleOverrides: {
+        root: {
+          padding: 0,
+        },
+      },
+    },
   }
 });
 

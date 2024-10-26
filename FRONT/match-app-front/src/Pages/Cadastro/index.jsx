@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography, Container, Box, Grid2, InputAdornment, IconButton, Grid } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { signInWithPopup } from 'firebase/auth';
-import { auth, provider } from '../../firebase';
-import { Link } from 'react-router-dom';
+import { auth } from '../../firebase';
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { useAuth } from '../../Routes/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../Assets/imgs/logo-completo.png';
 import googleLogo from '../../Assets/imgs/google_logo.png';
 import './cadastro.css';
@@ -15,6 +16,8 @@ const Cadastro = () => {
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [error, setError] = useState('');
   const [showSenha, setShowSenha] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useAuth(); 
 
   // logar sem google
   const handleSubmit = (e) => {
@@ -30,9 +33,14 @@ const Cadastro = () => {
   // logar com google
   const handleGoogleLogin = async () => {
     try {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
       const result = await signInWithPopup(auth, provider);
       console.log('Usuário logado com Google: ', result.user);
-      // redireciona
+      login()
+      navigate('/historico');
     } catch (error) {
       console.error('Erro ao fazer login com Google: ', error);
     }

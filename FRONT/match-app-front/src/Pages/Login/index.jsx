@@ -1,9 +1,11 @@
 import { Box, Container, IconButton, InputAdornment, TextField, Typography, Grid2, Button } from "@mui/material";
 import { useState } from "react";
 import logo from '../../Assets/imgs/logo-completo.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import googleLogo from '../../Assets/imgs/google_logo.png';
+import { useAuth } from '../../Routes/AuthContext'; // Apenas o useAuth, não o login
 import './login.css';
 
 const Login = () => {
@@ -11,11 +13,14 @@ const Login = () => {
     const [senha, setSenha] = useState('');
     const [showSenha, setShowSenha] = useState(false);
     const [error, setError] = useState('');
+    const auth = getAuth();
+    const { login } = useAuth(); // Mantenha aqui
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
-        e.preventDefault(); // Prevenir o comportamento padrão do formulário
+        e.preventDefault(); 
         
-        const senhaPerfil = "123"; // Exemplo de senha correta para verificar
+        const senhaPerfil = "123";
         if (senha !== senhaPerfil) {
             setError('As senhas não coincidem!');
         } else {
@@ -29,9 +34,11 @@ const Login = () => {
     const handleGoogleLogin = async () => {
         try {
             // Lógica de login com Google
+            const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
             console.log('Usuário logado com Google: ', result.user);
-            // redireciona ou faz outra ação
+            login();
+            navigate('/historico');
         } catch (error) {
             console.error('Erro ao fazer login com Google: ', error);
         }
@@ -157,7 +164,6 @@ const Login = () => {
                         </Grid2>
                     </Grid2>
                 </form>
-
                
                 <Typography
                     component={Link}

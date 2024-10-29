@@ -6,6 +6,7 @@ import { AuthProvider } from './AuthContext';
 import ProtectedRoute from './ProtectedRoute';
 import PrivacyPolicy from '../Pages/PoliticaPrivacidade';
 import TermsOfUse from '../Pages/TermosDeUso';
+import HomePage from '../Pages/Home';
 
 function RoutesApp() {
   return (
@@ -17,6 +18,7 @@ function RoutesApp() {
           <Route path="/signup" element={<Cadastro />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfUse />} />
+          <Route path="/home" element={<HomePage />} />
           <Route
             path="/historico"
             element={

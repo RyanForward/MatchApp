@@ -1,0 +1,39 @@
+/* navbar.css */
+
+.vertical-navbar {
+    width: 250px;
+    height: 100vh;
+    background-color: black;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.vertical-navbar a {
+    color: white;
+    text-decoration: none;
+    margin: 10px 0;
+    font-size: 18px;
+    transition: color 0.3s;
+}
+
+.vertical-navbar a:hover {
+    color: #f0f0f0;
+}
+
+@media (max-width: 768px) {
+    .vertical-navbar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 10px 0;
+    }
+
+    .vertical-navbar a {
+        margin: 0 10px;
+        font-size: 16px;
+    }
+}

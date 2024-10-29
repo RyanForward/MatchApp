@@ -13,7 +13,8 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import "./navbar.css";
-import logo from '../../Assets/imgs/logo-completo.png'; // Importando a logo    
+import logo from '../../Assets/imgs/logo-completo.png'; // Importando a logo   
+import { Link } from 'react-router-dom'; 
 
 function NavBar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -25,30 +26,40 @@ function NavBar() {
     setDrawerOpen(open);
   };
 
-  const drawerContent = (
+
+
+const drawerContent = (
     <Box
-      sx={{ width: 250 }}
-      role="presentation"
-      onClick={toggleDrawer(false)}
-      onKeyDown={toggleDrawer(false)}
+        sx={{ width: 250 }}
+        role="presentation"
+        onClick={toggleDrawer(false)}
+        onKeyDown={toggleDrawer(false)}
     >
-      <List>
-        {['Início', 'Histórico', 'Perfil', 'Próximas partidas'].map((text, index) => (
-          <ListItem button key={index}>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['Política de privacidade', 'Termos de serviço'].map((text, index) => (
-          <ListItem button key={index}>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
+        <List>
+            {[
+                { text: 'Início', link: '/home' },
+                { text: 'Histórico', link: '/historico' },
+                { text: 'Perfil', link: '/perfil' },
+                { text: 'Próximas partidas', link: '/proximas-partidas' }
+            ].map((item, index) => (
+                <ListItem button component={Link} to={item.link} key={index}>
+                    <ListItemText primary={item.text} />
+                </ListItem>
+            ))}
+        </List>
+        <Divider />
+        <List>
+            {[
+                { text: 'Política de privacidade', link: '/privacy' },
+                { text: 'Termos de serviço', link: '/terms' }
+            ].map((item, index) => (
+                <ListItem button component={Link} to={item.link} key={index}>
+                    <ListItemText primary={item.text} />
+                </ListItem>
+            ))}
+        </List>
     </Box>
-  );
+);
 
   return (
     <div>

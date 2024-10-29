@@ -1,9 +1,14 @@
 import React from 'react';
 import { Container, Typography, Box } from '@mui/material';
+import Navbar from '../Navbar'; // Importando o componente Navbar
 import logo from '../../Assets/imgs/logo-completo.png';
 
 const TermsOfUse = () => {
     return (
+        <>
+        <nav>
+          <Navbar />
+        </nav>
         <Container maxWidth="md" sx={{ 
             marginTop: 4,
             display: 'flex',
@@ -108,6 +113,7 @@ const TermsOfUse = () => {
                 </Typography>
             </Box>
         </Container>
+        </>
     );
 };
 

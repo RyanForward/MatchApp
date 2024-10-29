@@ -1,8 +1,9 @@
 import React from 'react';
 import { Container, Typography, Box } from '@mui/material';
-import logo from '../../Assets/imgs/logo-completo.png';
 
 const TermsOfUse = () => {
+    const logo = 'https://firebasestorage.googleapis.com/v0/b/matchapp-a23bb.appspot.com/o/logo-completo.png?alt=media&token=719c282e-32a0-4c91-908a-6fb1dbcd0c1b'
+
     return (
         <Container maxWidth="md" sx={{ 
             marginTop: 4,

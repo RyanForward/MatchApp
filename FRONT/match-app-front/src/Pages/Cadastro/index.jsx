@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { TextField, Button, Typography, Container, Box, Grid2, InputAdornment, IconButton, Grid } from '@mui/material';
+import { TextField, Button, Typography, Container, Box, Grid, InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { auth } from '../../firebase';
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useAuth } from '../../Routes/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '../../Assets/imgs/logo-completo.png';
-import googleLogo from '../../Assets/imgs/google_logo.png';
 import './cadastro.css';
 
 const Cadastro = () => {
@@ -18,8 +16,9 @@ const Cadastro = () => {
   const [showSenha, setShowSenha] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth(); 
+  const logo = 'https://firebasestorage.googleapis.com/v0/b/matchapp-a23bb.appspot.com/o/logo-completo.png?alt=media&token=719c282e-32a0-4c91-908a-6fb1dbcd0c1b'
+  const googleLogo = 'https://firebasestorage.googleapis.com/v0/b/matchapp-a23bb.appspot.com/o/google_logo.png?alt=media&token=f4bf9fbf-24e6-4858-92bd-4512741a8aed'
 
-  // logar sem google
   const handleSubmit = (e) => {
     e.preventDefault();
     if (senha !== confirmarSenha) {
@@ -30,13 +29,10 @@ const Cadastro = () => {
     }
   };
 
-  // logar com google
   const handleGoogleLogin = async () => {
     try {
       const provider = new GoogleAuthProvider();
-      provider.setCustomParameters({
-        prompt: 'select_account'
-      });
+      provider.setCustomParameters({ prompt: 'select_account' });
       const result = await signInWithPopup(auth, provider);
       console.log('Usuário logado com Google: ', result.user);
       login()
@@ -47,29 +43,29 @@ const Cadastro = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ backgroundColor: '#ffffff', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <Container maxWidth="xs" sx={{ backgroundColor: '#ffffff', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 2 }}>
       <Box 
         display="flex" 
         justifyContent="center" 
         alignItems="center" 
         flexDirection="column"
-        flexGrow={1} // faz o conteúdo crescer para preencher a altura da tela
+        width="100%"
         padding={2}
-        sx={{ overflowY: 'auto' }} // habilita o scroll quando necessário
+        sx={{ overflowY: 'auto' }}
       >
-        <Box mb={2} sx={{ flexShrink: 0 }}>
+        <Box mb={2} width="100%" display="flex" justifyContent="center">
           <img 
             src={logo} 
-            alt="Descrição da imagem"
-            style={{ width: '100%', height: 'auto' }}
+            alt="Logo da empresa MatchApp"
+            style={{ width: '80%', maxWidth: '300px', height: 'auto' }}
           />
         </Box>
-        <Typography variant="h4" component="h1" gutterBottom paddingBottom={2}>
+        <Typography variant="h5" component="h1" gutterBottom>
           Seja bem-vindo!
         </Typography>
-        <form onSubmit={handleSubmit}>
-          <Grid2 container spacing={2} fullWidth display="flex" justifyContent="center">
-            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
+        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
               <TextField
                 label="Nome"
                 variant="outlined"
@@ -77,11 +73,10 @@ const Cadastro = () => {
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 required
-                sx={{ maxWidth: '100%' }}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
+            <Grid item xs={12}>
               <TextField
                 label="Email"
                 variant="outlined"
@@ -90,11 +85,10 @@ const Cadastro = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                sx={{ maxWidth: '100%' }}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
+            <Grid item xs={12}>
               <TextField
                 label="Senha"
                 variant="outlined"
@@ -115,11 +109,10 @@ const Cadastro = () => {
                     </InputAdornment>
                   ),
                 }}
-                sx={{ maxWidth: '100%' }}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
+            <Grid item xs={12}>
               <TextField
                 label="Confirmar Senha"
                 variant="outlined"
@@ -130,34 +123,28 @@ const Cadastro = () => {
                 required
                 error={senha !== confirmarSenha}
                 helperText={senha !== confirmarSenha ? 'As senhas não coincidem' : ''}
-                sx={{ maxWidth: '100%' }}
               />
-            </Grid2>
+            </Grid>
 
             {error && (
-              <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
+              <Grid item xs={12}>
                 <Typography color="error">{error}</Typography>
-              </Grid2>
+              </Grid>
             )}
 
-            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
+            <Grid item xs={12}>
               <Button 
                 type="submit" 
                 variant="contained" 
                 color="primary"
                 fullWidth 
-                disableElevation 
-                sx={{
-                  fontWeight: 'bold', 
-                  fontSize: '1.1em',
-                  borderRadius: '10.7px',
-                  maxWidth: '100%',
-                }}
+                sx={{ fontWeight: 'bold', fontSize: '1.1em', borderRadius: '10.7px' }}
               >
                 Cadastrar
               </Button>
-            </Grid2>
-            <Grid2 item xs={12} minWidth="350px">
+            </Grid>
+
+            <Grid item xs={12}>
               <Button
                 variant="outlined"
                 fullWidth
@@ -183,23 +170,19 @@ const Cadastro = () => {
                   component="img"
                   src={googleLogo}
                   alt="Google logo"
-                  sx={{
-                    width: '25px',
-                    height: '25px',
-                    marginRight: '10px',
-                  }}
+                  sx={{ width: '25px', height: '25px', marginRight: '10px' }}
                 />
                 Cadastro com Google
               </Button>
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
         </form>
 
         <Typography
           component={Link}
           to="/login" 
           sx={{
-            margin: '10px',
+            marginTop: '15px',
             color: 'black', 
             textAlign: 'center', 
             fontSize: '1.05em',

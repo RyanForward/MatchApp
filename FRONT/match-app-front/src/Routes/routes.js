@@ -7,7 +7,7 @@ import ProtectedRoute from './ProtectedRoute';
 import PrivacyPolicy from '../Pages/PoliticaPrivacidade';
 import TermsOfUse from '../Pages/TermosDeUso';
 import HomePage from '../Pages/Home';
-import ProfileCard from '../Pages/Perfil/perfil';
+import ProfileCard from '../Pages/Perfil';
 
 function RoutesApp() {
   return (

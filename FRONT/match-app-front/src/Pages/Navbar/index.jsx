@@ -63,7 +63,7 @@ const drawerContent = (
 
   return (
     <div>
-      <AppBar position="static" style={{ backgroundColor: '#ffffff', color: '#000' }}>
+      <AppBar className='AppBar' position="static" style={{ backgroundColor: '#ffffff', color: '#000' }}>
         <Toolbar>
           <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
             <MenuIcon />
@@ -81,7 +81,7 @@ const drawerContent = (
       </AppBar>
 
       {/* Drawer para o menu lateral */}
-      <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+      <Drawer className="Drawer" anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
         {drawerContent}
       </Drawer>
     </div>

@@ -7,6 +7,7 @@ import ProtectedRoute from './ProtectedRoute';
 import PrivacyPolicy from '../Pages/PoliticaPrivacidade';
 import TermsOfUse from '../Pages/TermosDeUso';
 import HomePage from '../Pages/Home';
+import ProfileCard from '../Pages/Perfil/perfil';
 
 function RoutesApp() {
   return (
@@ -19,6 +20,7 @@ function RoutesApp() {
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfUse />} />
           <Route path="/home" element={<HomePage />} />
+          <Route path="/perfil" element={<ProfileCard />} />
           <Route
             path="/historico"
             element={

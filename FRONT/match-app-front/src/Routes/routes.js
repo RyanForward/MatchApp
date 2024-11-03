@@ -7,7 +7,11 @@ import ProtectedRoute from './ProtectedRoute';
 import PrivacyPolicy from '../Pages/PoliticaPrivacidade';
 import TermsOfUse from '../Pages/TermosDeUso';
 import HomePage from '../Pages/Home';
+<<<<<<< HEAD
 import ProfileCard from '../Pages/Perfil';
+=======
+import ProfileCard from '../Pages/Perfil/perfil';
+>>>>>>> 72ebb7af22814956f0f9797ebb636fcc5800d36c
 
 function RoutesApp() {
   return (

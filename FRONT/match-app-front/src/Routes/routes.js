@@ -8,6 +8,8 @@ import PrivacyPolicy from '../Pages/PoliticaPrivacidade';
 import TermsOfUse from '../Pages/TermosDeUso';
 import HomePage from '../Pages/Home';
 import ProfileCard from '../Pages/Perfil';
+import Postmatch from '../Pages/postmatch';
+import Nextmacth from '../Pages/nextmatch'; 
 
 function RoutesApp() {
   return (
@@ -21,6 +23,8 @@ function RoutesApp() {
           <Route path="/terms" element={<TermsOfUse />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/perfil" element={<ProfileCard />} />
+          <Route path="/postmatch" element={<Postmatch />} />
+          <Route path="/nextmatch" element={<Nextmacth />} />
           <Route
             path="/historico"
             element={

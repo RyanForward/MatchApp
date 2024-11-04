@@ -43,7 +43,7 @@ const drawerContent = (
                 { text: 'Início', link: '/home' },
                 { text: 'Histórico', link: '/historico' },
                 { text: 'Perfil', link: '/perfil' },
-                { text: 'Próximas partidas', link: '/proximas-partidas' }
+                { text: 'Próximas partidas', link: '/nextmatch' }
             ].map((item, index) => (
                 <ListItem button component={Link} to={item.link} key={index}>
                     <ListItemText primary={item.text} />

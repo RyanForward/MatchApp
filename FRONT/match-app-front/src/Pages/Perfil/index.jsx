@@ -12,7 +12,7 @@ const ProfileCard = () => {
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/usuario/:id')
+    axios.get('api/usuario/1')
       .then(response => {
         setProfile(response.data);
       })
@@ -33,7 +33,7 @@ const ProfileCard = () => {
       <Card sx={{ maxWidth: "sm", mx: 'auto', mt: 5, p: 2, textAlign: 'center', boxShadow: 3 }}>
         <Box display="flex" flexDirection="column" alignItems="center">
           <Avatar sx={{ width: 80, height: 80, mb: 2 }} src={profile.avatarUrl} />
-          <Typography variant="h6">{profile.name}</Typography>
+          <Typography variant="h6">{profile.user_nome}</Typography>
           <Box display="flex" alignItems="center" color="green" mb={1}>
             <Typography variant="h4">{profile.rating}</Typography>
             <StarIcon fontSize="large" />

@@ -1,58 +1,67 @@
-import React from 'react';
-import {AppBar, Toolbar, IconButton, Typography, Container, Button, Box, Table, TableBody, TableCell, TableContainer, TableRow, Paper,} from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { AppBar, Toolbar, IconButton, Typography, Container, Button, Box, Table, TableBody, TableCell, TableContainer, TableRow, Paper } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import Navbar from '../Navbar'; // Importando o componente Navbar
 import logo from '../../Assets/imgs/logo-completo.png';
+import axios from 'axios';
 
 function HomePage() {
-    const partidas = [
-      { id: 1, esporte: 'Vôlei', local: 'Av. Coliseu, 400, Recife', data: '10/08/2024' },
-      { id: 2, esporte: 'Vôlei', local: 'Av. Coliseu, 400, Recife', data: '10/08/2024' },
-      { id: 3, esporte: 'Vôlei', local: 'Av. Coliseu, 400, Recife', data: '10/08/2024' },
-      { id: 4, esporte: 'Vôlei', local: 'Av. Coliseu, 400, Recife', data: '10/08/2024' },
-      { id: 5, esporte: 'Vôlei', local: 'Av. Coliseu, 400, Recife', data: '10/08/2024' },
-    ];
-  
-    return (
-      <>
-        <nav>
-          <Navbar />
-        </nav>     
-        <Container maxWidth="sm" style={{ paddingTop: 20 }}>
-    
-          {/* Saudação */}
-          <Typography variant="h5" gutterBottom>Olá, Andressa!</Typography>
-          <Typography variant="subtitle1" gutterBottom>O que deseja?</Typography>
-    
-          {/* Botões */}
-          <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    // Substitua a URL abaixo pela URL do seu backend
+    axios.get('/api/usuario/1')
+      .then(response => setUserName(response.data.user_nome))
+      .catch(error => console.error('Erro ao buscar o nome do usuário:', error));
+  }, []);
+
+  const partidas = [
+    { id: 1, esporte: 'Vôlei', local: 'Av. Coliseu, 400, Recife', data: '10/08/2024' },
+    { id: 2, esporte: 'Vôlei', local: 'Av. Coliseu, 400, Recife', data: '10/08/2024' },
+    { id: 3, esporte: 'Vôlei', local: 'Av. Coliseu, 400, Recife', data: '10/08/2024' },
+    { id: 4, esporte: 'Vôlei', local: 'Av. Coliseu, 400, Recife', data: '10/08/2024' },
+    { id: 5, esporte: 'Vôlei', local: 'Av. Coliseu, 400, Recife', data: '10/08/2024' },
+  ];
+
+  return (
+    <>
+      <nav>
+        <Navbar />
+      </nav>
+      <Container maxWidth="sm" style={{ paddingTop: 20 }}>
+        {/* Saudação */}
+        <Typography variant="h5" gutterBottom>Olá, {userName}!</Typography>
+        <Typography variant="subtitle1" gutterBottom>O que deseja?</Typography>
+
+        {/* Botões */}
+        <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
           <Button variant="contained" color="success" fullWidth style={{ marginTop: 10 }}>
             <a href="/encontrarmatch" style={{ color: 'inherit', textDecoration: 'none' }}>Encontrar uma partida</a>
           </Button>
-            <Typography variant="subtitle1" gutterBottom>ou</Typography>
+          <Typography variant="subtitle1" gutterBottom>ou</Typography>
           <Button variant="contained" color="success" fullWidth style={{ marginTop: 10 }}>
             <a href="/criarmatch" style={{ color: 'inherit', textDecoration: 'none' }}>Organizar uma partida</a>
           </Button>
-          </Box>
-    
-          {/* Últimas partidas */}
-          <Typography variant="subtitle1" gutterBottom>Últimas 5 partidas:</Typography>
-          <TableContainer component={Paper}>
-            <Table aria-label="Ultimas partidas">
-              <TableBody>
-                {partidas.map((partida) => (
-                  <TableRow key={partida.id}>
-                    <TableCell align="left">{partida.esporte}</TableCell>
-                    <TableCell align="left">{partida.local}</TableCell>
-                    <TableCell align="left">{partida.data}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Container>
-      </>
-    );
-  }
-  
-  export default HomePage;
+        </Box>
+
+        {/* Últimas partidas */}
+        <Typography variant="subtitle1" gutterBottom>Últimas 5 partidas:</Typography>
+        <TableContainer component={Paper}>
+          <Table aria-label="Ultimas partidas">
+            <TableBody>
+              {partidas.map((partida) => (
+                <TableRow key={partida.id}>
+                  <TableCell align="left">{partida.esporte}</TableCell>
+                  <TableCell align="left">{partida.local}</TableCell>
+                  <TableCell align="left">{partida.data}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Container>
+    </>
+  );
+}
+
+export default HomePage;

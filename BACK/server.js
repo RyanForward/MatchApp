@@ -13,15 +13,30 @@ const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
     database: 'match',
-    password: 'barbara',
+    password: 'admin',
     port: 5432, 
 });
 
 const app = express();
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
-app.post('/usuario', async (req, res) => {
+
+async function main(){
+    try {
+        const client = await pool.connect();
+        const result = await client.query('SELECT * FROM Usuario');
+        console.log(result.rows);
+        client.release();
+    } catch (err) {
+        console.error(err);
+    }
+
+}
+
+
+app.post('/api/usuario', async (req, res) => {
     const { user_nome, user_tipo, user_senha } = req.body;
     try {
         const result = await pool.query(
@@ -34,8 +49,22 @@ app.post('/usuario', async (req, res) => {
     }
 });
 
+// Retorna as informações de um usuário específico
+app.get('/api/usuario/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query('SELECT * FROM Usuario WHERE user_id = $1', [id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Usuário não encontrado' });
+        }
+        res.status(200).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Retorna as informações de um usuário
-app.get('/', async (req, res) => { //raiz da aplicação
+app.get('/api/', async (req, res) => { //raiz da aplicação
     try {
         const result = await pool.query('SELECT * FROM Usuario');
         res.status(200).json(result.rows);
@@ -45,7 +74,7 @@ app.get('/', async (req, res) => { //raiz da aplicação
 });
 
 // Inserir uma nova quadra
-app.post('/quadra', async (req, res) => {
+app.post('/api/quadra', async (req, res) => {
     const { user_id, calendario, valor, publico } = req.body;
     try {
         const result = await pool.query(
@@ -59,7 +88,7 @@ app.post('/quadra', async (req, res) => {
 });
 
 // Editar informações de uma quadra existente
-app.put('/quadra/:id', async (req, res) => {
+app.put('/api/quadra/:id', async (req, res) => {
     const { id } = req.params;
     const { calendario, valor, publico } = req.body;
     try {
@@ -77,7 +106,7 @@ app.put('/quadra/:id', async (req, res) => {
 });
 
 // Inserir uma nova partida
-app.post('/partida', async (req, res) => {
+app.post('/api/partida', async (req, res) => {
     const { user_id, match_data, match_local, match_valor, match_publico } = req.body;
     try {
         const result = await pool.query(
@@ -91,7 +120,7 @@ app.post('/partida', async (req, res) => {
 });
 
 // Editar informações de uma partida existente
-app.put('/partida/:id', async (req, res) => {
+app.put('/api/partida/:id', async (req, res) => {
     const { id } = req.params;
     const { match_data, match_local, match_valor, match_publico } = req.body;
     try {
@@ -108,8 +137,8 @@ app.put('/partida/:id', async (req, res) => {
     }
 });
 
-// Inicia o servidor na porta 3000
-const PORT = 3000;
+// Inicia o servidor na porta 5000
+const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });

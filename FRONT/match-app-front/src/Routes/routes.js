@@ -11,6 +11,7 @@ import ProfileCard from '../Pages/Perfil';
 import Postmatch from '../Pages/postmatch';
 import Nextmacth from '../Pages/nextmatch';
 import Criarmatch from '../Pages/Criarmatch';
+import EncontrarMatch from '../Pages/Encontrarmatch';
 
 function RoutesApp() {
   return (
@@ -27,6 +28,7 @@ function RoutesApp() {
           <Route path="/postmatch" element={<Postmatch />} />
           <Route path="/nextmatch" element={<Nextmacth />} />
           <Route path="/criarmatch" element={<Criarmatch />} />
+          <Route path="/encontrarmatch" element={<EncontrarMatch />} />
           <Route
             path="/historico"
             element={

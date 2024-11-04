@@ -26,9 +26,9 @@ function HomePage() {
     
           {/* Botões */}
           <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
-            <Button variant="contained" color="success" fullWidth style={{ marginBottom: 10 }}>
-              Encontrar partida
-            </Button>
+          <Button variant="contained" color="success" fullWidth style={{ marginTop: 10 }}>
+            <a href="/encontrarmatch" style={{ color: 'inherit', textDecoration: 'none' }}>Encontrar uma partida</a>
+          </Button>
             <Typography variant="subtitle1" gutterBottom>ou</Typography>
           <Button variant="contained" color="success" fullWidth style={{ marginTop: 10 }}>
             <a href="/criarmatch" style={{ color: 'inherit', textDecoration: 'none' }}>Organizar uma partida</a>

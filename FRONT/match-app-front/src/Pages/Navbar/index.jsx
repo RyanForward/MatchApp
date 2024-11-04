@@ -30,7 +30,7 @@ function NavBar() {
 
 const drawerContent = (
     <Box
-        sx={{ width: 250 }}
+        sx={{ maxWidth: "sm" }}
         role="presentation"
         onClick={toggleDrawer(false)}
         onKeyDown={toggleDrawer(false)}

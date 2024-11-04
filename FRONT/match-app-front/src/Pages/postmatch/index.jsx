@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, Typography, Box, Button, Avatar, IconButton } from '@mui/material';
 import StarIcon from '@mui/icons-material/StarBorder';
 import StarFilledIcon from '@mui/icons-material/Star';
+import './postmatch.css';
 import Navbar from '../Navbar'; // Importando o componente Navbar
 
 const FeedbackCard = ({ name }) => {
@@ -34,7 +35,7 @@ const FeedbackPage = () => {
     <nav>
       <Navbar />
     </nav>  
-    <Card sx={{ maxWidth: 300, mx: 'auto', mt: 5, p: 2, textAlign: 'center', boxShadow: 3 }}>
+    <Card sx={{ maxWidth: "sm", mx: 'auto', mt: 5, p: 2, textAlign: 'center', boxShadow: 3 }}>
       <Typography variant="h6" gutterBottom>Como foi a partida?</Typography>
       <CardContent>
         <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
@@ -46,7 +47,11 @@ const FeedbackPage = () => {
           <FeedbackCard name="Jurandir Cunha" />
         </Box>
       </CardContent>
-      <Button variant="contained" color="success" sx={{ mt: 2 }}>Finalizar</Button>
+      <Button type="submit" 
+              variant="contained" 
+              color="primary"
+              fullWidth 
+              disableElevation sx={{ mt: 2 }}>Finalizar</Button>
     </Card>
     </>
   );

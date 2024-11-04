@@ -24,7 +24,7 @@ const UpcomingMatches = () => {
         <nav>
           <Navbar />
         </nav> 
-    <Box sx={{ maxWidth: 300, mx: 'auto', mt: 5, p: 2, textAlign: 'center' }}>
+    <Box sx={{ maxWidth: "sm", mx: 'auto', mt: 5, p: 2, textAlign: 'center' }}>
       <Typography variant="h6" gutterBottom>Suas próximas partidas</Typography>
       <MatchCard sport="Vôlei" location="Av. Coliseu, 400, Recife" date="14/08/2024" />
       <MatchCard sport="Futebol" location="Av. Coliseu, 400, Recife" date="15/08/2024" />

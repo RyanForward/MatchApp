@@ -9,7 +9,7 @@ const ProfileCard = () => {
         <nav>
           <Navbar />
         </nav>  
-    <Card sx={{ maxWidth: 300, mx: 'auto', mt: 5, p: 2, textAlign: 'center', boxShadow: 3 }}>
+    <Card sx={{ maxWidth: "sm", mx: 'auto', mt: 5, p: 2, textAlign: 'center', boxShadow: 3 }}>
       <Box display="flex" flexDirection="column" alignItems="center">
         <Avatar sx={{ width: 80, height: 80, mb: 2 }} />
         <Typography variant="h6">Andressa Silva</Typography>

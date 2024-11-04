@@ -18,7 +18,7 @@ function HomePage() {
         <nav>
           <Navbar />
         </nav>     
-        <Container maxWidth="xs" style={{ paddingTop: 20 }}>
+        <Container maxWidth="sm" style={{ paddingTop: 20 }}>
     
           {/* Saudação */}
           <Typography variant="h5" gutterBottom>Olá, Andressa!</Typography>

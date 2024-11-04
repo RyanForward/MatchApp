@@ -23,7 +23,7 @@ function CreateMatch() {
   return (
     <>
       <nav>
-        <Navbar />
+        <Navbar />s
       </nav> 
     <Box sx={{ maxWidth: "sm", mx: "auto", mt: 4, p: 2, border: "1px solid #ccc", borderRadius: 2 }}>
       <Typography variant="h6" gutterBottom>Crie uma partida</Typography>
@@ -137,3 +137,31 @@ function CreateMatch() {
 }
 
 export default CreateMatch;
+import axios from 'axios';
+
+const handleSubmit = async () => {
+    const matchData = {
+        esporte: document.querySelector('input[name="esporte"]').value,
+        tipoCompeticao: document.querySelector('input[name="tipoCompeticao"]').value,
+        genero: document.querySelector('input[name="genero"]').value,
+        data: document.querySelector('input[name="data"]').value,
+        faixaIdadeMin: document.querySelector('input[name="faixaIdadeMin"]').value,
+        faixaIdadeMax: document.querySelector('input[name="faixaIdadeMax"]').value,
+        nivelExpertise: document.querySelector('input[name="nivelExpertise"]').value,
+        numeroTotalPessoas: document.querySelector('input[name="numeroTotalPessoas"]').value,
+        partidaGratuita: document.querySelector('input[name="partidaGratuita"]').checked,
+        acessivel: document.querySelector('input[name="acessivel"]').checked,
+        participantes: participants,
+    };
+
+    try {
+        const response = await axios.post('http://localhost:3000/api/matches', matchData);
+        console.log('Match created successfully:', response.data);
+    } catch (error) {
+        console.error('Error creating match:', error);
+    }
+};
+
+<Button variant="contained" color="primary" fullWidth onClick={handleSubmit}>
+    Criar Partida
+</Button>

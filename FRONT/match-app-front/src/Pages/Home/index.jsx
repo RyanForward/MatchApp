@@ -30,9 +30,9 @@ function HomePage() {
               Encontrar partida
             </Button>
             <Typography variant="subtitle1" gutterBottom>ou</Typography>
-            <Button variant="contained" color="success" fullWidth>
-              Organizar partida
-            </Button>
+          <Button variant="contained" color="success" fullWidth style={{ marginTop: 10 }}>
+            <a href="/criarmatch" style={{ color: 'inherit', textDecoration: 'none' }}>Organizar uma partida</a>
+          </Button>
           </Box>
     
           {/* Últimas partidas */}

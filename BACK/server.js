@@ -34,6 +34,16 @@ app.post('/usuario', async (req, res) => {
     }
 });
 
+// Retorna as informações de um usuário
+app.get('/', async (req, res) => { //raiz da aplicação
+    try {
+        const result = await pool.query('SELECT * FROM Usuario');
+        res.status(200).json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Inserir uma nova quadra
 app.post('/quadra', async (req, res) => {
     const { user_id, calendario, valor, publico } = req.body;

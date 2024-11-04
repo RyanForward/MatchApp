@@ -13,7 +13,10 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import "./navbar.css";
-import logo from '../../Assets/imgs/logo-completo.png'; // Importando a logo   
+
+const logo = 'https://firebasestorage.googleapis.com/v0/b/matchapp-a23bb.appspot.com/o/logo.png?alt=media&token=ba286398-61bd-4cbb-9851-fc58b30ccd2f'
+
+   
 import { Link } from 'react-router-dom'; 
 
 function NavBar() {
@@ -75,7 +78,7 @@ const drawerContent = (
           <img 
             src={logo} 
             alt="Descrição da imagem"
-            style={{ width: '10%', height: 'auto' }}
+            style={{ width: '5%', height: 'auto' }}
           />
         </Toolbar>
       </AppBar>

@@ -37,11 +37,9 @@ const Login = () => {
             console.log('Token de autenticação: ', response);
             const token = response.data.token;
             sessionStorage.setItem('token', token);
-            if (token) {
-                setMsg('Login efetuado com sucesso!');
-                login();
-                navigate('/home');
-            }
+            setMsg('Login efetuado com sucesso!');
+            login();
+            navigate('/home');
         } catch (error) {
             setError(error.response.data.message);
             console.log(error.response.data);

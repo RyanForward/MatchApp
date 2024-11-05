@@ -95,11 +95,12 @@ app.post("/api/Login", async (req, res) => {
         const user = result.rows[0];
         // const passwordValidado = await compare(user_senha, user.user_senha);
         // console.log(user_senha, user.user_senha, passwordValidado);
+        console.log(user);
         console.log(user_senha, user.user_senha);
         if (user_senha === user.user_senha) {
             return res.json({ message: 'Login bem-sucedido' });
         } else {
-            return res.status(422).send('Usuario ou senha incorretos.');
+            return user, res.status(422).send('Usuario ou senha incorretos.');
         }
     } catch (err) {
         res.status(500).json({ error: err.message });

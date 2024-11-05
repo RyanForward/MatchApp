@@ -37,7 +37,7 @@ function CreateMatch() {
     };
 
     try {
-        const response = await axios.post('http://localhost:3000/partida', matchData);
+        const response = await axios.post('/api/partida', matchData);
         console.log('Match created successfully:', response.data);
     } catch (error) {
         console.error('Error creating match:', error);

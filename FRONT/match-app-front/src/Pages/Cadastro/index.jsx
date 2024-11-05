@@ -1,36 +1,60 @@
 import React, { useState } from 'react';
-import { TextField, Button, Typography, Container, Box, Grid2, InputAdornment, IconButton, Grid } from '@mui/material';
+import { TextField, Button, Typography, Container, Box, Grid2, InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { auth } from '../../firebase';
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useAuth } from '../../Routes/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import * as yup from 'yup';
+import {yupResolver} from '@hookform/resolvers/yup';
+import { useForm, Controller } from 'react-hook-form';
 import logo from '../../Assets/imgs/logo-completo.png';
 import googleLogo from '../../Assets/imgs/google_logo.png';
 import './cadastro.css';
 
-const Cadastro = () => {
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
-  const [error, setError] = useState('');
-  const [showSenha, setShowSenha] = useState(false);
-  const navigate = useNavigate();
-  const { login } = useAuth(); 
 
-  // logar sem google
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (senha !== confirmarSenha) {
-      setError('As senhas não coincidem!');
-    } else {
-      setError('');
-      console.log({ nome, email, senha });
+const schema = yup.object().shape({
+  nome: yup.string().required('Nome é obrigatório'),
+  email: yup.string().email('Email inválido').required('Email é obrigatório'),
+  senha: yup.string().min(6, 'A senha deve ter pelo menos 6 caracteres').required('Senha é obrigatória'),
+  confirmarSenha: yup.string().oneOf([yup.ref('senha'), null], 'As senhas não coincidem').required('Confirmação de senha é obrigatória'),
+});
+
+const Cadastro = () => {
+  const [showSenha, setShowSenha] = useState(false);
+
+  const { register, handleSubmit, formState: { errors }, control } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const generateRandomNumber = () => {
+    return Math.floor(Math.random() * 1000000); // Gera um número aleatório entre 0 e 999999
+  };
+
+ 
+
+  const onSubmit = async (data) => {
+    try {
+      const randomNumber = generateRandomNumber();
+      const userData = { randomNumber, ...data };
+      console.log('Dados do usuário: ', userData);
+      await axios.post('/api/usuario', {
+        user_id: randomNumber,
+        user_nome: data.nome,
+        user_email: data.email,
+        user_senha: data.senha,
+      });
+      login();
+      navigate('/home');
+    } catch (error) {
+      console.error('Erro ao cadastrar: ', error);
     }
   };
 
-  // logar com google
   const handleGoogleLogin = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -39,8 +63,8 @@ const Cadastro = () => {
       });
       const result = await signInWithPopup(auth, provider);
       console.log('Usuário logado com Google: ', result.user);
-      login()
-      navigate('/historico');
+      login();
+      navigate('/home');
     } catch (error) {
       console.error('Erro ao fazer login com Google: ', error);
     }
@@ -53,9 +77,9 @@ const Cadastro = () => {
         justifyContent="center" 
         alignItems="center" 
         flexDirection="column"
-        flexGrow={1} // faz o conteúdo crescer para preencher a altura da tela
+        flexGrow={1}
         padding={2}
-        sx={{ overflowY: 'auto' }} // habilita o scroll quando necessário
+        sx={{ overflowY: 'auto' }}
       >
         <Box mb={2} sx={{ flexShrink: 0 }}>
           <img 
@@ -67,78 +91,97 @@ const Cadastro = () => {
         <Typography variant="h4" component="h1" gutterBottom paddingBottom={2}>
           Seja bem-vindo!
         </Typography>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Grid2 container spacing={2} fullWidth display="flex" justifyContent="center">
             <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
-              <TextField
-                label="Nome"
-                variant="outlined"
-                fullWidth
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                required
-                sx={{ maxWidth: '100%' }}
+              <Controller
+                name="nome"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Nome"
+                    variant="outlined"
+                    fullWidth
+                    error={!!errors.nome}
+                    helperText={errors.nome ? errors.nome.message : ''}
+                    required
+                    sx={{ maxWidth: '100%' }}
+                  />
+                )}
               />
             </Grid2>
 
             <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
-              <TextField
-                label="Email"
-                variant="outlined"
-                fullWidth
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                sx={{ maxWidth: '100%' }}
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Email"
+                    variant="outlined"
+                    fullWidth
+                    type="email"
+                    error={!!errors.email}
+                    helperText={errors.email ? errors.email.message : ''}
+                    required
+                    sx={{ maxWidth: '100%' }}
+                  />
+                )}
               />
             </Grid2>
 
             <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
-              <TextField
-                label="Senha"
-                variant="outlined"
-                fullWidth
-                type={showSenha ? 'text' : 'password'}
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                required
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowSenha(!showSenha)}
-                        edge="end"
-                      >
-                        {showSenha ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ maxWidth: '100%' }}
+              <Controller
+                name="senha"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Senha"
+                    variant="outlined"
+                    fullWidth
+                    type={showSenha ? 'text' : 'password'}
+                    error={!!errors.senha}
+                    helperText={errors.senha ? errors.senha.message : ''}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowSenha(!showSenha)}
+                            edge="end"
+                          >
+                            {showSenha ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }}
+                    sx={{ maxWidth: '100%' }}
+                  />
+                )}
               />
             </Grid2>
 
             <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
-              <TextField
-                label="Confirmar Senha"
-                variant="outlined"
-                fullWidth
-                type="password"
-                value={confirmarSenha}
-                onChange={(e) => setConfirmarSenha(e.target.value)}
-                required
-                error={senha !== confirmarSenha}
-                helperText={senha !== confirmarSenha ? 'As senhas não coincidem' : ''}
-                sx={{ maxWidth: '100%' }}
+              <Controller
+                name="confirmarSenha"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Confirmar Senha"
+                    variant="outlined"
+                    fullWidth
+                    type="password"
+                    error={!!errors.confirmarSenha}
+                    helperText={errors.confirmarSenha ? errors.confirmarSenha.message : ''}
+                    required
+                    sx={{ maxWidth: '100%' }}
+                  />
+                )}
               />
             </Grid2>
-
-            {error && (
-              <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
-                <Typography color="error">{error}</Typography>
-              </Grid2>
-            )}
 
             <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
               <Button 

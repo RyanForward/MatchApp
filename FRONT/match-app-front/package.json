@@ -12,6 +12,7 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@hookform/resolvers": "^3.9.1",
     "@mui/icons-material": "^6.1.5",
     "@mui/material": "^6.1.5",
     "abab": "^2.0.6",
@@ -634,6 +635,7 @@
     "react-dom": "^18.3.1",
     "react-error-overlay": "^6.0.11",
     "react-google-button": "^0.8.0",
+    "react-hook-form": "^7.53.1",
     "react-is": "^18.3.1",
     "react-refresh": "^0.11.0",
     "react-router": "^6.27.0",
@@ -847,7 +849,8 @@
     "yaml": "^1.10.2",
     "yargs": "^16.2.0",
     "yargs-parser": "^20.2.9",
-    "yocto-queue": "^0.1.0"
+    "yocto-queue": "^0.1.0",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11"

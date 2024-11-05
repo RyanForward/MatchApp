@@ -4,6 +4,9 @@ import logo from '../../Assets/imgs/logo-completo.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import axios from 'axios';
+import * as yup from 'yup';
+import {yupResolver} from '@hookform/resolvers/yup';
 import googleLogo from '../../Assets/imgs/google_logo.png';
 import { useAuth } from '../../Routes/AuthContext';
 import './login.css';
@@ -38,7 +41,7 @@ const Login = () => {
             const result = await signInWithPopup(auth, provider);
             console.log('Usuário logado com Google: ', result.user);
             login();
-            navigate('/historico');
+            navigate('/home');
         } catch (error) {
             console.error('Erro ao fazer login com Google: ', error);
         }

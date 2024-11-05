@@ -1,7 +1,7 @@
 CREATE TABLE Usuario (
     user_id INT NOT NULL PRIMARY KEY,
     user_nome CHAR(50) NOT NULL,
-    user_tipo CHAR(50) NOT NULL,
+    user_email CHAR(50) NOT NULL,
     user_senha CHAR(50) NOT NULL
 );
 

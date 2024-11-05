@@ -7,6 +7,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
+const cors = require('cors');
 
 // Configura o pool de conexões para o PostgreSQL
 const pool = new Pool({
@@ -36,12 +37,28 @@ async function main(){
 }
 
 
+// Middleware para lidar com CORS
+app.use(cors());
+
+// Middleware para lidar com requisições JSON
+app.use(express.json());
+
+// Middleware para lidar com requisições URL encoded
+app.use(express.urlencoded({ extended: true }));
+
+// Rota para receber dados do front-end e cadastrar no banco de dados
 app.post('/api/usuario', async (req, res) => {
-    const { user_nome, user_tipo, user_senha } = req.body;
+    const { user_id } = req.body;
+    const { user_nome } = req.body;
+    const { user_email } = req.body;
+    const { user_senha } = req.body;
+    
+    console.log(req.body);
+    
     try {
         const result = await pool.query(
-            'INSERT INTO Usuario (user_nome, user_tipo, user_senha) VALUES ($1, $2, $3) RETURNING *',
-            [user_nome, user_tipo, user_senha]
+            'INSERT INTO Usuario (user_id, user_nome, user_email, user_senha) VALUES ($1, $2, $3, $4) RETURNING *',
+            [user_id, user_nome, user_email, user_senha]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {

@@ -1,42 +1,55 @@
-import { Box, Container, IconButton, InputAdornment, TextField, Typography, Grid2, Button } from "@mui/material";
+import { Box, Container, IconButton, InputAdornment, TextField, Typography, Button } from "@mui/material";
 import { useState } from "react";
 import logo from '../../Assets/imgs/logo-completo.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import axios from 'axios';
+import { useForm, Controller, set } from 'react-hook-form';
 import * as yup from 'yup';
-import {yupResolver} from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import googleLogo from '../../Assets/imgs/google_logo.png';
 import { useAuth } from '../../Routes/AuthContext';
 import './login.css';
 
+const schema = yup.object().shape({
+    email: yup.string().email('Email inválido').required('Email é obrigatório'),
+    senha: yup.string().min(6, 'A senha deve ter pelo menos 6 caracteres').required('Senha é obrigatória')
+});
+
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [senha, setSenha] = useState('');
     const [showSenha, setShowSenha] = useState(false);
+    const [msg, setMsg] = useState('');
     const [error, setError] = useState('');
     const auth = getAuth();
     const { login } = useAuth(); 
     const navigate = useNavigate();
+    const { control, handleSubmit, formState: { errors } } = useForm({
+        resolver: yupResolver(schema)
+    });
 
-    const handleSubmit = (e) => {
-        e.preventDefault(); 
-        
-        const senhaPerfil = "123";
-        if (senha !== senhaPerfil) {
-            setError('As senhas não coincidem!');
-        } else {
-            setError('');
-            console.log({ email, senha });
-            // Aqui você pode fazer o envio ao servidor
+    const onSubmit = async (data) => {
+        try {
+            const response = await axios.post('/api/login', {
+                user_email: data.email,
+                user_senha: data.senha
+            });
+            console.log('Token de autenticação: ', response);
+            const token = response.data.token;
+            sessionStorage.setItem('token', token);
+            if (token) {
+                setMsg('Login efetuado com sucesso!');
+                login();
+                navigate('/home');
+            }
+        } catch (error) {
+            setError(error.response.data.message);
+            console.log(error.response.data);
         }
     };
 
-    // logar com google
     const handleGoogleLogin = async () => {
         try {
-            // Lógica de login com Google
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
             console.log('Usuário logado com Google: ', result.user);
@@ -47,7 +60,7 @@ const Login = () => {
         }
     };
 
-    return(
+    return (
         <Container maxWidth="sm" sx={{ backgroundColor: "#ffffff" }}>
             <Box
                 display="flex"
@@ -67,53 +80,65 @@ const Login = () => {
                 <Typography variant="h4" component="h1" gutterBottom paddingBottom={2}>
                     Bora jogar?
                 </Typography>
-                <form onSubmit={handleSubmit}>
-                    <Grid2 
-                        container 
-                        spacing={2} 
-                        fullWidth
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <Box 
                         display='flex'
                         flexDirection='column'
                         alignItems='center'
+                        width='100%'
                     >
-                        <Grid2 item xs={12} minWidth='350px'>
-                            <TextField
-                                label="Email"
-                                variant="outlined"
-                                fullWidth
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
+                        <Box width='100%' mb={2}>
+                            <Controller
+                                name="email"
+                                control={control}
+                                defaultValue=""
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Email"
+                                        variant="outlined"
+                                        fullWidth
+                                        error={!!errors.email}
+                                        helperText={errors.email ? errors.email.message : ''}
+                                    />
+                                )}
                             />
-                        </Grid2>
-                        <Grid2 item xs={12} minWidth='350px'>
-                            <TextField
-                                label="Senha"
-                                variant="outlined"
-                                fullWidth
-                                type={showSenha ? 'text' : 'password'}
-                                value={senha}
-                                onChange={ (e) => setSenha(e.target.value)}
-                                required
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={() => setShowSenha(!showSenha)}
-                                            >
-                                                {showSenha ? <VisibilityOff/> : <Visibility/>}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ) ,
-                                }}
+                        </Box>
+                        <Box width='100%' mb={2}>
+                            <Controller
+                                name="senha"
+                                control={control}
+                                defaultValue=""
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Senha"
+                                        variant="outlined"
+                                        fullWidth
+                                        type={showSenha ? 'text' : 'password'}
+                                        error={!!errors.senha}
+                                        helperText={errors.senha ? errors.senha.message : ''}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={() => setShowSenha(!showSenha)}
+                                                    >
+                                                        {showSenha ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                )}
                             />
-                        </Grid2>
+                        </Box>
                         {error && (
                             <Typography color="error" textAlign="center">
                                 {error}
                             </Typography>
                         )}
-                        <Grid2 item xs={12} sx={{ padding: 0 }} minWidth='350px'>
+                        <Box width='100%' mb={2}>
                             <Button 
                                 type="submit" 
                                 variant="contained" 
@@ -127,10 +152,10 @@ const Login = () => {
                                     maxWidth: '100%',
                                 }}
                             >
-                            Entrar
+                                Entrar
                             </Button>
-                        </Grid2>
-                        <Grid2 item xs={12} sx={{ marginTop: 2 }} minWidth='350px'>
+                        </Box>
+                        <Box width='100%' mb={2}>
                             <Button
                                 variant="outlined"
                                 fullWidth
@@ -164,10 +189,9 @@ const Login = () => {
                                 />
                                 Login com Google
                             </Button>
-                        </Grid2>
-                    </Grid2>
+                        </Box>
+                    </Box>
                 </form>
-               
                 <Typography
                     component={Link}
                     to="/signup" 
@@ -180,7 +204,7 @@ const Login = () => {
                         '&:hover': { textDecoration: 'underline' }
                     }}
                 >
-                Não possui conta? <strong>Cadastre-se</strong>
+                    Não possui conta? <strong>Cadastre-se</strong>
                 </Typography>
             </Box>
         </Container>

@@ -8,6 +8,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
 const cors = require('cors');
+const { compare } = require('bcrypt');
 
 // Configura o pool de conexões para o PostgreSQL
 const pool = new Pool({
@@ -19,7 +20,7 @@ const pool = new Pool({
 });
 
 const app = express();
-app.use(bodyParser.json());
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
@@ -78,6 +79,33 @@ app.get('/api/usuario/:id', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+});
+
+app.post("/api/Login", async (req, res) => {
+    const { user_email } = req.body;
+    const { user_senha } = req.body;
+
+    console.log(req.body);
+
+    try {
+        const result = await pool.query('SELECT * FROM Usuario WHERE user_email = $1', [user_email]);
+        if (result.rows.length === 0) {
+            return res.status(404).send('Usuario não encontrado.');
+        }
+        const user = result.rows[0];
+        // const passwordValidado = await compare(user_senha, user.user_senha);
+        // console.log(user_senha, user.user_senha, passwordValidado);
+        console.log(user_senha, user.user_senha);
+        if (user_senha === user.user_senha) {
+            return res.json({ message: 'Login bem-sucedido' });
+        } else {
+            return res.status(422).send('Usuario ou senha incorretos.');
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+
+    return res.status(200).json({ message: 'Login bem-sucedido' });
 });
 
 // Retorna as informações de um usuário

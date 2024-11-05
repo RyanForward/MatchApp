@@ -10,7 +10,7 @@ function HomePage() {
 
   useEffect(() => {
     // Substitua a URL abaixo pela URL do seu backend
-    axios.get('/api/usuario/1')
+    axios.get('/api/usuario/:id')
       .then(response => setUserName(response.data.user_nome))
       .catch(error => console.error('Erro ao buscar o nome do usuário:', error));
   }, []);

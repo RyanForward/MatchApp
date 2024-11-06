@@ -27,7 +27,7 @@ const UserProfile = () => {
         fetchUser();
     }, []);
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <div>Carregando...</div>;
 
     if (!user) return <div>Usuário não encontrado</div>;
 

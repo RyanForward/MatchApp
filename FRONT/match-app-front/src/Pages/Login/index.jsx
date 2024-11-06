@@ -21,6 +21,7 @@ const Login = () => {
     const [showSenha, setShowSenha] = useState(false);
     const [msg, setMsg] = useState('');
     const [error, setError] = useState('');
+    const [token, setToken] = useState('')
     const auth = getAuth();
     const { login } = useAuth(); 
     const navigate = useNavigate();
@@ -35,7 +36,7 @@ const Login = () => {
                 user_senha: data.senha
             });
             console.log('Token de autenticação: ', response);
-            const token = response.data.token;
+            setToken(response.data.token);
             sessionStorage.setItem('token', token);
             setMsg('Login efetuado com sucesso!');
             login();

@@ -14,6 +14,7 @@ const pool = new Pool({
     port: 5432, 
 });
 
+
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -49,6 +50,20 @@ app.post('/api/usuario', async (req, res) => {
     }
 });
 
+// Retorna as informações de um usuário específico
+app.get('/api/usuario/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query('SELECT * FROM Usuario WHERE user_id = $1', [id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Usuário não encontrado' });
+        }
+        res.status(200).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Rota para login de usuário
 app.post("/api/login", async (req, res) => {
     const { user_email, user_senha } = req.body;
@@ -64,8 +79,8 @@ app.post("/api/login", async (req, res) => {
         const passwordValidado = await bcrypt.compare(user_senha, user.user_senha);
         if (passwordValidado) {
             const token = jwt.sign({ userId: user.user_id }, 'secret_key', { expiresIn: '1h' });
-            console.log('Token de autenticação: ', token);
-            return res.json({ token: token });
+            console.log(token);
+            return res.status(200).json({ token });
         } else {
             return res.status(422).send('Usuário ou senha incorretos.');
         }
@@ -109,7 +124,8 @@ app.use((req, res, next) => {
 
 // Middleware para verificar se o token é válido
 function verificaToken(req, res, next) {
-    const token = req.headers['authorization'];
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
     if (!token) {
         return res.status(401).send('Acesso negado. Token não fornecido.');
     }
@@ -121,6 +137,82 @@ function verificaToken(req, res, next) {
         res.status(400).send('Token inválido.');
     }
 }
+
+
+
+// Retorna as informações de um usuário
+app.get('/api/', async (req, res) => { //raiz da aplicação
+    try {
+        const result = await pool.query('SELECT * FROM Usuario');
+        res.status(200).json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Inserir uma nova quadra
+app.post('/api/quadra', async (req, res) => {
+    const { user_id, calendario, valor, publico } = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO Quadras (user_id, calendario, valor, publico) VALUES ($1, $2, $3, $4) RETURNING *',
+            [user_id, calendario, valor, publico]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Editar informações de uma quadra existente
+app.put('/api/quadra/:id', async (req, res) => {
+    const { id } = req.params;
+    const { calendario, valor, publico } = req.body;
+    try {
+        const result = await pool.query(
+            'UPDATE Quadras SET calendario = $1, valor = $2, publico = $3 WHERE quadra_id = $4 RETURNING *',
+            [calendario, valor, publico, id]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Quadra não encontrada' });
+        }
+        res.status(200).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Inserir uma nova partida
+app.post('/api/partida', async (req, res) => {
+    const { user_id, match_data, match_local, match_valor, match_publico } = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO Partida (user_id, match_data, match_local, match_valor, match_publico) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [user_id, match_data, match_local, match_valor, match_publico]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Editar informações de uma partida existente
+app.put('/api/partida/:id', async (req, res) => {
+    const { id } = req.params;
+    const { match_data, match_local, match_valor, match_publico } = req.body;
+    try {
+        const result = await pool.query(
+            'UPDATE Partida SET match_data = $1, match_local = $2, match_valor = $3, match_publico = $4 WHERE match_id = $5 RETURNING *',
+            [match_data, match_local, match_valor, match_publico, id]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Partida não encontrada' });
+        }
+        res.status(200).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 // Inicia o servidor na porta 5000
 const PORT = 5000;

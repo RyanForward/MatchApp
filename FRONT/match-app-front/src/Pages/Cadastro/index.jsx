@@ -48,6 +48,7 @@ const Cadastro = () => {
         user_email: data.email,
         user_senha: data.senha,
       });
+      await auth.signInWithEmailAndPassword(data.email, data.senha);
       login();
       navigate('/home');
     } catch (error) {

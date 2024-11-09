@@ -50,8 +50,8 @@ const Login = () => {
         try {
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
-            console.log('Usuário logado com Google: ', result.user);
-            //localStorage.setItem('token', result.user.accessToken);
+            console.log('Usuário logado com Google: ',  result.user.accessToken);
+            localStorage.setItem('token', result.user.accessToken);
             login();
             navigate('/home');
         } catch (error) {

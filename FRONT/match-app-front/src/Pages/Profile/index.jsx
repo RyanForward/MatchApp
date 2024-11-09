@@ -34,7 +34,6 @@ const UserProfile = () => {
     return (
         <div>
             <h1>Olá, {user.user_nome}</h1>
-            <p>{user.user_email}</p>
         </div>
     );
 };

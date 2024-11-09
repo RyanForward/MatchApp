@@ -39,6 +39,7 @@ const HistoricoPartidas = () => {
       <NavBar />
     </nav>  
     <Container maxWidth="sm" sx={{ backgroundColor: "#ffffff", marginTop: { xs: 4, md: 6, lg: 8 } }}>
+      <NavBar/>
       <Grid2
         display="flex"
         justifyContent="center"

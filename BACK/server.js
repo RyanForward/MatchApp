@@ -43,12 +43,12 @@ app.post('/api/usuario', async (req, res) => {
             'INSERT INTO Usuario (user_id, user_nome, user_email, user_senha) VALUES ($1, $2, $3, $4) RETURNING *',
             [user_id, user_nome, user_email, hashedPassword]
         );
-        res.status(201).json(result.rows[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
         console.log(err);
     }
 });
+
 
 // Retorna as informações de um usuário específico
 app.get('/api/usuario/:id', async (req, res) => {

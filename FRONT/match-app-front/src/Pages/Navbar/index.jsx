@@ -16,18 +16,25 @@ import {
   DialogContentText,
   DialogActions,
   Button,
+  useMediaQuery,
+  useTheme,
+  ButtonGroup,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import "./navbar.css";
 import { useAuth } from '../../Routes/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import "./navbar.css";
 
 const logo = 'https://firebasestorage.googleapis.com/v0/b/matchapp-a23bb.appspot.com/o/logo.png?alt=media&token=ba286398-61bd-4cbb-9851-fc58b30ccd2f';
 
 function NavBar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { logout } = useAuth(); 
+  const { logout } = useAuth();
   const navigate = useNavigate();
+  
+  // Hook para identificar o tamanho da tela
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const toggleDrawer = (open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -39,7 +46,7 @@ function NavBar() {
   const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
 
   const handleLogoutClick = (event) => {
-    event.stopPropagation(); // Impede o fechamento da sidebar
+    event.stopPropagation();
     setOpenLogoutDialog(true);
   };
 
@@ -51,7 +58,6 @@ function NavBar() {
     setOpenLogoutDialog(false);
     logout();
     navigate('/login')
-
   };
 
   const drawerContent = (
@@ -61,8 +67,7 @@ function NavBar() {
       onKeyDown={toggleDrawer(false)}
     >
       <List>
-        {[
-          { text: 'Início', link: '/home' },
+        {[{ text: 'Início', link: '/home' },
           { text: 'Histórico', link: '/historico' },
           { text: 'Perfil', link: '/perfil' },
           { text: 'Próximas partidas', link: '/nextmatch' }
@@ -80,8 +85,7 @@ function NavBar() {
       </List>
       <Divider />
       <List>
-        {[
-          { text: 'Política de privacidade', link: '/privacy' },
+        {[{ text: 'Política de privacidade', link: '/privacy' },
           { text: 'Termos de serviço', link: '/terms' },
           { text: 'Sair', action: handleLogoutClick }
         ].map((item, index) => (
@@ -122,26 +126,80 @@ function NavBar() {
 
   return (
     <div>
-      <AppBar className='AppBar' position="fixed" style={{ backgroundColor: '#ffffff', color: '#000', marginBottom: '20px'}}>
+      <AppBar className='AppBar' position="fixed" style={{ backgroundColor: '#ffffff', color: '#000', marginBottom: '20px' }}>
         <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          </Typography>
+          {/* Menu Hamburguer para telas menores */}
+          {isMobile && (
+            <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
+              <MenuIcon />
+            </IconButton>
+          )}
+
           {/* Logo */}
-          <img 
-            src={logo} 
-            alt="Descrição da imagem"
-            style={{ width: '50px', height: 'auto' }}
-          />
+          <Typography variant="h3" component="div" sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', width: '10px'}}>
+            <img 
+              src={logo} 
+              alt="Descrição da imagem"
+              style={{ width: '50px', height: 'auto' }}
+            />
+          </Typography>
+
+          {/* Navbar Links visíveis apenas em telas grandes */}
+          {!isMobile && (
+          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-around'}}>
+              <Button
+                component={Link}
+                to="/home"
+                sx={{ textTransform: 'none', textDecoration: 'none', border: 'none', '&:not(:last-child)': { marginRight: 0 } }}
+              >
+                Início
+              </Button>
+              <Button
+                component={Link}
+                to="/historico"
+                sx={{ textTransform: 'none', border: 'none', '&:not(:last-child)': { marginRight: 0 } }}
+              >
+                Histórico
+              </Button>
+              <Button
+                component={Link}
+                to="/perfil"
+                sx={{ textTransform: 'none', border: 'none', '&:not(:last-child)': { marginRight: 0 } }}
+              >
+                Perfil
+              </Button>
+              <Button
+                component={Link}
+                to="/nextmatch"
+                sx={{ textTransform: 'none', border: 'none', '&:not(:last-child)': { marginRight: 0 } }}
+              >
+                Próximas partidas
+              </Button>
+              <Button
+                component={Link}
+                to="/privacy"
+                sx={{ textTransform: 'none', border: 'none', '&:not(:last-child)': { marginRight: 0 } }}
+              >
+                Política de privacidade
+              </Button>
+              <Button
+                component={Link}
+                to="/terms"
+                sx={{ textTransform: 'none', border: 'none', '&:not(:last-child)': { marginRight: 0 } }}
+              >
+                Termos de serviço
+              </Button>
+          </Box>
+        )}
         </Toolbar>
       </AppBar>
 
-      {/* Drawer para o menu lateral */}
-      <Drawer className="Drawer" anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
-        {drawerContent}
-      </Drawer>
+      {/* Drawer para o menu lateral em telas menores */}
+      {isMobile && (
+        <Drawer className="Drawer" anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+          {drawerContent}
+        </Drawer>
+      )}
     </div>
   );
 }

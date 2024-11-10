@@ -24,7 +24,7 @@ function FindMatch() {
       <nav>
         <Navbar />
       </nav> 
-    <Box sx={{ maxWidth: "sm", mx: "auto", mt: 4, p: 2, border: "1px solid #ccc", borderRadius: 2 }}>
+    <Box sx={{ maxWidth: "sm", mx: "auto", mt: 4, p: 2, border: "1px solid #ccc", borderRadius: 2, marginTop: 10 }}>
       <Typography variant="h6" gutterBottom>Encontre uma partida próxima a você</Typography>
 
       <Grid container spacing={2}>

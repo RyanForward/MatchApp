@@ -10,19 +10,27 @@ const PrivacyPolicy = () => {
           <Navbar />
         </nav>  
         <Container maxWidth="md" sx={{ 
-            marginTop: 4,
+            marginTop: 10,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
         }}>
             <Box sx={{
-                marginBottom: 4
+                marginBottom: 4,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
             }}>
-                <Box mb={2}>
+                <Box mb={2} sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
                     <img 
                         src={logo} 
                         alt="Descrição da imagem"
-                        style={{ width: '80%', height: 'auto' }}
+                        style={{ width: '40%', height: 'auto' }}
                     />
                 </Box>
                 <Typography variant="h4" gutterBottom>

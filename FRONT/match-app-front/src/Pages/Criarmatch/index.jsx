@@ -49,7 +49,7 @@ function CreateMatch() {
       <nav>
         <Navbar />
       </nav> 
-    <Box sx={{ maxWidth: "sm", mx: "auto", mt: 4, p: 2, border: "1px solid #ccc", borderRadius: 2 }}>
+    <Box sx={{ maxWidth: "sm", mx: "auto", mt: 4, p: 2, border: "1px solid #ccc", borderRadius: 2, marginTop: 10  }}>
       <Typography variant="h6" gutterBottom>Crie uma partida</Typography>
 
       <Grid container spacing={2}>

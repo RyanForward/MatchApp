@@ -5,20 +5,32 @@ const PrivacyPolicy = () => {
     const logo = 'https://firebasestorage.googleapis.com/v0/b/matchapp-a23bb.appspot.com/o/logo-completo.png?alt=media&token=719c282e-32a0-4c91-908a-6fb1dbcd0c1b'
 
     return (
+        <>
+        <nav>
+          <Navbar />
+        </nav>  
         <Container maxWidth="md" sx={{ 
-            marginTop: 4,
+            marginTop: 10,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
         }}>
             <Box sx={{
-                marginBottom: 4
+                marginBottom: 4,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
             }}>
-                <Box mb={2}>
+                <Box mb={2} sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
                     <img 
                         src={logo} 
                         alt="Descrição da imagem"
-                        style={{ width: '80%', height: 'auto' }}
+                        style={{ width: '40%', height: 'auto' }}
                     />
                 </Box>
                 <Typography variant="h4" gutterBottom>
@@ -110,7 +122,9 @@ const PrivacyPolicy = () => {
                 </Typography>
             </Box>
         </Container>
+        </>
     );
+    
 };
 
 export default PrivacyPolicy;

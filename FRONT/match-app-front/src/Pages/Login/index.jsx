@@ -6,10 +6,14 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useAuth } from '../../Routes/AuthContext';
 import './login.css';
 
+const schema = yup.object().shape({
+    email: yup.string().email('Email inválido').required('Email é obrigatório'),
+    senha: yup.string().min(6, 'A senha deve ter pelo menos 6 caracteres').required('Senha é obrigatória')
+});
+
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [senha, setSenha] = useState('');
     const [showSenha, setShowSenha] = useState(false);
+    const [msg, setMsg] = useState('');
     const [error, setError] = useState('');
     const auth = getAuth();
     const { login } = useAuth(); 
@@ -33,9 +37,10 @@ const Login = () => {
         try {
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
-            console.log('Usuário logado com Google: ', result.user);
+            console.log('Usuário logado com Google: ', result.user.accessToken);
+            localStorage.setItem('token', result.user.accessToken);
             login();
-            navigate('/historico');
+            navigate('/home');
         } catch (error) {
             console.error('Erro ao fazer login com Google: ', error);
         }
@@ -112,7 +117,7 @@ const Login = () => {
                         {/* Botão Entrar */}
                         <Grid item xs={12} style={{ width: '100%' }}>
                             <Button 
-                                type="submit" 
+                                type="submit"
                                 variant="contained" 
                                 color="primary"
                                 fullWidth

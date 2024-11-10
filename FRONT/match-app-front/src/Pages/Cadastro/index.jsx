@@ -35,8 +35,8 @@ const Cadastro = () => {
       provider.setCustomParameters({ prompt: 'select_account' });
       const result = await signInWithPopup(auth, provider);
       console.log('Usuário logado com Google: ', result.user);
-      login()
-      navigate('/historico');
+      login();
+      navigate('/home');
     } catch (error) {
       console.error('Erro ao fazer login com Google: ', error);
     }
@@ -136,7 +136,7 @@ const Cadastro = () => {
               <Button 
                 type="submit" 
                 variant="contained" 
-                color="primary"
+                color="primary" 
                 fullWidth 
                 sx={{ fontWeight: 'bold', fontSize: '1.1em', borderRadius: '10.7px' }}
               >

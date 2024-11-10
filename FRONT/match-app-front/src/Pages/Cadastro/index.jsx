@@ -39,14 +39,16 @@ const Cadastro = () => {
       const randomNumber = generateRandomNumber();
       const userData = { randomNumber, ...data };
       console.log('Dados do usuário: ', userData);
+      console.log('teste 1')
       await axios.post('/api/usuario', {
         user_id: randomNumber,
         user_nome: data.nome,
         user_email: data.email,
         user_senha: data.senha,
       });
-      login();
-      navigate('/home');
+      console.log('teste 2') //nao chega aqui
+      alert('Cadastrado com sucesso! Redirecionando para a página de login...')
+      navigate('/login');
     } catch (error) {
       console.error('Erro ao cadastrar: ', error);
     }

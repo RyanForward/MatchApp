@@ -6,6 +6,7 @@ import Perfil from '../Perfil'; // Importando o componente Perfil
 import Profile from '../Profile'; // Importando o componente Profile
 import logo from '../../Assets/imgs/logo-completo.png';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 function HomePage() {
 
@@ -31,14 +32,14 @@ function HomePage() {
 
         {/* Botões */}
         <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
-          <Button variant="contained" color="success" fullWidth sx={{ marginTop: 2 }}>
-            <a href="/encontrarmatch" style={{ color: 'inherit', textDecoration: 'none' }}>Encontrar uma partida</a>
+          <Button variant="contained" color="success" fullWidth sx={{ marginTop: 2 }} component={Link} to="/encontrarmatch">
+                  Encontrar uma partida
           </Button>
           <Typography variant="subtitle1" gutterBottom sx={{ marginY: 1 }}>
             ou
           </Typography>
-          <Button variant="contained" color="success" fullWidth sx={{ marginTop: 2 }}>
-            <a href="/criarmatch" style={{ color: 'inherit', textDecoration: 'none' }}>Organizar uma partida</a>
+          <Button variant="contained" color="success" fullWidth sx={{ marginTop: 2 }} component={Link} to="/criarmatch">
+                  Organizar uma partida
           </Button>
         </Box>
 

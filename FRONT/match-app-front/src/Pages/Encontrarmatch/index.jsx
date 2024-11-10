@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import './encontrar.css';
 import Navbar from '../Navbar'; // Importando o componente Navbar
 import { TextField, Select, MenuItem, FormControl, InputLabel, Checkbox, FormControlLabel, Button, Grid, Box, Typography } from '@mui/material';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css'
+import { Icon } from 'leaflet';
 
 function FindMatch() {
   const [filters, setFilters] = useState({
@@ -18,6 +21,12 @@ function FindMatch() {
   const handleFilterChange = (field, value) => {
     setFilters({ ...filters, [field]: value });
   };
+
+  const customIcon = new Icon({
+    iconUrl: 'https://firebasestorage.googleapis.com/v0/b/matchapp-a23bb.appspot.com/o/marker.png?alt=media&token=aa7f387b-c9ad-44f8-9adb-d8793184097a',
+    iconSize: [50, 50],
+    iconAnchor: [16, 32], 
+  });
 
   return (
     <>
@@ -70,12 +79,20 @@ function FindMatch() {
         </Grid>
 
         <Grid item xs={6}>
-          <TextField
-            label="Nível de expertise"
+        <FormControl fullWidth>
+          <InputLabel>Tipo de expertise</InputLabel>
+          <Select
             value={filters.expertiseLevel}
             onChange={(e) => handleFilterChange('expertiseLevel', e.target.value)}
             fullWidth
-          />
+            >
+              <MenuItem value="novato">Novato</MenuItem>
+              <MenuItem value="iniciante">Iniciante</MenuItem>
+              <MenuItem value="amador">Amador</MenuItem>
+              <MenuItem value="experiente">Experiente</MenuItem>
+              <MenuItem value="profissional">Profissional</MenuItem>
+            </Select>
+            </FormControl>
         </Grid>
 
         <Grid item xs={6}>
@@ -121,8 +138,27 @@ function FindMatch() {
 
         <Grid item xs={12}>
           <Typography variant="subtitle1">Selecione uma partida:</Typography>
-          <Box sx={{ height: 200, backgroundColor: '#f0f0f0', borderRadius: 1, mt: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Typography variant="caption">[Mapa interativo com marcadores]</Typography>
+          <Box sx={{ height: 300, backgroundColor: '#f0f0f0', borderRadius: 1, mt: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid black' }}>
+          <MapContainer center={[-22.4142733, -45.4495993]} zoom={14}>
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <Marker position={[-22.4148486,-45.446872]} icon={customIcon}>
+                <Popup>
+                  <div>
+                      Volei - 4 pessoas
+                  </div>
+                </Popup>
+              </Marker>
+              <Marker position={[-22.408078, -45.436202]} icon={customIcon}>
+                <Popup>
+                  <div>
+                      Beach Tenis - 2 pessoas
+                  </div>
+                </Popup>
+              </Marker>
+            </MapContainer>
           </Box>
         </Grid>
 

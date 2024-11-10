@@ -3,13 +3,13 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+    const { isAuthenticated, loading } = useAuth();
+    console.log('Autenticado? ', isAuthenticated);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" />;
-  }
+    if (loading) return <div>Carregando...</div>; // Aguarda a verificação do token
+    if (!isAuthenticated) return <Navigate to="/login" />; // Redireciona se não autenticado
 
-  return children;
+    return children;
 };
 
 export default ProtectedRoute;

@@ -140,7 +140,7 @@ function NavBar() {
             <img 
               src={logo} 
               alt="Descrição da imagem"
-              style={{ width: '50px', height: 'auto' }}
+              style={{ width: '80px', height: 'auto', margin: -20 }}
             />
           </Typography>
 

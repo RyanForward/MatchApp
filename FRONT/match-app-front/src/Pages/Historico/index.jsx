@@ -3,6 +3,7 @@ import {
   Table, TableBody, TableCell, TableContainer, TableRow, Typography, Paper,
   Button, Grid2, Container
 } from '@mui/material';
+import NavBar from '../Navbar';
 
 const HistoricoPartidas = () => {
   const [partidas, setPartidas] = useState([]);
@@ -33,7 +34,12 @@ const HistoricoPartidas = () => {
   }, []);
 
   return (
+    <>
+    <nav>
+      <NavBar />
+    </nav>  
     <Container maxWidth="sm" sx={{ backgroundColor: "#ffffff", marginTop: { xs: 4, md: 6, lg: 8 } }}>
+      <NavBar/>
       <Grid2
         display="flex"
         justifyContent="center"
@@ -116,6 +122,7 @@ const HistoricoPartidas = () => {
             </Button>
           </Grid2>
     </Container>
+    </>
   );
 };
 

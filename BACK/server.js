@@ -43,6 +43,7 @@ app.post('/api/usuario', async (req, res) => {
             'INSERT INTO Usuario (user_id, user_nome, user_email, user_senha) VALUES ($1, $2, $3, $4) RETURNING *',
             [user_id, user_nome, user_email, hashedPassword]
         );
+        return result
     } catch (err) {
         res.status(500).json({ error: err.message });
         console.log(err);

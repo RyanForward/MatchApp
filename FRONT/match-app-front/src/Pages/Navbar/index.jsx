@@ -146,51 +146,88 @@ function NavBar() {
 
           {/* Navbar Links visíveis apenas em telas grandes */}
           {!isMobile && (
-          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-around'}}>
+            <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-around' }}>
               <Button
                 component={Link}
                 to="/home"
-                sx={{ textTransform: 'none', textDecoration: 'none', border: 'none', '&:not(:last-child)': { marginRight: 0 } }}
+                sx={{
+                  textTransform: 'none',
+                  textDecoration: 'none',
+                  border: 'none',
+                  fontSize: '1.1rem',
+                  color: 'black',
+                  '&:not(:last-child)': { marginRight: 0 }
+                }}
               >
                 Início
               </Button>
               <Button
                 component={Link}
                 to="/historico"
-                sx={{ textTransform: 'none', border: 'none', '&:not(:last-child)': { marginRight: 0 } }}
+                sx={{
+                  textTransform: 'none',
+                  border: 'none',
+                  fontSize: '1.1rem',
+                  color: 'black',
+                  '&:not(:last-child)': { marginRight: 0 }
+                }}
               >
                 Histórico
               </Button>
               <Button
                 component={Link}
                 to="/perfil"
-                sx={{ textTransform: 'none', border: 'none', '&:not(:last-child)': { marginRight: 0 } }}
+                sx={{
+                  textTransform: 'none',
+                  border: 'none',
+                  fontSize: '1.1rem',
+                  color: 'black',
+                  '&:not(:last-child)': { marginRight: 0 }
+                }}
               >
                 Perfil
               </Button>
               <Button
                 component={Link}
                 to="/nextmatch"
-                sx={{ textTransform: 'none', border: 'none', '&:not(:last-child)': { marginRight: 0 } }}
+                sx={{
+                  textTransform: 'none',
+                  border: 'none',
+                  fontSize: '1.1rem',
+                  color: 'black',
+                  '&:not(:last-child)': { marginRight: 0 }
+                }}
               >
                 Próximas partidas
               </Button>
               <Button
                 component={Link}
                 to="/privacy"
-                sx={{ textTransform: 'none', border: 'none', '&:not(:last-child)': { marginRight: 0 } }}
+                sx={{
+                  textTransform: 'none',
+                  border: 'none',
+                  fontSize: '1.1rem',
+                  color: 'black',
+                  '&:not(:last-child)': { marginRight: 0 }
+                }}
               >
                 Política de privacidade
               </Button>
               <Button
                 component={Link}
                 to="/terms"
-                sx={{ textTransform: 'none', border: 'none', '&:not(:last-child)': { marginRight: 0 } }}
+                sx={{
+                  textTransform: 'none',
+                  border: 'none',
+                  fontSize: '1.1rem',
+                  color: 'black',
+                  '&:not(:last-child)': { marginRight: 0 }
+                }}
               >
                 Termos de serviço
               </Button>
-          </Box>
-        )}
+            </Box>
+          )}
         </Toolbar>
       </AppBar>
 

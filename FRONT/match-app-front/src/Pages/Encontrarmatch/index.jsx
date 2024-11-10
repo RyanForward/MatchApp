@@ -91,8 +91,8 @@ function FindMatch() {
               <MenuItem value="amador">Amador</MenuItem>
               <MenuItem value="experiente">Experiente</MenuItem>
               <MenuItem value="profissional">Profissional</MenuItem>
-            </Select>
-            </FormControl>
+          </Select>
+        </FormControl>
         </Grid>
 
         <Grid item xs={6}>

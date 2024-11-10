@@ -106,7 +106,17 @@ function CreateMatch() {
         </Grid>
 
         <Grid item xs={6}>
-          <TextField label="Nível de expertise" fullWidth />
+          <FormControl fullWidth>
+            <InputLabel>Tipo de expertise</InputLabel>
+            <Select defaultValue=""
+              >
+                <MenuItem value="novato">Novato</MenuItem>
+                <MenuItem value="iniciante">Iniciante</MenuItem>
+                <MenuItem value="amador">Amador</MenuItem>
+                <MenuItem value="experiente">Experiente</MenuItem>
+                <MenuItem value="profissional">Profissional</MenuItem>
+            </Select>
+          </FormControl>        
         </Grid>
 
         <Grid item xs={6}>

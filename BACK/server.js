@@ -28,6 +28,9 @@ app.use(express.json());
 // Middleware para lidar com requisições URL encoded
 app.use(express.urlencoded({ extended: true }));
 
+
+// ROTAS DOS USUÁRIOS *********************
+
 // Rota para receber dados do front-end e cadastrar no banco de dados
 app.post('/api/usuario', async (req, res) => {
     const { user_id } = req.body;
@@ -151,6 +154,9 @@ app.get('/api/', async (req, res) => { //raiz da aplicação
     }
 });
 
+
+// ROTAS DAS QUADRAS *********************
+
 // Inserir uma nova quadra
 app.post('/api/quadra', async (req, res) => {
     const { user_id, calendario, valor, publico } = req.body;
@@ -183,6 +189,8 @@ app.put('/api/quadra/:id', async (req, res) => {
     }
 });
 
+// ROTAS DAS PARTIDAS *********************
+
 // Inserir uma nova partida
 app.post('/api/partida', async (req, res) => {
     const { user_id, match_data, match_local, match_valor, match_publico } = req.body;
@@ -210,6 +218,20 @@ app.put('/api/partida/:id', async (req, res) => {
             return res.status(404).json({ message: 'Partida não encontrada' });
         }
         res.status(200).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Deletar uma partida
+app.delete('/api/partida/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query('DELETE FROM Partida WHERE match_id = $1 RETURNING *', [id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Partida não encontrada' });
+        }
+        res.status(200).json({ message: 'Partida deletada com sucesso' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

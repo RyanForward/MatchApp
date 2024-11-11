@@ -1,16 +1,30 @@
-import { Card, CardContent, Typography, Box, Button, Avatar, Divider } from '@mui/material';
+import { 
+  Card, 
+  CardContent, 
+  Typography, 
+  Box, 
+  Button, 
+  Avatar, 
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+ } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import Navbar from '../Navbar'; // Importando o componente Navbar
-
-
-
-// export default ProfileCard;
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
+import { useAuth } from '../../Routes/AuthContext';
 
 const ProfileCard = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
+  const navigate = useNavigate();
+  const { logout } = useAuth(); 
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -32,19 +46,34 @@ const ProfileCard = () => {
     };
 
     fetchUser();
-}, []);
+  }, []);
 
-if (loading) return <div>Carregando...</div>;
+  if (loading) return <div>Carregando...</div>;
 
-if (!user) return <div>Usuário não encontrado</div>;
+  if (!user) return <div>Usuário não encontrado</div>;
 
+  
+  const handleLogoutClick = (event) => {
+    event.stopPropagation();
+    setOpenLogoutDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenLogoutDialog(false);
+  };
+
+  const confirmLogout = () => {
+    setOpenLogoutDialog(false);
+    logout();
+    navigate('/login')
+  };
 
   return (
     <>
       <nav>
         <Navbar />
       </nav>  
-      <Card sx={{ maxWidth: "sm", mx: 'auto', mt: 5, p: 2, textAlign: 'center', boxShadow: 3 }}>
+      <Card sx={{ maxWidth: 400, mx: 'auto', mt: 5, p: 2, textAlign: 'center', boxShadow: 3, marginTop: 10 }}>
         <Box display="flex" flexDirection="column" alignItems="center">
           <Avatar sx={{ width: 80, height: 80, mb: 2 }} src={user.avatarUrl} />
           <Typography variant="h6">{user.user_nome}</Typography>
@@ -55,20 +84,39 @@ if (!user) return <div>Usuário não encontrado</div>;
         </Box>
         <Divider sx={{ my: 2 }} />
         <CardContent>
-          <Typography variant="body2">Partidas jogadas: {user.gamesPlayed}</Typography>
-          <Typography variant="body2">Partidas organizadas: {user.gamesOrganized}</Typography>
-          <Typography variant="body2">Esporte favorito: {user.favoriteSport}</Typography>
-          <Typography variant="body2" mt={2}>Idade: {user.age}</Typography>
-          <Typography variant="body2">Email: {user.email}</Typography>
-          <Typography variant="body2" mt={2}>Biografia:</Typography>
+          <Typography variant="body2" sx={{ mb: 1 }}>Partidas jogadas: {user.gamesPlayed}</Typography>
+          <Typography variant="body2" sx={{ mb: 1 }}>Partidas organizadas: {user.gamesOrganized}</Typography>
+          <Typography variant="body2" sx={{ mb: 1 }}>Esporte favorito: {user.favoriteSport}</Typography>
+          <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>Idade: {user.age}</Typography>
+          <Typography variant="body2" sx={{ mb: 1 }}>Email: {user.email}</Typography>
+          <Typography variant="body2" mt={2} sx={{ mb: 1 }}>Biografia:</Typography>
           <Box component="textarea" rows="4" style={{ width: '100%', marginTop: 8, padding: 8, resize: 'none', borderRadius: 4 }} value={user.bio} readOnly />
         </CardContent>
-        <Box display="flex" justifyContent="space-around" mt={2} mb={1}>
-          <Button variant="contained" color="success">Sair</Button>
+        <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-around" mt={2} mb={1}>
+          <Button variant="contained" color="success" onClick={handleLogoutClick} sx={{ mb: { xs: 2, sm: 0 } }}>Sair</Button>
           <Button variant="contained" color="error">Deletar Conta</Button>
         </Box>
-      </Card>
-    </>
+        <Dialog
+          open={openLogoutDialog}
+          onClose={handleCloseDialog}
+        >
+          <DialogTitle>Confirmar Logout</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Você realmente deseja sair?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog} color="primary">
+              Cancelar
+            </Button>
+            <Button onClick={confirmLogout} color="primary" autoFocus>
+              Sair
+            </Button>
+          </DialogActions>
+        </Dialog>
+        </Card>
+      </>
   );
 };
 

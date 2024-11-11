@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Typography, Container, Box, Grid2, InputAdornment, IconButton } from '@mui/material';
+import { TextField, Button, Typography, Container, Box, Grid, InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { auth } from '../../firebase';
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
@@ -7,12 +7,11 @@ import { useAuth } from '../../Routes/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import * as yup from 'yup';
-import {yupResolver} from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
 import logo from '../../Assets/imgs/logo-completo.png';
 import googleLogo from '../../Assets/imgs/google_logo.png';
 import './cadastro.css';
-
 
 const schema = yup.object().shape({
   nome: yup.string().required('Nome é obrigatório'),
@@ -35,21 +34,21 @@ const Cadastro = () => {
     return Math.floor(Math.random() * 1000000); // Gera um número aleatório entre 0 e 999999
   };
 
- 
-
   const onSubmit = async (data) => {
     try {
       const randomNumber = generateRandomNumber();
       const userData = { randomNumber, ...data };
       console.log('Dados do usuário: ', userData);
+      console.log('teste 1')
       await axios.post('/api/usuario', {
         user_id: randomNumber,
         user_nome: data.nome,
         user_email: data.email,
         user_senha: data.senha,
       });
-      login();
-      navigate('/home');
+      console.log('teste 2') //nao chega aqui
+      alert('Cadastrado com sucesso! Redirecionando para a página de login...')
+      navigate('/login');
     } catch (error) {
       console.error('Erro ao cadastrar: ', error);
     }
@@ -72,28 +71,16 @@ const Cadastro = () => {
 
   return (
     <Container maxWidth="sm" sx={{ backgroundColor: '#ffffff', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Box 
-        display="flex" 
-        justifyContent="center" 
-        alignItems="center" 
-        flexDirection="column"
-        flexGrow={1}
-        padding={2}
-        sx={{ overflowY: 'auto' }}
-      >
-        <Box mb={2} sx={{ flexShrink: 0 }}>
-          <img 
-            src={logo} 
-            alt="Descrição da imagem"
-            style={{ width: '100%', height: 'auto' }}
-          />
+      <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" flexGrow={1} padding={2} sx={{ overflowY: 'auto' }}>
+        <Box mb={2} sx={{ flexShrink: 0, width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <img src={logo} alt="Descrição da imagem" style={{ width: '100%', height: 'auto', maxWidth: '250px' }} />
         </Box>
-        <Typography variant="h4" component="h1" gutterBottom paddingBottom={2}>
+        <Typography variant="h4" component="h1" gutterBottom paddingBottom={2} sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
           Seja bem-vindo!
         </Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid2 container spacing={2} fullWidth display="flex" justifyContent="center">
-            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
+          <Grid container spacing={2} justifyContent="center" sx={{ width: '100%' }}>
+            <Grid item xs={12}>
               <Controller
                 name="nome"
                 control={control}
@@ -110,9 +97,9 @@ const Cadastro = () => {
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
+            <Grid item xs={12}>
               <Controller
                 name="email"
                 control={control}
@@ -130,9 +117,9 @@ const Cadastro = () => {
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
+            <Grid item xs={12}>
               <Controller
                 name="senha"
                 control={control}
@@ -148,10 +135,7 @@ const Cadastro = () => {
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowSenha(!showSenha)}
-                            edge="end"
-                          >
+                          <IconButton onClick={() => setShowSenha(!showSenha)} edge="end">
                             {showSenha ? <VisibilityOff /> : <Visibility />}
                           </IconButton>
                         </InputAdornment>
@@ -161,9 +145,9 @@ const Cadastro = () => {
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
+            <Grid item xs={12}>
               <Controller
                 name="confirmarSenha"
                 control={control}
@@ -181,26 +165,27 @@ const Cadastro = () => {
                   />
                 )}
               />
-            </Grid2>
+            </Grid>
 
-            <Grid2 item xs={12} sx={{ padding: 0 }} minWidth="350px">
+            <Grid item xs={12}>
               <Button 
                 type="submit" 
                 variant="contained" 
-                color="primary"
+                color="primary" 
                 fullWidth 
                 disableElevation 
                 sx={{
                   fontWeight: 'bold', 
-                  fontSize: '1.1em',
+                  fontSize: { xs: '1em', sm: '1.1em' },
                   borderRadius: '10.7px',
                   maxWidth: '100%',
                 }}
               >
                 Cadastrar
               </Button>
-            </Grid2>
-            <Grid2 item xs={12} minWidth="350px">
+            </Grid>
+
+            <Grid item xs={12}>
               <Button
                 variant="outlined"
                 fullWidth
@@ -234,8 +219,8 @@ const Cadastro = () => {
                 />
                 Cadastro com Google
               </Button>
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
         </form>
 
         <Typography

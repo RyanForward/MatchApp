@@ -5,6 +5,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import './criapartida.css';
 import Navbar from '../Navbar'; // Importando o componente Navbar
 import axios from 'axios';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css'
+import { Icon } from 'leaflet';
 
 function CreateMatch() {
   const [participants, setParticipants] = useState([]);
@@ -49,7 +52,7 @@ function CreateMatch() {
       <nav>
         <Navbar />
       </nav> 
-    <Box sx={{ maxWidth: "sm", mx: "auto", mt: 4, p: 2, border: "1px solid #ccc", borderRadius: 2 }}>
+    <Box sx={{ maxWidth: "sm", mx: "auto", mt: 4, p: 2, border: "1px solid #ccc", borderRadius: 2, marginTop: 10  }}>
       <Typography variant="h6" gutterBottom>Crie uma partida</Typography>
 
       <Grid container spacing={2}>
@@ -103,7 +106,17 @@ function CreateMatch() {
         </Grid>
 
         <Grid item xs={6}>
-          <TextField label="Nível de expertise" fullWidth />
+          <FormControl fullWidth>
+            <InputLabel>Tipo de expertise</InputLabel>
+            <Select defaultValue=""
+              >
+                <MenuItem value="novato">Novato</MenuItem>
+                <MenuItem value="iniciante">Iniciante</MenuItem>
+                <MenuItem value="amador">Amador</MenuItem>
+                <MenuItem value="experiente">Experiente</MenuItem>
+                <MenuItem value="profissional">Profissional</MenuItem>
+            </Select>
+          </FormControl>        
         </Grid>
 
         <Grid item xs={6}>
@@ -117,8 +130,13 @@ function CreateMatch() {
 
         <Grid item xs={12}>
           <Typography variant="subtitle1">Selecione um local:</Typography>
-          <Box sx={{ height: 200, backgroundColor: '#f0f0f0', borderRadius: 1, mt: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Typography variant="caption">[Mapa interativo aqui]</Typography>
+          <Box sx={{ height: 300, backgroundColor: '#f0f0f0', borderRadius: 1, mt: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid black' }}>
+          <MapContainer center={[-22.4142733, -45.4495993]} zoom={14}>
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+            </MapContainer>
           </Box>
         </Grid>
 

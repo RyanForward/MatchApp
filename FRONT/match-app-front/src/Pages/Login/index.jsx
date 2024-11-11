@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import axios from 'axios';
-import { useForm, Controller, set } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import googleLogo from '../../Assets/imgs/google_logo.png';
@@ -50,7 +50,8 @@ const Login = () => {
         try {
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
-            console.log('Usuário logado com Google: ', result.user);
+            console.log('Usuário logado com Google: ', result.user.accessToken);
+            localStorage.setItem('token', result.user.accessToken);
             login();
             navigate('/home');
         } catch (error) {
@@ -59,7 +60,7 @@ const Login = () => {
     };
 
     return (
-        <Container maxWidth="sm" sx={{ backgroundColor: "#ffffff" }}>
+        <Container maxWidth="xs" sx={{ backgroundColor: "#ffffff", padding: 2 }}>
             <Box
                 display="flex"
                 justifyContent="center"
@@ -68,24 +69,19 @@ const Login = () => {
                 height="100vh"
                 padding={2}
             >
-                <Box mb={2}>
+                <Box mb={2} sx={{ maxWidth: '80%' }}>
                     <img 
                         src={logo} 
                         alt="Descrição da imagem"
                         style={{ width: '100%', height: 'auto' }}
                     />
                 </Box>
-                <Typography variant="h4" component="h1" gutterBottom paddingBottom={2}>
+                <Typography variant="h4" component="h1" gutterBottom paddingBottom={2} sx={{ textAlign: 'center', fontSize: '1.5rem' }}>
                     Bora jogar?
                 </Typography>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <Box 
-                        display='flex'
-                        flexDirection='column'
-                        alignItems='center'
-                        width='100%'
-                    >
-                        <Box width='100%' mb={2}>
+                <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
+                    <Box display="flex" flexDirection="column" alignItems="center" width="100%">
+                        <Box width="100%" mb={2}>
                             <Controller
                                 name="email"
                                 control={control}
@@ -102,7 +98,7 @@ const Login = () => {
                                 )}
                             />
                         </Box>
-                        <Box width='100%' mb={2}>
+                        <Box width="100%" mb={2}>
                             <Controller
                                 name="senha"
                                 control={control}
@@ -132,13 +128,13 @@ const Login = () => {
                             />
                         </Box>
                         {error && (
-                            <Typography color="error" textAlign="center">
+                            <Typography color="error" textAlign="center" sx={{ marginBottom: '16px' }}>
                                 {error}
                             </Typography>
                         )}
-                        <Box width='100%' mb={2}>
+                        <Box width="100%" mb={2}>
                             <Button 
-                                type="submit" 
+                                type="submit"
                                 variant="contained" 
                                 color="primary"
                                 fullWidth 
@@ -153,7 +149,7 @@ const Login = () => {
                                 Entrar
                             </Button>
                         </Box>
-                        <Box width='100%' mb={2}>
+                        <Box width="100%" mb={2}>
                             <Button
                                 variant="outlined"
                                 fullWidth

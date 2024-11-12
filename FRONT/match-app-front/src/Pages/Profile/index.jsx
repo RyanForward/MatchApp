@@ -27,13 +27,13 @@ const UserProfile = () => {
         fetchUser();
     }, []);
 
-    if (loading) return <div>Carregando...</div>;
+    if (loading) return <div id="loading-message">Carregando...</div>;
 
-    if (!user) return <div>Usuário não encontrado</div>;
+    if (!user) return <div id="user-not-found-message">Usuário não encontrado</div>;
 
     return (
-        <div>
-            <h1>Olá, {user.user_nome}</h1>
+        <div id="user-profile">
+            <h1 id="user-greeting">Olá, {user.user_nome}</h1>
         </div>
     );
 };

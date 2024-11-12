@@ -60,7 +60,7 @@ const Login = () => {
     };
 
     return (
-        <Container maxWidth="xs" sx={{ backgroundColor: "#ffffff", padding: 2 }}>
+        <Container maxWidth="xs" sx={{ backgroundColor: "#ffffff", padding: 2 }} id="login-container">
             <Box
                 display="flex"
                 justifyContent="center"
@@ -68,20 +68,22 @@ const Login = () => {
                 flexDirection="column"
                 height="100vh"
                 padding={2}
+                id="login-box"
             >
-                <Box mb={2} sx={{ maxWidth: '80%' }}>
+                <Box mb={2} sx={{ maxWidth: '80%' }} id="logo-box">
                     <img 
                         src={logo} 
                         alt="Descrição da imagem"
                         style={{ width: '100%', height: 'auto' }}
+                        id="logo"
                     />
                 </Box>
-                <Typography variant="h4" component="h1" gutterBottom paddingBottom={2} sx={{ textAlign: 'center', fontSize: '1.5rem' }}>
+                <Typography variant="h4" component="h1" gutterBottom paddingBottom={2} sx={{ textAlign: 'center', fontSize: '1.5rem' }} id="login-heading">
                     Bora jogar?
                 </Typography>
-                <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
-                    <Box display="flex" flexDirection="column" alignItems="center" width="100%">
-                        <Box width="100%" mb={2}>
+                <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }} id="login-form">
+                    <Box display="flex" flexDirection="column" alignItems="center" width="100%" id="form-box">
+                        <Box width="100%" mb={2} id="email-box">
                             <Controller
                                 name="email"
                                 control={control}
@@ -94,11 +96,12 @@ const Login = () => {
                                         fullWidth
                                         error={!!errors.email}
                                         helperText={errors.email ? errors.email.message : ''}
+                                        id="email-input"
                                     />
                                 )}
                             />
                         </Box>
-                        <Box width="100%" mb={2}>
+                        <Box width="100%" mb={2} id="senha-box">
                             <Controller
                                 name="senha"
                                 control={control}
@@ -117,22 +120,24 @@ const Login = () => {
                                                 <InputAdornment position="end">
                                                     <IconButton
                                                         onClick={() => setShowSenha(!showSenha)}
+                                                        id="toggle-password-visibility"
                                                     >
                                                         {showSenha ? <VisibilityOff /> : <Visibility />}
                                                     </IconButton>
                                                 </InputAdornment>
                                             ),
                                         }}
+                                        id="senha-input"
                                     />
                                 )}
                             />
                         </Box>
                         {error && (
-                            <Typography color="error" textAlign="center" sx={{ marginBottom: '16px' }}>
+                            <Typography color="error" textAlign="center" sx={{ marginBottom: '16px' }} id="login-error-message">
                                 {error}
                             </Typography>
                         )}
-                        <Box width="100%" mb={2}>
+                        <Box width="100%" mb={2} id="submit-button-box">
                             <Button 
                                 type="submit"
                                 variant="contained" 
@@ -145,11 +150,12 @@ const Login = () => {
                                     borderRadius: '10.7px',
                                     maxWidth: '100%',
                                 }}
+                                id="submit-button"
                             >
                                 Entrar
                             </Button>
                         </Box>
-                        <Box width="100%" mb={2}>
+                        <Box width="100%" mb={2} id="google-login-box">
                             <Button
                                 variant="outlined"
                                 fullWidth
@@ -170,6 +176,7 @@ const Login = () => {
                                         borderColor: 'black'
                                     },
                                 }}
+                                id="google-login-button"
                             >
                                 <Box
                                     component="img"
@@ -180,6 +187,7 @@ const Login = () => {
                                         height: '25px',
                                         marginRight: '10px',
                                     }}
+                                    id="google-logo"
                                 />
                                 Login com Google
                             </Button>
@@ -197,6 +205,7 @@ const Login = () => {
                         textDecoration: 'none', 
                         '&:hover': { textDecoration: 'underline' }
                     }}
+                    id="signup-link"
                 >
                     Não possui conta? <strong>Cadastre-se</strong>
                 </Typography>

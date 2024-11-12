@@ -35,12 +35,13 @@ const HistoricoPartidas = () => {
 
   return (
     <>
-    <nav>
+    <nav id="navbar">
       <NavBar />
     </nav>  
-    <Container maxWidth="sm" sx={{ backgroundColor: "#ffffff", marginTop: { xs: 4, md: 6, lg: 8 } }}>
-      <NavBar/>
+    <Container maxWidth="sm" sx={{ backgroundColor: "#ffffff", marginTop: { xs: 4, md: 6, lg: 8 } }} id="historico-container">
+      <NavBar id="navbar-secondary"/>
       <Grid2
+        id="grid-header"
         display="flex"
         justifyContent="center"
         alignItems="center"
@@ -60,6 +61,7 @@ const HistoricoPartidas = () => {
             mt: 2,
             fontSize: { xs: '1.2rem', sm: '1.5rem', lg: '1.8rem' }
           }}
+          id="historico-title"
         >
           <strong>Histórico de partidas</strong>
         </Typography>
@@ -69,11 +71,12 @@ const HistoricoPartidas = () => {
             width: { xs: '100%', sm: 350, lg: 1000 },
             mt: 4,
           }}
+          id="table-container"
         >
-          <Table>
+          <Table id="partidas-table">
             <TableBody>
               {partidas.map((partida, index) => (
-                <TableRow key={index}>
+                <TableRow key={index} id={`partida-row-${index}`}>
                   <TableCell
                     align="center"
                     sx={{
@@ -83,6 +86,7 @@ const HistoricoPartidas = () => {
                       fontWeight: 'bold',
                       wordBreak: 'break-word'
                     }}
+                    id={`partida-cell-${index}`}
                   >
                     {`${partida.esporte} - ${partida.local} - ${partida.data}`}
                   </TableCell>
@@ -97,8 +101,8 @@ const HistoricoPartidas = () => {
               width: { xs: '100%', sm: 350, lg: 500 },
               bottom: '2vh',
               marginTop: { xs: 2, sm: 4, lg: 6 },
-              
             }}
+            id="delete-button-container"
           >
             <Button
               variant="contained"
@@ -117,6 +121,7 @@ const HistoricoPartidas = () => {
                 borderRadius: '8px',
                 padding: { xs: 1, sm: 2, lg: 3 }
               }}
+              id="delete-historico-button"
             >
               Deletar histórico
             </Button>

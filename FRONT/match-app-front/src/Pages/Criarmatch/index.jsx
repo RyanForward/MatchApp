@@ -53,13 +53,13 @@ function CreateMatch() {
         <Navbar />
       </nav> 
     <Box sx={{ maxWidth: "sm", mx: "auto", mt: 4, p: 2, border: "1px solid #ccc", borderRadius: 2, marginTop: 10  }}>
-      <Typography variant="h6" gutterBottom>Crie uma partida</Typography>
+      <Typography variant="h6" gutterBottom id="title">Crie uma partida</Typography>
 
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <FormControl fullWidth>
-            <InputLabel>Esporte</InputLabel>
-            <Select defaultValue="">
+          <FormControl fullWidth id="form-esporte">
+            <InputLabel id="esporte-label">Esporte</InputLabel>
+            <Select defaultValue="" labelId="esporte-label" id="esporte-select">
               <MenuItem value="vôlei">Vôlei</MenuItem>
               <MenuItem value="futebol">Futebol</MenuItem>
               <MenuItem value="basquete">Basquete</MenuItem>
@@ -68,9 +68,9 @@ function CreateMatch() {
         </Grid>
 
         <Grid item xs={6}>
-          <FormControl fullWidth>
-            <InputLabel>Tipo de competição</InputLabel>
-            <Select defaultValue="">
+          <FormControl fullWidth id="form-tipo-competicao">
+            <InputLabel id="tipo-competicao-label">Tipo de competição</InputLabel>
+            <Select defaultValue="" labelId="tipo-competicao-label" id="tipo-competicao-select">
               <MenuItem value="amador">Amador</MenuItem>
               <MenuItem value="profissional">Profissional</MenuItem>
             </Select>
@@ -78,9 +78,9 @@ function CreateMatch() {
         </Grid>
 
         <Grid item xs={6}>
-          <FormControl fullWidth>
-            <InputLabel>Gênero</InputLabel>
-            <Select defaultValue="">
+          <FormControl fullWidth id="form-genero">
+            <InputLabel id="genero-label">Gênero</InputLabel>
+            <Select defaultValue="" labelId="genero-label" id="genero-select">
               <MenuItem value="masculino">Masculino</MenuItem>
               <MenuItem value="feminino">Feminino</MenuItem>
               <MenuItem value="misto">Misto</MenuItem>
@@ -94,44 +94,44 @@ function CreateMatch() {
             type="date"
             fullWidth
             InputLabelProps={{ shrink: true }}
+            id="data-input"
           />
         </Grid>
 
         <Grid item xs={6}>
-          <TextField label="Faixa de idade (min)" type="number" fullWidth />
+          <TextField label="Faixa de idade (min)" type="number" fullWidth id="faixa-idade-min-input" />
         </Grid>
 
         <Grid item xs={6}>
-          <TextField label="Faixa de idade (max)" type="number" fullWidth />
+          <TextField label="Faixa de idade (max)" type="number" fullWidth id="faixa-idade-max-input" />
         </Grid>
 
         <Grid item xs={6}>
-          <FormControl fullWidth>
-            <InputLabel>Tipo de expertise</InputLabel>
-            <Select defaultValue=""
-              >
-                <MenuItem value="novato">Novato</MenuItem>
-                <MenuItem value="iniciante">Iniciante</MenuItem>
-                <MenuItem value="amador">Amador</MenuItem>
-                <MenuItem value="experiente">Experiente</MenuItem>
-                <MenuItem value="profissional">Profissional</MenuItem>
+          <FormControl fullWidth id="form-nivel-expertise">
+            <InputLabel id="nivel-expertise-label">Tipo de expertise</InputLabel>
+            <Select defaultValue="" labelId="nivel-expertise-label" id="nivel-expertise-select">
+              <MenuItem value="novato">Novato</MenuItem>
+              <MenuItem value="iniciante">Iniciante</MenuItem>
+              <MenuItem value="amador">Amador</MenuItem>
+              <MenuItem value="experiente">Experiente</MenuItem>
+              <MenuItem value="profissional">Profissional</MenuItem>
             </Select>
           </FormControl>        
         </Grid>
 
         <Grid item xs={6}>
-          <TextField label="Número total de pessoas" type="number" fullWidth />
+          <TextField label="Número total de pessoas" type="number" fullWidth id="numero-total-pessoas-input" />
         </Grid>
 
         <Grid item xs={12}>
-          <FormControlLabel control={<Checkbox />} label="Partida gratuita?" />
-          <FormControlLabel control={<Checkbox />} label="Acessível" />
+          <FormControlLabel control={<Checkbox id="partida-gratuita-checkbox" />} label="Partida gratuita?" />
+          <FormControlLabel control={<Checkbox id="acessivel-checkbox" />} label="Acessível" />
         </Grid>
 
         <Grid item xs={12}>
-          <Typography variant="subtitle1">Selecione um local:</Typography>
-          <Box sx={{ height: 300, backgroundColor: '#f0f0f0', borderRadius: 1, mt: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid black' }}>
-          <MapContainer center={[-22.4142733, -45.4495993]} zoom={14}>
+          <Typography variant="subtitle1" id="local-title">Selecione um local:</Typography>
+          <Box sx={{ height: 300, backgroundColor: '#f0f0f0', borderRadius: 1, mt: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid black' }} id="map-container">
+          <MapContainer center={[-22.4142733, -45.4495993]} zoom={14} id="map">
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -141,24 +141,25 @@ function CreateMatch() {
         </Grid>
 
         <Grid item xs={12}>
-          <Typography variant="subtitle1">Adicione participantes:</Typography>
-          <Box display="flex" alignItems="center">
+          <Typography variant="subtitle1" id="participants-title">Adicione participantes:</Typography>
+          <Box display="flex" alignItems="center" id="participant-input-container">
             <TextField
               value={newParticipant}
               onChange={(e) => setNewParticipant(e.target.value)}
               label="Nome do participante"
               fullWidth
+              id="participant-input"
             />
-            <IconButton color="primary" onClick={handleAddParticipant}>
+            <IconButton color="primary" onClick={handleAddParticipant} id="add-participant-btn">
               <AddIcon />
             </IconButton>
           </Box>
-          <List>
+          <List id="participants-list">
             {participants.map((participant, index) => (
-              <ListItem key={index}>
+              <ListItem key={index} id={`participant-${index}`}>
                 <ListItemText primary={participant} />
                 <ListItemSecondaryAction>
-                  <IconButton edge="end" color="secondary" onClick={() => handleRemoveParticipant(participant)}>
+                  <IconButton edge="end" color="secondary" onClick={() => handleRemoveParticipant(participant)} id={`remove-participant-${index}`}>
                     <DeleteIcon />
                   </IconButton>
                 </ListItemSecondaryAction>
@@ -168,7 +169,7 @@ function CreateMatch() {
         </Grid>
 
         <Grid item xs={12}>
-            <Button variant="contained" color="primary" fullWidth onClick={handleSubmit}>
+            <Button variant="contained" color="primary" fullWidth onClick={handleSubmit} id="submit-btn">
                 Criar Partida
             </Button>
         </Grid>
@@ -179,7 +180,3 @@ function CreateMatch() {
 }
 
 export default CreateMatch;
-
-
-
-

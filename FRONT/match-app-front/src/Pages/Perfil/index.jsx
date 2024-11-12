@@ -48,9 +48,9 @@ const ProfileCard = () => {
     fetchUser();
   }, []);
 
-  if (loading) return <div>Carregando...</div>;
+  if (loading) return <div id="loading-message">Carregando...</div>;
 
-  if (!user) return <div>Usuário não encontrado</div>;
+  if (!user) return <div id="user-not-found-message">Usuário não encontrado</div>;
 
   
   const handleLogoutClick = (event) => {
@@ -70,53 +70,50 @@ const ProfileCard = () => {
 
   return (
     <>
-      <nav>
-        <Navbar />
+      <nav id="navbar-container">
+        <Navbar id="navbar" />
       </nav>  
-      <Card sx={{ maxWidth: 400, mx: 'auto', mt: 5, p: 2, textAlign: 'center', boxShadow: 3, marginTop: 10 }}>
-        <Box display="flex" flexDirection="column" alignItems="center">
-          <Avatar sx={{ width: 80, height: 80, mb: 2 }} src={user.avatarUrl} />
-          <Typography variant="h6">{user.user_nome}</Typography>
-          <Box display="flex" alignItems="center" color="green" mb={1}>
-            <Typography variant="h4">{user.rating}</Typography>
-            <StarIcon fontSize="large" />
+      <Card id="profile-card" sx={{ maxWidth: 400, mx: 'auto', mt: 5, p: 2, textAlign: 'center', boxShadow: 3, marginTop: 10 }}>
+        <Box id="profile-header" display="flex" flexDirection="column" alignItems="center">
+          <Avatar id="profile-avatar" sx={{ width: 80, height: 80, mb: 2 }} src={user.avatarUrl} />
+          <Typography id="profile-name" variant="h6">{user.user_nome}</Typography>
+          <Box id="profile-rating" display="flex" alignItems="center" color="green" mb={1}>
+            <Typography id="profile-rating-value" variant="h4">{user.rating}</Typography>
+            <StarIcon id="profile-rating-icon" fontSize="large" />
           </Box>
         </Box>
-        <Divider sx={{ my: 2 }} />
-        <CardContent>
-          <Typography variant="body2" sx={{ mb: 1 }}>Partidas jogadas: {user.gamesPlayed}</Typography>
-          <Typography variant="body2" sx={{ mb: 1 }}>Partidas organizadas: {user.gamesOrganized}</Typography>
-          <Typography variant="body2" sx={{ mb: 1 }}>Esporte favorito: {user.favoriteSport}</Typography>
-          <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>Idade: {user.age}</Typography>
-          <Typography variant="body2" sx={{ mb: 1 }}>Email: {user.email}</Typography>
-          <Typography variant="body2" mt={2} sx={{ mb: 1 }}>Biografia:</Typography>
-          <Box component="textarea" rows="4" style={{ width: '100%', marginTop: 8, padding: 8, resize: 'none', borderRadius: 4 }} value={user.bio} readOnly />
+        <Divider id="profile-divider" sx={{ my: 2 }} />
+        <CardContent id="profile-content">
+          <Typography id="profile-games-played" variant="body2" sx={{ mb: 1 }}>Partidas jogadas: {user.gamesPlayed}</Typography>
+          <Typography id="profile-games-organized" variant="body2" sx={{ mb: 1 }}>Partidas organizadas: {user.gamesOrganized}</Typography>
+          <Typography id="profile-favorite-sport" variant="body2" sx={{ mb: 1 }}>Esporte favorito: {user.favoriteSport}</Typography>
+          <Typography id="profile-age" variant="body2" sx={{ mt: 2, mb: 1 }}>Idade: {user.age}</Typography>
+          <Typography id="profile-email" variant="body2" sx={{ mb: 1 }}>Email: {user.email}</Typography>
+          <Typography id="profile-bio-title" variant="body2" mt={2} sx={{ mb: 1 }}>Biografia:</Typography>
+          <Box id="profile-bio-textarea" component="textarea" rows="4" style={{ width: '100%', marginTop: 8, padding: 8, resize: 'none', borderRadius: 4 }} value={user.bio} readOnly />
         </CardContent>
-        <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-around" mt={2} mb={1}>
-          <Button variant="contained" color="success" onClick={handleLogoutClick} sx={{ mb: { xs: 2, sm: 0 } }}>Sair</Button>
-          <Button variant="contained" color="error">Deletar Conta</Button>
+        <Box id="profile-actions" display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-around" mt={2} mb={1}>
+          <Button id="logout-button" variant="contained" color="success" onClick={handleLogoutClick} sx={{ mb: { xs: 2, sm: 0 } }}>Sair</Button>
+          <Button id="delete-account-button" variant="contained" color="error">Deletar Conta</Button>
         </Box>
-        <Dialog
-          open={openLogoutDialog}
-          onClose={handleCloseDialog}
-        >
-          <DialogTitle>Confirmar Logout</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
+        <Dialog id="logout-dialog" open={openLogoutDialog} onClose={handleCloseDialog}>
+          <DialogTitle id="logout-dialog-title">Confirmar Logout</DialogTitle>
+          <DialogContent id="logout-dialog-content">
+            <DialogContentText id="logout-dialog-content-text">
               Você realmente deseja sair?
             </DialogContentText>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog} color="primary">
+          <DialogActions id="logout-dialog-actions">
+            <Button id="logout-dialog-cancel-button" onClick={handleCloseDialog} color="primary">
               Cancelar
             </Button>
-            <Button onClick={confirmLogout} color="primary" autoFocus>
+            <Button id="logout-dialog-confirm-button" onClick={confirmLogout} color="primary" autoFocus>
               Sair
             </Button>
           </DialogActions>
         </Dialog>
-        </Card>
-      </>
+      </Card>
+    </>
   );
 };
 

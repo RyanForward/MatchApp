@@ -6,12 +6,13 @@ CREATE TABLE Usuario (
 );
 
 
-CREATE TABLE Quadras (
+CREATE TABLE quadra (
     quadra_id INT NOT NULL PRIMARY KEY,
     user_id INT NOT NULL,
+	quadra_nome char(50),
     calendario DATE NOT NULL,
     valor CHAR(50),
-    publico CHAR(50),
+    publico boolean,
     FOREIGN KEY (user_id) REFERENCES Usuario(user_id)
 );
 

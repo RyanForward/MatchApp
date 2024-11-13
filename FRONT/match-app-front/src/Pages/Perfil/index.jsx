@@ -11,22 +11,30 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
- } from '@mui/material';
+  TextField,
+  Container,
+} from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
-import Navbar from '../Navbar'; // Importando o componente Navbar
+import Navbar from '../Navbar'; 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../../Routes/AuthContext';
+import { useTheme } from '@mui/material/styles';
 
 const ProfileCard = () => {
+    
+  const theme = useTheme();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValues, setEditValues] = useState({});
   const navigate = useNavigate();
   const { logout } = useAuth(); 
 
   useEffect(() => {
+
     const fetchUser = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -38,6 +46,12 @@ const ProfileCard = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUser(response.data);
+            setEditValues({
+              favoriteSport: response.data.favoriteSport,
+              nome: response.data.nome,
+              age: response.data.age,
+              bio: response.data.bio
+            });
         } catch (err) {
             console.error(err);
         } finally {
@@ -52,7 +66,14 @@ const ProfileCard = () => {
 
   if (!user) return <div id="user-not-found-message">Usuário não encontrado</div>;
 
-  
+  const handleEditClick = () => {
+    setIsEditing((prev) => !prev);
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditValues((prev) => ({ ...prev, [field]: value }));
+  };
+
   const handleLogoutClick = (event) => {
     event.stopPropagation();
     setOpenLogoutDialog(true);
@@ -65,7 +86,7 @@ const ProfileCard = () => {
   const confirmLogout = () => {
     setOpenLogoutDialog(false);
     logout();
-    navigate('/login')
+    navigate('/login');
   };
 
   return (
@@ -79,20 +100,83 @@ const ProfileCard = () => {
           <Typography id="profile-name" variant="h6">{user.user_nome}</Typography>
           <Box id="profile-rating" display="flex" alignItems="center" color="green" mb={1}>
             <Typography id="profile-rating-value" variant="h4">{user.rating}</Typography>
-            <StarIcon id="profile-rating-icon" fontSize="large" />
-          </Box>
+            <StarIcon id="profile-rating-icon" fontSize="large" color="primary" />
+            </Box>
         </Box>
-        <Divider id="profile-divider" sx={{ my: 2 }} />
         <CardContent id="profile-content">
           <Typography id="profile-games-played" variant="body2" sx={{ mb: 1 }}>Partidas jogadas: {user.gamesPlayed}</Typography>
           <Typography id="profile-games-organized" variant="body2" sx={{ mb: 1 }}>Partidas organizadas: {user.gamesOrganized}</Typography>
-          <Typography id="profile-favorite-sport" variant="body2" sx={{ mb: 1 }}>Esporte favorito: {user.favoriteSport}</Typography>
-          <Typography id="profile-age" variant="body2" sx={{ mt: 2, mb: 1 }}>Idade: {user.age}</Typography>
-          <Typography id="profile-email" variant="body2" sx={{ mb: 1 }}>Email: {user.email}</Typography>
-          <Typography id="profile-bio-title" variant="body2" mt={2} sx={{ mb: 1 }}>Biografia:</Typography>
-          <Box id="profile-bio-textarea" component="textarea" rows="4" style={{ width: '100%', marginTop: 8, padding: 8, resize: 'none', borderRadius: 4 }} value={user.bio} readOnly />
+          <Divider id="profile-divider" sx={{ my: 2, backgroundColor: 'primary.main' }} />
+          <Container sx={{textAlign: 'left'}}>
+            {isEditing ? (
+              <TextField
+                label="Esporte favorito"
+                value={editValues.favoriteSport}
+                onChange={(e) => handleInputChange('favoriteSport', e.target.value)}
+                fullWidth
+                sx={{ mb: 1 }}
+              />
+            ) : (
+              <Typography id="profile-favorite-sport" variant="body2" sx={{ mb: 1 }}>Esporte favorito: {user.favoriteSport}</Typography>
+            )}
+
+            {isEditing ? (
+              <TextField
+                label="Nome"
+                value={editValues.nome}
+                onChange={(e) => handleInputChange('nome', e.target.value)}
+                fullWidth
+                sx={{ mb: 1 }}
+              />
+            ) : (
+              <Typography id="profile-email" variant="body2" sx={{ mb: 1 }}>Nome: {user.nome}</Typography>
+            )}
+
+            {isEditing ? (
+              <TextField
+                label="Idade"
+                value={editValues.age}
+                onChange={(e) => handleInputChange('age', e.target.value)}
+                fullWidth
+                sx={{ mb: 1 }}
+              />
+            ) : (
+              <Typography id="profile-age" variant="body2" sx={{ mt: 2, mb: 1 }}>Idade: {user.age}</Typography>
+            )}
+
+            <Typography id="profile-bio-title" variant="body2" mt={2} sx={{ mb: 1 }}>Biografia:</Typography>
+            {isEditing ? (
+              <TextField
+                label="Biografia"
+                value={editValues.bio}
+                onChange={(e) => handleInputChange('bio', e.target.value)}
+                multiline
+                rows={4}
+                fullWidth
+                sx={{ mb: 1 }}
+              />
+            ) : (
+              <Box
+                id="profile-bio-textarea"
+                component="textarea"
+                rows="4"
+                style={{ width: '100%', marginTop: 8, padding: 8, resize: 'none', borderRadius: 4 }}
+                value={user.bio}
+                readOnly
+              />
+            )}
+          </Container>
         </CardContent>
         <Box id="profile-actions" display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-around" mt={2} mb={1}>
+          <Button
+            id="edit-button"
+            variant="contained"
+            color="success"
+            onClick={handleEditClick}
+            sx={{ mb: { xs: 2, sm: 0 } }}
+          >
+            {isEditing ? 'Salvar' : 'Editar'}
+          </Button>
           <Button id="logout-button" variant="contained" color="success" onClick={handleLogoutClick} sx={{ mb: { xs: 2, sm: 0 } }}>Sair</Button>
           <Button id="delete-account-button" variant="contained" color="error">Deletar Conta</Button>
         </Box>

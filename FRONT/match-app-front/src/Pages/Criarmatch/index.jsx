@@ -79,7 +79,7 @@ function CreateMatch() {
   const [marker, setMarker] = useState(null);
   const [formValues, setFormValues] = useState({
     match_data: '',  // Inicializa como string vazia
-    valor: 'free',  // Inicializa como string vazia
+    match_valor: 0,  // Inicializa como string vazia
     esporte: '',
     tipoCompeticao: '',
     genero: '',
@@ -87,7 +87,7 @@ function CreateMatch() {
     faixaIdadeMax: '',
     nivelExpertise: '',
     numeroTotalPessoas: '',
-    partidaGratuita: false,
+    match_publico: false,
     acessivel: false,
   });
 
@@ -120,9 +120,10 @@ function CreateMatch() {
 
   const handleSubmit = async () => {
     const randomNumber = generateRandomNumber();
+    const localizacao = marker.position.lat + ',' + marker.position.lng;
     const matchData = {randomNumber, 
       user_id: user.user_id,
-      match_local: marker.position.lat + ',' + marker.position.lng,
+      match_local: localizacao,
       ...formValues,
       participantes: participants,
     };
@@ -213,7 +214,7 @@ function CreateMatch() {
           </Grid>
 
           <Grid item xs={12}>
-            <FormControlLabel control={<Checkbox name="partidaGratuita" checked={formValues.partidaGratuita} onChange={handleChange} />} label="Partida gratuita?" />
+            <FormControlLabel control={<Checkbox name="match_publico" checked={formValues.match_publico} onChange={handleChange} />} label="Partida gratuita?" />
             <FormControlLabel control={<Checkbox name="acessivel" checked={formValues.acessivel} onChange={handleChange} />} label="Acessível" />
           </Grid>
 

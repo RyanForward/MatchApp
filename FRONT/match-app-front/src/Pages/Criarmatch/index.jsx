@@ -79,7 +79,7 @@ function CreateMatch() {
   const [marker, setMarker] = useState(null);
   const [formValues, setFormValues] = useState({
     match_data: '',  // Inicializa como string vazia
-    match_valor: 0,  // Inicializa como string vazia
+    match_valor: 0, 
     esporte: '',
     tipoCompeticao: '',
     genero: '',

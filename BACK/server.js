@@ -44,19 +44,19 @@ function verificaToken(req, res, next) {
 }
 
 // Middleware para autenticação do usuário
-app.use((req, res, next) => {
-    const token = req.headers['authorization'];
-    if (!token) {
-        return res.status(401).send('Acesso negado. Token não fornecido.');
-    }
-    try {
-        const decoded = jwt.verify(token, 'secret_key');
-        req.userId = decoded.userId;
-        next();
-    } catch (err) {
-        res.status(400).send('Token inválido.');
-    }
-});
+// app.use((req, res, next) => {
+//     const token = req.headers['authorization'];
+//     if (!token) {
+//         return res.status(401).send('Acesso negado. Token não fornecido.');
+//     }
+//     try {
+//         const decoded = jwt.verify(token, 'secret_key');
+//         req.userId = decoded.userId;
+//         next();
+//     } catch (err) {
+//         res.status(400).send('Token inválido.');
+//     }
+// });
 
 // ROTAS DOS USUÁRIOS *********************
 
@@ -94,7 +94,8 @@ app.get('/api/usuario/:id', async (req, res) => {
 
 // Rota para login de usuário
 app.post("/api/login", async (req, res) => {
-    const { user_email, user_senha } = req.body;
+    const { user_email} = req.body; 
+    const { user_senha } = req.body;
 
     console.log(req.body);
 

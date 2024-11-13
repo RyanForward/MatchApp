@@ -97,7 +97,7 @@ function FindMatch() {
         <Typography variant="h6" gutterBottom id="title">Encontre uma partida próxima a você</Typography>
 
         <Grid container spacing={2} id="filters-grid">
-          <Grid item xs={6} id="sport-filter">
+          <Grid item xs={12} sm={6} id="sport-filter">
             <FormControl fullWidth>
               <InputLabel id="sport-label">Esporte</InputLabel>
               <Select
@@ -113,7 +113,7 @@ function FindMatch() {
             </FormControl>
           </Grid>
 
-          <Grid item xs={6} id="competition-type-filter">
+          <Grid item xs={12} sm={6} id="competition-type-filter">
             <FormControl fullWidth>
               <InputLabel id="competition-type-label">Tipo de competição</InputLabel>
               <Select
@@ -128,7 +128,7 @@ function FindMatch() {
             </FormControl>
           </Grid>
 
-          <Grid item xs={6} id="gender-filter">
+          <Grid item xs={12} sm={6} id="gender-filter">
             <FormControl fullWidth>
               <InputLabel id="gender-label">Gênero</InputLabel>
               <Select
@@ -144,7 +144,7 @@ function FindMatch() {
             </FormControl>
           </Grid>
 
-          <Grid item xs={6} id="expertise-level-filter">
+          <Grid item xs={12} sm={6} id="expertise-level-filter">
             <FormControl fullWidth>
               <InputLabel id="expertise-level-label">Tipo de expertise</InputLabel>
               <Select
@@ -162,7 +162,7 @@ function FindMatch() {
             </FormControl>
           </Grid>
 
-          <Grid item xs={6} id="min-age-filter">
+          <Grid item xs={12} sm={6} id="min-age-filter">
             <TextField
               label="Faixa de idade (min)"
               type="number"
@@ -173,7 +173,7 @@ function FindMatch() {
             />
           </Grid>
 
-          <Grid item xs={6} id="max-age-filter">
+          <Grid item xs={12} sm={6} id="max-age-filter">
             <TextField
               label="Faixa de idade (max)"
               type="number"
@@ -217,7 +217,7 @@ function FindMatch() {
                   id="tile-layer"
                 />
                 {filteredMatches.map((match, index) => (
-                  <Marker key={index} position={[match.latitude, match.longitude]} icon={customIcon} id={`marker-${index}`}>
+                  <Marker key={index} position={[match.match_local]} icon={customIcon} id={`marker-${index}`}>
                     <Popup id={`popup-${index}`}>
                       <div>
                         {match.sport} - {match.participants} pessoas

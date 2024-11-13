@@ -5,13 +5,65 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import './criapartida.css';
 import Navbar from '../Navbar'; // Importando o componente Navbar
 import axios from 'axios';
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'
 import { Icon } from 'leaflet';
+
+// Corrige o problema do ícone padrão do Leaflet (opcional)
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
+
+const MapComponent = ({ marker, setMarker }) => {
+  // Centro e zoom inicial do mapa
+  const center = [-22.4142733, -45.4495993]; // substitua pelas coordenadas iniciais desejadas
+  const zoom = 13;
+
+  // Função que adiciona um marcador na posição do clique
+  const addMarker = (e) => {
+    const newMarker = {
+      id: Date.now(), // Cria um ID único para cada marcador
+      position: e.latlng, // Define a posição do marcador com as coordenadas do clique
+      label: `Marcador em ${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`
+    };
+    setMarker(newMarker);
+  };
+
+  // Hook para capturar o clique no mapa
+  function MapClickHandler() {
+    useMapEvents({
+      click: addMarker,
+    });
+    return null;
+  }
+
+  return (
+    <MapContainer center={center} zoom={zoom} style={{ height: "300px", width: "100%" }}>
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      />
+      {/* Componente para capturar cliques no mapa */}
+      <MapClickHandler />
+      
+      {/* Renderiza o marcador */}
+      {marker && (
+        <Marker key={marker.id} position={marker.position}>
+          <Popup>{marker.label}</Popup>
+        </Marker>
+      )}
+    </MapContainer>
+  );
+};
 
 function CreateMatch() {
   const [participants, setParticipants] = useState([]);
   const [newParticipant, setNewParticipant] = useState("");
+  const [marker, setMarker] = useState(null);
 
   const handleAddParticipant = () => {
     if (newParticipant) {
@@ -22,6 +74,10 @@ function CreateMatch() {
 
   const handleRemoveParticipant = (name) => {
     setParticipants(participants.filter(participant => participant !== name));
+  };
+
+  const handleRemoveMarker = () => {
+    setMarker(null);
   };
 
   const handleSubmit = async () => {
@@ -37,6 +93,7 @@ function CreateMatch() {
         partidaGratuita: document.querySelector('input[name="partidaGratuita"]').checked,
         acessivel: document.querySelector('input[name="acessivel"]').checked,
         participantes: participants,
+        localizacao: marker ? marker.position : null,
     };
 
     try {
@@ -45,7 +102,7 @@ function CreateMatch() {
     } catch (error) {
         console.error('Error creating match:', error);
     }
-};
+  };
 
   return (
     <>
@@ -131,13 +188,15 @@ function CreateMatch() {
         <Grid item xs={12}>
           <Typography variant="subtitle1" id="local-title">Selecione um local:</Typography>
           <Box sx={{ height: 300, backgroundColor: '#f0f0f0', borderRadius: 1, mt: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid black' }} id="map-container">
-          <MapContainer center={[-22.4142733, -45.4495993]} zoom={14} id="map">
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-            </MapContainer>
+            <MapComponent marker={marker} setMarker={setMarker} />
           </Box>
+          <br />
+          {marker && (
+            console.log(marker),
+            <Button variant="contained" color="warning" fullWidth onClick={handleRemoveMarker} id="remove-marker-btn">
+              Remover Marcador
+            </Button>
+          )}
         </Grid>
 
         <Grid item xs={12}>

@@ -5,13 +5,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import './criapartida.css';
 import Navbar from '../Navbar';
 import axios from 'axios';
+import { useForm, Controller } from 'react-hook-form';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-
-
-
-
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -50,54 +47,49 @@ const MapComponent = ({ marker, setMarker }) => {
 function CreateMatch() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { control, handleSubmit, setValue, watch } = useForm({
+    defaultValues: {
+      match_data: '',
+      match_valor: 0,
+      esporte: '',
+      tipoCompeticao: '',
+      genero: '',
+      faixaIdadeMin: '',
+      faixaIdadeMax: '',
+      nivelExpertise: '',
+      numeroTotalPessoas: '',
+      match_publico: false,
+      acessivel: false,
+    }
+  });
+
+  const formValues = watch();
 
   useEffect(() => {
     const fetchUser = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                console.error('Token not found');
-                throw new Error('Token not found');
-            }
-            const response = await axios.get('/api/usuario_logado', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setUser(response.data);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('Token not found');
+          throw new Error('Token not found');
         }
+        const response = await axios.get('/api/usuario_logado', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setUser(response.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
-  
+
     fetchUser();
   }, []);
-
 
   const [participants, setParticipants] = useState([]);
   const [newParticipant, setNewParticipant] = useState("");
   const [marker, setMarker] = useState(null);
-  const [formValues, setFormValues] = useState({
-    match_data: '',  // Inicializa como string vazia
-    match_valor: 0, 
-    esporte: '',
-    tipoCompeticao: '',
-    genero: '',
-    faixaIdadeMin: '',
-    faixaIdadeMax: '',
-    nivelExpertise: '',
-    numeroTotalPessoas: '',
-    match_publico: false,
-    acessivel: false,
-  });
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormValues({
-      ...formValues,
-      [name]: type === 'checkbox' ? checked : value
-    });
-  };
 
   const handleAddParticipant = () => {
     if (newParticipant) {
@@ -118,13 +110,14 @@ function CreateMatch() {
     return Math.floor(Math.random() * 1000000);
   };
 
-  const handleSubmit = async () => {
+  const onSubmit = async (data) => {
     const randomNumber = generateRandomNumber();
     const localizacao = marker.position.lat + ',' + marker.position.lng;
-    const matchData = {randomNumber, 
+    const matchData = {
+      randomNumber,
       user_id: user.user_id,
       match_local: localizacao,
-      ...formValues,
+      ...data,
       participantes: participants,
     };
 
@@ -147,75 +140,143 @@ function CreateMatch() {
           <Grid item xs={6}>
             <FormControl fullWidth>
               <InputLabel>Esporte</InputLabel>
-              <Select name="esporte" value={formValues.esporte} onChange={handleChange}>
-                <MenuItem value="vôlei">Vôlei</MenuItem>
-                <MenuItem value="futebol">Futebol</MenuItem>
-                <MenuItem value="basquete">Basquete</MenuItem>
-              </Select>
+              <Controller
+                name="esporte"
+                control={control}
+                render={({ field }) => (
+                  <Select {...field}>
+                    <MenuItem value="vôlei">Vôlei</MenuItem>
+                    <MenuItem value="futebol">Futebol</MenuItem>
+                    <MenuItem value="basquete">Basquete</MenuItem>
+                  </Select>
+                )}
+              />
             </FormControl>
           </Grid>
 
           <Grid item xs={6}>
             <FormControl fullWidth>
               <InputLabel>Tipo de competição</InputLabel>
-              <Select name="tipoCompeticao" value={formValues.tipoCompeticao} onChange={handleChange}>
-                <MenuItem value="amador">Amador</MenuItem>
-                <MenuItem value="profissional">Profissional</MenuItem>
-              </Select>
+              <Controller
+                name="tipoCompeticao"
+                control={control}
+                render={({ field }) => (
+                  <Select {...field}>
+                    <MenuItem value="amador">Amador</MenuItem>
+                    <MenuItem value="profissional">Profissional</MenuItem>
+                  </Select>
+                )}
+              />
             </FormControl>
           </Grid>
 
           <Grid item xs={6}>
             <FormControl fullWidth>
               <InputLabel>Gênero</InputLabel>
-              <Select name="genero" value={formValues.genero} onChange={handleChange}>
-                <MenuItem value="masculino">Masculino</MenuItem>
-                <MenuItem value="feminino">Feminino</MenuItem>
-                <MenuItem value="misto">Misto</MenuItem>
-              </Select>
+              <Controller
+                name="genero"
+                control={control}
+                render={({ field }) => (
+                  <Select {...field}>
+                    <MenuItem value="masculino">Masculino</MenuItem>
+                    <MenuItem value="feminino">Feminino</MenuItem>
+                    <MenuItem value="misto">Misto</MenuItem>
+                  </Select>
+                )}
+              />
             </FormControl>
           </Grid>
 
           <Grid item xs={6}>
-            <TextField
+            <Controller
               name="match_data"
-              label="Data"
-              type="date"
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-              value={formValues.match_data} // Atualiza o valor com o estado
-              onChange={handleChange}  // Adiciona o onChange para controlar o valor
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Data"
+                  type="date"
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                />
+              )}
             />
           </Grid>
 
           <Grid item xs={6}>
-            <TextField name="faixaIdadeMin" label="Faixa de idade (min)" type="number" fullWidth value={formValues.faixaIdadeMin} onChange={handleChange} />
+            <Controller
+              name="faixaIdadeMin"
+              control={control}
+              render={({ field }) => (
+                <TextField {...field} label="Faixa de idade (min)" type="number" fullWidth />
+              )}
+            />
           </Grid>
 
           <Grid item xs={6}>
-            <TextField name="faixaIdadeMax" label="Faixa de idade (max)" type="number" fullWidth value={formValues.faixaIdadeMax} onChange={handleChange} />
+            <Controller
+              name="faixaIdadeMax"
+              control={control}
+              render={({ field }) => (
+                <TextField {...field} label="Faixa de idade (max)" type="number" fullWidth />
+              )}
+            />
           </Grid>
 
           <Grid item xs={6}>
             <FormControl fullWidth>
               <InputLabel>Tipo de expertise</InputLabel>
-              <Select name="nivelExpertise" value={formValues.nivelExpertise} onChange={handleChange}>
-                <MenuItem value="novato">Novato</MenuItem>
-                <MenuItem value="iniciante">Iniciante</MenuItem>
-                <MenuItem value="amador">Amador</MenuItem>
-                <MenuItem value="experiente">Experiente</MenuItem>
-                <MenuItem value="profissional">Profissional</MenuItem>
-              </Select>
-            </FormControl>        
+              <Controller
+                name="nivelExpertise"
+                control={control}
+                render={({ field }) => (
+                  <Select {...field}>
+                    <MenuItem value="novato">Novato</MenuItem>
+                    <MenuItem value="iniciante">Iniciante</MenuItem>
+                    <MenuItem value="amador">Amador</MenuItem>
+                    <MenuItem value="experiente">Experiente</MenuItem>
+                    <MenuItem value="profissional">Profissional</MenuItem>
+                  </Select>
+                )}
+              />
+            </FormControl>
           </Grid>
 
           <Grid item xs={6}>
-            <TextField name="numeroTotalPessoas" label="Número total de pessoas" type="number" fullWidth value={formValues.numeroTotalPessoas} onChange={handleChange} />
+            <Controller
+              name="numeroTotalPessoas"
+              control={control}
+              render={({ field }) => (
+                <TextField {...field} label="Número total de pessoas" type="number" fullWidth />
+              )}
+            />
           </Grid>
 
           <Grid item xs={12}>
-            <FormControlLabel control={<Checkbox name="match_publico" checked={formValues.match_publico} onChange={handleChange} />} label="Partida gratuita?" />
-            <FormControlLabel control={<Checkbox name="acessivel" checked={formValues.acessivel} onChange={handleChange} />} label="Acessível" />
+            <FormControlLabel
+              control={
+                <Controller
+                  name="match_publico"
+                  control={control}
+                  render={({ field }) => (
+                    <Checkbox {...field} checked={field.value} />
+                  )}
+                />
+              }
+              label="Partida gratuita?"
+            />
+            <FormControlLabel
+              control={
+                <Controller
+                  name="acessivel"
+                  control={control}
+                  render={({ field }) => (
+                    <Checkbox {...field} checked={field.value} />
+                  )}
+                />
+              }
+              label="Acessível"
+            />
           </Grid>
 
           <Grid item xs={12}>
@@ -254,7 +315,7 @@ function CreateMatch() {
           </Grid>
 
           <Grid item xs={12}>
-            <Button variant="contained" color="primary" fullWidth onClick={handleSubmit}>
+            <Button variant="contained" color="primary" fullWidth onClick={handleSubmit(onSubmit)}>
               Criar Partida
             </Button>
           </Grid>

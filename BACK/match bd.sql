@@ -30,8 +30,8 @@ CREATE TABLE Partida (
 CREATE TABLE Partida (
     match_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES Usuario(user_id), -- Assumindo que há uma tabela Usuario com user_id como chave primária
-    match_data TIMESTAMP NOT NULL,
     match_local VARCHAR(255) NOT NULL,
+    match_data TIMESTAMP NOT NULL,
     match_valor DECIMAL(10, 2) NOT NULL,
     match_publico BOOLEAN NOT NULL,
     esporte VARCHAR(50) NOT NULL,

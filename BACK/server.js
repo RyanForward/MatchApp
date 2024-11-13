@@ -180,11 +180,29 @@ app.put('/api/quadra/:id', async (req, res) => {
 
 // Inserir uma nova partida
 app.post('/api/partida', async (req, res) => {
-    const { user_id, match_data, match_local, match_valor, match_publico } = req.body;
+    const { match_id } = req.body;
+    const { user_id } = req.body;
+    const { match_local } = req.body;
+    const { match_data } = req.body;
+    const { match_valor } = req.body;
+    const { match_publico } = req.body;
+    const { match_esporte } = req.body;
+    const { match_tipo } = req.body;
+    const { match_genero } = req.body;
+    const { match_idade_min } = req.body;
+    const { match_idade_max } = req.body;
+    const { match_expertise } = req.body;
+    const { match_num_jogadores } = req.body;
+    const { match_partida_gratuita } = req.body;
+    const { match_acessivel } = req.body;
+    const { match_participantes } = req.body;
+
+    console.log(req.body);
+
     try {
         const result = await pool.query(
-            'INSERT INTO Partida (user_id, match_data, match_local, match_valor, match_publico) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [user_id, match_data, match_local, match_valor, match_publico]
+            'INSERT INTO Partida (match_id, user_id, match_local, match_data, match_valor, match_publico, esporte, tipo_competicao, genero, faixa_idade_min, faixa_idade_max, nivel_expertise, numero_total_pessoa, partida_gratuita, acessivel, participantes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *',
+            [match_id, user_id, match_local, match_data, match_valor, match_publico, match_esporte, match_tipo, match_genero, match_idade_min, match_idade_max, match_expertise, match_num_jogadores, match_partida_gratuita, match_acessivel, match_participantes]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {

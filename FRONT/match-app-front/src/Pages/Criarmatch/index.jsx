@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextField, Select, MenuItem, FormControl, InputLabel, Checkbox, FormControlLabel, Button, Grid, Box, Typography, IconButton, List, ListItem, ListItemText, ListItemSecondaryAction } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -8,6 +8,10 @@ import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+
+
+
+
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -26,6 +30,7 @@ const MapComponent = ({ marker, setMarker }) => {
       position: e.latlng,
       label: `Marcador em ${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`
     });
+    console.log(e.latlng);
   };
 
   function MapClickHandler() {
@@ -43,14 +48,41 @@ const MapComponent = ({ marker, setMarker }) => {
 };
 
 function CreateMatch() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('Token not found');
+                throw new Error('Token not found');
+            }
+            const response = await axios.get('/api/usuario_logado', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setUser(response.data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+  
+    fetchUser();
+  }, []);
+
+
   const [participants, setParticipants] = useState([]);
   const [newParticipant, setNewParticipant] = useState("");
   const [marker, setMarker] = useState(null);
   const [formValues, setFormValues] = useState({
+    match_data: '',  // Inicializa como string vazia
+    valor: 'free',  // Inicializa como string vazia
     esporte: '',
     tipoCompeticao: '',
     genero: '',
-    data: '',  // Inicializa como string vazia
     faixaIdadeMin: '',
     faixaIdadeMax: '',
     nivelExpertise: '',
@@ -82,14 +114,22 @@ function CreateMatch() {
     setMarker(null);
   };
 
+  const generateRandomNumber = () => {
+    return Math.floor(Math.random() * 1000000);
+  };
+
   const handleSubmit = async () => {
-    const matchData = {
+    const randomNumber = generateRandomNumber();
+    const matchData = {randomNumber, 
+      user_id: user.user_id,
+      match_local: marker.position.lat + ',' + marker.position.lng,
       ...formValues,
       participantes: participants,
-      localizacao: marker ? marker.position : null,
     };
 
     try {
+      console.log(marker.position.lat + ', ' + marker.position.lng);
+      console.log('Creating match:', matchData);
       const response = await axios.post('/api/partida', matchData);
       console.log('Match created successfully:', response.data);
     } catch (error) {
@@ -137,12 +177,12 @@ function CreateMatch() {
 
           <Grid item xs={6}>
             <TextField
-              name="data"
+              name="match_data"
               label="Data"
               type="date"
               fullWidth
               InputLabelProps={{ shrink: true }}
-              value={formValues.data} // Atualiza o valor com o estado
+              value={formValues.match_data} // Atualiza o valor com o estado
               onChange={handleChange}  // Adiciona o onChange para controlar o valor
             />
           </Grid>

@@ -206,7 +206,7 @@ app.get('/api/partida/:id', async (req, res) => {
 });
 
 // Retorna todas as partidas
-app.get('/api/partida', async (req, res) => {
+app.get('/api/partida', verificaToken, async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM Partida');
         res.status(200).json(result.rows);

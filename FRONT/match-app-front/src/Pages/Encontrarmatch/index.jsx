@@ -23,15 +23,24 @@ function FindMatch() {
   const [filteredMatches, setFilteredMatches] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/partida/')
-      .then(response => {
+    const fetchMatches = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('Token not found');
+          throw new Error('Token not found');
+        }
+        const response = await axios.get('/api/partida/', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         setMatches(response.data);
         setFilteredMatches(response.data);
         console.log('Matches fetched successfully!', response.data);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('There was an error fetching the matches!', error);
-      });
+      }
+    };
+    fetchMatches();
   }, []);
 
   useEffect(() => {

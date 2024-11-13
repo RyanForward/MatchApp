@@ -12,6 +12,7 @@ import Postmatch from '../Pages/postmatch';
 import Nextmacth from '../Pages/nextmatch';
 import Criarmatch from '../Pages/Criarmatch';
 import EncontrarMatch from '../Pages/Encontrarmatch';
+import NotFound from '../Pages/NotFound';
 
 function RoutesApp() {
   return (
@@ -79,6 +80,10 @@ function RoutesApp() {
             <HistoricoPartidas />
           </ProtectedRoute>
         }
+      />
+      <Route
+      path='*'
+      element={ <NotFound/>}
       />
     </Routes>
       </AuthProvider>

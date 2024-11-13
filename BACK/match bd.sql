@@ -3,6 +3,9 @@ CREATE TABLE Usuario (
     user_nome CHAR(50) NOT NULL,
     user_email CHAR(50) NOT NULL,
     user_senha TEXT NOT NULL
+    user_age INT,
+    user_fav_sport TEXT,
+    user_bio CHAR(100),
 );
 
 

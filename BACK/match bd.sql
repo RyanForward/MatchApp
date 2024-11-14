@@ -2,7 +2,10 @@ CREATE TABLE Usuario (
     user_id INT NOT NULL PRIMARY KEY,
     user_nome CHAR(50) NOT NULL,
     user_email CHAR(50) NOT NULL,
-    user_senha TEXT NOT NULL
+    user_senha TEXT NOT NULL,
+    user_age INT,
+    user_fav_sport TEXT,
+    user_bio char(100)
 );
 
 
@@ -18,18 +21,8 @@ CREATE TABLE quadra (
 
 
 CREATE TABLE Partida (
-    match_id INT NOT NULL PRIMARY KEY,
-    user_id INT NOT NULL,
-    match_data DATE NOT NULL,
-    match_local CHAR(100) NOT NULL,
-    match_valor CHAR(50),
-    match_publico CHAR(100),
-    FOREIGN KEY (user_id) REFERENCES Usuario(user_id)
-);
-
-CREATE TABLE Partida (
     match_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Usuario(user_id), -- Assumindo que há uma tabela Usuario com user_id como chave primária
+    host_id INT REFERENCES Usuario(user_id), -- Assumindo que há uma tabela Usuario com user_id como chave primária
     match_local VARCHAR(255) NOT NULL,
     match_data TIMESTAMP NOT NULL,
     match_valor DECIMAL(10, 2) NOT NULL,

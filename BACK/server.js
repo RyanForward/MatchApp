@@ -5,14 +5,117 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+
+
 // Configura o pool de conexões para o PostgreSQL
 const pool = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'postgres',
+    password: 'admin',
+    port: 5432
+});
+
+(async () => {
+    const client = await pool.connect();
+    try {
+        // Verifica se o banco de dados existe
+        const dbCheck = await client.query("SELECT 1 FROM pg_database WHERE datname='match'");
+        if (dbCheck === null || dbCheck.rows.length === 0) {
+            // Cria o banco de dados se não existir
+            await client.query('CREATE DATABASE match');              
+            console.log('Banco de dados "match" criado com sucesso.');
+        }
+        else {
+            console.log('Banco de dados "match" já existe.');
+        }
+    } catch (err) {
+        console.error('Erro ao verificar/criar banco de dados:', err);
+        Error.captureStackTrace(err);
+    } finally {
+        client.release();
+    }
+})();
+
+// Configura o pool de conexões para o PostgreSQL
+const matchpool = new Pool({
     user: 'postgres',
     host: 'localhost',
     database: 'match',
     password: 'admin',
     port: 5432
 });
+
+
+(async () => {
+    const client = await matchpool.connect();
+    try {
+        // Cria as tabelas se não existirem
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS Usuario (
+                user_id INT NOT NULL PRIMARY KEY,
+                user_nome CHAR(50) NOT NULL,
+                user_email CHAR(50) NOT NULL,
+                user_senha TEXT NOT NULL,
+                user_age INT,
+                user_fav_sport TEXT,
+                user_bio char(100)
+            );
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS Quadra (
+                quadra_id INT NOT NULL PRIMARY KEY,
+                user_id INT NOT NULL,
+                quadra_nome char(50),
+                calendario DATE NOT NULL,
+                valor CHAR(50),
+                publico boolean,
+                FOREIGN KEY (user_id) REFERENCES Usuario(user_id)
+            );
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS Partida (
+                match_id SERIAL PRIMARY KEY,
+                host_id INT REFERENCES Usuario(user_id), -- Assumindo que há uma tabela Usuario com user_id como chave primária
+                match_local VARCHAR(255) NOT NULL,
+                match_data TIMESTAMP NOT NULL,
+                match_valor DECIMAL(10, 2) NOT NULL,
+                match_publico BOOLEAN NOT NULL,
+                esporte VARCHAR(50) NOT NULL,
+                tipo_competicao VARCHAR(50) NOT NULL,
+                genero VARCHAR(10) NOT NULL,
+                faixa_idade_min INT NOT NULL,
+                faixa_idade_max INT NOT NULL,
+                nivel_expertise VARCHAR(50) NOT NULL,
+                numero_total_pessoas INT NOT NULL,
+                partida_gratuita BOOLEAN NOT NULL,
+                acessivel BOOLEAN NOT NULL,
+                participantes TEXT[] NOT NULL
+            );
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS Grupo (
+                shipment_id INT NOT NULL PRIMARY KEY,
+                match_id INT NOT NULL,
+                user_id INT NOT NULL,
+                horario DATE NOT NULL,
+                FOREIGN KEY (match_id) REFERENCES Partida(match_id),
+                FOREIGN KEY (user_id) REFERENCES Usuario(user_id)
+            );
+        `);
+
+        console.log('Tabelas criadas/verificadas com sucesso.');
+        console.log('Conexão com o banco de dados estabelecida com sucesso.');
+    } catch (err) {
+        console.error('Erro ao verificar/criar tabelas:', err);
+        Error.captureStackTrace(err);
+    } finally {
+        client.release();
+    }
+})();
 
 const app = express();
 
@@ -68,7 +171,7 @@ app.post('/api/usuario', async (req, res) => {
 
     try {
         const hashedPassword = await bcrypt.hash(user_senha, 10);
-        const result = await pool.query(
+        const result = await matchpool.query(
             'INSERT INTO Usuario (user_id, user_nome, user_email, user_senha) VALUES ($1, $2, $3, $4) RETURNING *',
             [user_id, user_nome, user_email, hashedPassword]
         );
@@ -82,7 +185,7 @@ app.post('/api/usuario', async (req, res) => {
 app.get('/api/usuario/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query('SELECT * FROM Usuario WHERE user_id = $1', [id]);
+        const result = await matchpool.query('SELECT * FROM Usuario WHERE user_id = $1', [id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'Usuário não encontrado' });
         }
@@ -98,7 +201,7 @@ app.post("/api/login", async (req, res) => {
     const { user_senha } = req.body;
 
     try {
-        const result = await pool.query('SELECT * FROM Usuario WHERE user_email = $1', [user_email]);
+        const result = await matchpool.query('SELECT * FROM Usuario WHERE user_email = $1', [user_email]);
         console.log('result: ', result)
         if (result.rows.length === 0) {
             return res.status(404).send('Usuário não encontrado.');
@@ -121,7 +224,7 @@ app.post("/api/login", async (req, res) => {
 app.get('/api/usuario_logado', verificaToken, async (req, res) => {
     const userId = req.userId;
     try {
-        const result = await pool.query('SELECT * FROM Usuario WHERE user_id = $1', [userId]);
+        const result = await matchpool.query('SELECT * FROM Usuario WHERE user_id = $1', [userId]);
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'Usuário não encontrado' });
         }
@@ -131,10 +234,9 @@ app.get('/api/usuario_logado', verificaToken, async (req, res) => {
     }
 });
 
-// Retorna as informações de um usuário
 app.get('/api/', async (req, res) => { //raiz da aplicação
     try {
-        const result = await pool.query('SELECT * FROM Usuario');
+        const result = await matchpool.query('SELECT * FROM Usuario');
         res.status(200).json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -147,7 +249,7 @@ app.get('/api/', async (req, res) => { //raiz da aplicação
 app.post('/api/quadra', async (req, res) => {
     const { user_id, calendario, valor, publico } = req.body;
     try {
-        const result = await pool.query(
+        const result = await matchpool.query(
             'INSERT INTO Quadras (user_id, calendario, valor, publico) VALUES ($1, $2, $3, $4) RETURNING *',
             [user_id, calendario, valor, publico]
         );
@@ -162,7 +264,7 @@ app.put('/api/quadra/:id', async (req, res) => {
     const { id } = req.params;
     const { calendario, valor, publico } = req.body;
     try {
-        const result = await pool.query(
+        const result = await matchpool.query(
             'UPDATE Quadras SET calendario = $1, valor = $2, publico = $3 WHERE quadra_id = $4 RETURNING *',
             [calendario, valor, publico, id]
         );
@@ -181,7 +283,7 @@ app.put('/api/quadra/:id', async (req, res) => {
 app.post('/api/partida', async (req, res) => {
     console.log('body: ', req.body)
     const match_id = req.body.randomNumber;
-    const { user_id } = req.body;
+    const { host_id } = req.body;
     const { match_local } = req.body;
     const { match_data } = req.body;
     const { match_valor } = req.body;
@@ -201,9 +303,9 @@ app.post('/api/partida', async (req, res) => {
     console.log('partida_gratuita: ', partida_gratuita);
 
     try {
-        const result = await pool.query(
-            'INSERT INTO Partida (match_id, user_id, match_local, match_data, match_valor, match_publico, esporte, tipo_competicao, genero, faixa_idade_min, faixa_idade_max, nivel_expertise, numero_total_pessoas, partida_gratuita, acessivel, participantes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *',
-            [match_id, user_id, match_local, match_data, match_valor, match_publico, esporte, tipo_competicao, genero, faixa_idade_min, faixa_idade_max, nivel_expertise, numero_total_pessoas, partida_gratuita, acessivel, participantes]
+        const result = await matchpool.query(
+            'INSERT INTO Partida (match_id, host_id, match_local, match_data, match_valor, match_publico, esporte, tipo_competicao, genero, faixa_idade_min, faixa_idade_max, nivel_expertise, numero_total_pessoas, partida_gratuita, acessivel, participantes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *',
+            [match_id, host_id, match_local, match_data, match_valor, match_publico, esporte, tipo_competicao, genero, faixa_idade_min, faixa_idade_max, nivel_expertise, numero_total_pessoas, partida_gratuita, acessivel, participantes]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -216,7 +318,7 @@ app.post('/api/partida', async (req, res) => {
 app.get('/api/partida/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query('SELECT * FROM Partida WHERE match_id = $1', [id]);
+        const result = await matchpool.query('SELECT * FROM Partida WHERE match_id = $1', [id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'Partida não encontrada' });
         }
@@ -226,10 +328,9 @@ app.get('/api/partida/:id', async (req, res) => {
     }
 });
 
-// Retorna todas as partidas
 app.get('/api/partida', verificaToken, async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM Partida');
+        const result = await matchpool.query('SELECT * FROM Partida');
         res.status(200).json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -241,7 +342,7 @@ app.put('/api/partida/:id', async (req, res) => {
     const { id } = req.params;
     const { match_data, match_local, match_valor, match_publico } = req.body;
     try {
-        const result = await pool.query(
+        const result = await matchpool.query(
             'UPDATE Partida SET match_data = $1, match_local = $2, match_valor = $3, match_publico = $4 WHERE match_id = $5 RETURNING *',
             [match_data, match_local, match_valor, match_publico, id]
         );
@@ -258,7 +359,7 @@ app.put('/api/partida/:id', async (req, res) => {
 app.delete('/api/partida/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query('DELETE FROM Partida WHERE match_id = $1 RETURNING *', [id]);
+        const result = await matchpool.query('DELETE FROM Partida WHERE match_id = $1 RETURNING *', [id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'Partida não encontrada' });
         }
@@ -274,7 +375,7 @@ app.delete('/api/partida/:id', async (req, res) => {
 app.post('/api/grupo', async (req, res) => {
     const { shipment_id, match_id, user_id, horario } = req.body;
     try {
-        const result = await pool.query(
+        const result = await matchpool.query(
             'INSERT INTO Grupo (shipment_id, match_id, user_id, horario) VALUES ($1, $2, $3, $4) RETURNING *',
             [shipment_id, match_id, user_id, horario]
         );
@@ -288,7 +389,7 @@ app.post('/api/grupo', async (req, res) => {
 app.get('/api/grupo/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query('SELECT * FROM Grupo WHERE shipment_id = $1', [id]);
+        const result = await matchpool.query('SELECT * FROM Grupo WHERE shipment_id = $1', [id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'Grupo não encontrado' });
         }
@@ -298,10 +399,9 @@ app.get('/api/grupo/:id', async (req, res) => {
     }
 });
 
-// Retorna todos os grupos 
 app.get('/api/grupo', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM Grupo');
+        const result = await matchpool.query('SELECT * FROM Grupo');
         res.status(200).json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -313,7 +413,7 @@ app.put('/api/grupo/:id', async (req, res) => {
     const { id } = req.params;
     const { shipment_id, match_id, user_id, horario } = req.body;
     try {
-        const result = await pool.query(
+        const result = await matchpool.query(
             'UPDATE Grupo SET shipment_id = $1, match_id = $2, user_id = $3, horario = $4 WHERE shipment_id = $5 RETURNING *',
             [shipment_id, match_id, user_id, horario, id]
         );
@@ -330,7 +430,7 @@ app.put('/api/grupo/:id', async (req, res) => {
 app.delete('/api/grupo/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query('DELETE FROM Grupo WHERE shipment_id = $1 RETURNING *', [id]);
+        const result = await matchpool.query('DELETE FROM Grupo WHERE shipment_id = $1 RETURNING *', [id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'Grupo não encontrado' });
         }

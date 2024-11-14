@@ -142,7 +142,7 @@ function CreateMatch() {
     const localizacao = marker.position.lat + ',' + marker.position.lng;
     const matchData = {
       randomNumber,
-      user_id: user.user_id,
+      host_id: user.user_id,
       match_local: localizacao,
       ...data,
       match_valor: isFreeMatch ? 0 : data.match_valor,

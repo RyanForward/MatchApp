@@ -35,7 +35,6 @@ function FindMatch() {
         });
         setMatches(response.data);
         setFilteredMatches(response.data);
-        console.log('Matches fetched successfully!', response.data);
       } catch (error) {
         console.error('There was an error fetching the matches!', error);
       }

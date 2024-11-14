@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Select, MenuItem, FormControl, InputLabel, Checkbox, FormControlLabel, Button, Grid, Box, Typography, IconButton, List, ListItem, ListItemText, ListItemSecondaryAction } from '@mui/material';
+import { TextField, Select, MenuItem, Snackbar, Alert, FormControl, InputLabel, Checkbox, FormControlLabel, Button, Grid, Box, Typography, IconButton, List, ListItem, ListItemText, ListItemSecondaryAction, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import './criapartida.css';
@@ -9,6 +9,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { InfoOutlined } from '@mui/icons-material';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -27,7 +28,6 @@ const MapComponent = ({ marker, setMarker }) => {
       position: e.latlng,
       label: `Marcador em ${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`
     });
-    console.log(e.latlng);
   };
 
   function MapClickHandler() {
@@ -58,12 +58,23 @@ function CreateMatch() {
       faixaIdadeMax: '',
       nivelExpertise: '',
       numeroTotalPessoas: '',
-      match_publico: false,
+      match_publico: true,
       acessivel: false,
     }
   });
 
+  const [notification, setNotification] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
+
+  const handleClose = () => {
+    setNotification((prev) => ({ ...prev, open: false }));
+  };
+
   const formValues = watch();
+  const isFreeMatch = watch("match_publico");
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -118,15 +129,23 @@ function CreateMatch() {
       user_id: user.user_id,
       match_local: localizacao,
       ...data,
+      match_valor: isFreeMatch ? 0 : data.match_valor,
       participantes: participants,
     };
 
     try {
-      console.log(marker.position.lat + ', ' + marker.position.lng);
-      console.log('Creating match:', matchData);
       const response = await axios.post('/api/partida', matchData);
-      console.log('Match created successfully:', response.data);
+      setNotification({
+        open: true,
+        message: 'Partida criada com sucesso!',
+        severity: 'success',
+      });
     } catch (error) {
+      setNotification({
+        open: true,
+        message: 'Erro ao criar a partida.',
+        severity: 'error',
+      });
       console.error('Error creating match:', error);
     }
   };
@@ -253,18 +272,52 @@ function CreateMatch() {
           </Grid>
 
           <Grid item xs={12}>
+            {!isFreeMatch && (
+              <Controller
+                name="match_valor"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Valor da partida"
+                    type="number"
+                    fullWidth
+                    InputProps={{ inputProps: { min: 0 } }}
+                  />
+                )}
+              />
+            )}
             <FormControlLabel
               control={
                 <Controller
                   name="match_publico"
                   control={control}
                   render={({ field }) => (
-                    <Checkbox {...field} checked={field.value} />
+                    <Checkbox
+                      {...field}
+                      defaultValue={true}
+                      checked={field.value}
+                      onChange={(e) => {
+                        field.onChange(e.target.checked);
+                        if (e.target.checked) {
+                          setValue("match_valor", 0);
+                        }
+                      }}
+                    />
                   )}
                 />
               }
-              label="Partida gratuita?"
-            />
+              label={
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  Gratuito para jogar
+                  <Tooltip title="Marque esta opção se a partida for gratuita. O valor será automaticamente definido como 0.">
+                    <IconButton size="small" style={{ marginLeft: 4, fontSize: '150px' }}>
+                      <InfoOutlined fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              }            />
+            <Grid>
             <FormControlLabel
               control={
                 <Controller
@@ -275,8 +328,18 @@ function CreateMatch() {
                   )}
                 />
               }
-              label="Acessível"
+              label={
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  Acessível
+                  <Tooltip title="Partidas acessíveis têm o objetivo de promover a inclusão, tornando possível a participação de deficientes físicos">
+                    <IconButton size="small" style={{ marginLeft: 4, fontSize: '150px' }}>
+                      <InfoOutlined fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              }                
             />
+            </Grid>
           </Grid>
 
           <Grid item xs={12}>
@@ -318,6 +381,17 @@ function CreateMatch() {
             <Button variant="contained" color="primary" fullWidth onClick={handleSubmit(onSubmit)}>
               Criar Partida
             </Button>
+            <Snackbar
+              open={notification.open}
+              autoHideDuration={6000}
+              onClose={handleClose}
+              color='primary'
+              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+              <Alert onClose={handleClose} severity={notification.severity} sx={{ width: '100%' }}>
+                {notification.message}
+              </Alert>
+            </Snackbar>
           </Grid>
         </Grid>
       </Box>

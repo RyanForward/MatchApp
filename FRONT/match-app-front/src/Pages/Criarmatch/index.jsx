@@ -19,8 +19,24 @@ L.Icon.Default.mergeOptions({
 });
 
 const MapComponent = ({ marker, setMarker }) => {
-  const center = [-22.4142733, -45.4495993];
+  const [userLocation, setUserLocation] = useState(null);
+  const center = userLocation || [-22.4142733, -45.4495993];
   const zoom = 13;
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation([position.coords.latitude, position.coords.longitude]);
+        },
+        (error) => {
+          console.error('Error obtaining location', error);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+    }
+  }, []);
 
   const addMarker = (e) => {
     setMarker({

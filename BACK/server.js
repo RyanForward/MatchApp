@@ -97,10 +97,9 @@ app.post("/api/login", async (req, res) => {
     const { user_email} = req.body; 
     const { user_senha } = req.body;
 
-    console.log(req.body);
-
     try {
         const result = await pool.query('SELECT * FROM Usuario WHERE user_email = $1', [user_email]);
+        console.log('result: ', result)
         if (result.rows.length === 0) {
             return res.status(404).send('Usuário não encontrado.');
         }
@@ -180,32 +179,35 @@ app.put('/api/quadra/:id', async (req, res) => {
 
 // Inserir uma nova partida
 app.post('/api/partida', async (req, res) => {
-    const { match_id } = req.body;
+    console.log('body: ', req.body)
+    const match_id = req.body.randomNumber;
     const { user_id } = req.body;
     const { match_local } = req.body;
     const { match_data } = req.body;
     const { match_valor } = req.body;
     const { match_publico } = req.body;
     const { esporte } = req.body;
-    const { tipo_competicao } = req.body;
+    const tipo_competicao = req.body.tipoCompeticao;
     const { genero } = req.body;
-    const { faixa_idade_min } = req.body;
-    const { faixa_idade_max } = req.body;
-    const { nivel_expertise } = req.body;
-    const { numero_total_pessoa } = req.body;
-    const { partida_gratuita } = req.body;
+    const faixa_idade_min = req.body.faixaIdadeMin;
+    const faixa_idade_max = req.body.faixaIdadeMax;
+    const nivel_expertise = req.body.nivelExpertise;
+    const numero_total_pessoas = req.body.numeroTotalPessoas;
+    const partida_gratuita = req.body.match_publico;
     const { acessivel } = req.body;
     const { participantes } = req.body;
 
-    console.log(req.body);
+    console.log('req.body.match_publico: ', req.body.match_publico);
+    console.log('partida_gratuita: ', partida_gratuita);
 
     try {
         const result = await pool.query(
-            'INSERT INTO Partida (match_id, user_id, match_local, match_data, match_valor, match_publico, esporte, tipo_competicao, genero, faixa_idade_min, faixa_idade_max, nivel_expertise, numero_total_pessoa, partida_gratuita, acessivel, participantes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *',
-            [match_id, user_id, match_local, match_data, match_valor, match_publico, esporte, tipo_competicao, genero, faixa_idade_min, faixa_idade_max, nivel_expertise, numero_total_pessoa, partida_gratuita, acessivel, participantes]
+            'INSERT INTO Partida (match_id, user_id, match_local, match_data, match_valor, match_publico, esporte, tipo_competicao, genero, faixa_idade_min, faixa_idade_max, nivel_expertise, numero_total_pessoas, partida_gratuita, acessivel, participantes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *',
+            [match_id, user_id, match_local, match_data, match_valor, match_publico, esporte, tipo_competicao, genero, faixa_idade_min, faixa_idade_max, nivel_expertise, numero_total_pessoas, partida_gratuita, acessivel, participantes]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {
+        console.log(err)
         res.status(500).json({ error: err.message });
     }
 });

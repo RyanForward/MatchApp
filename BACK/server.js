@@ -281,7 +281,6 @@ app.put('/api/quadra/:id', async (req, res) => {
 
 // Inserir uma nova partida
 app.post('/api/partida', async (req, res) => {
-    console.log('body: ', req.body)
     const match_id = req.body.randomNumber;
     const {host_id} = req.body;
     const { match_local } = req.body;
@@ -298,9 +297,6 @@ app.post('/api/partida', async (req, res) => {
     const partida_gratuita = req.body.match_publico;
     const { acessivel } = req.body;
     const { participantes } = req.body;
-
-    console.log('req.body.match_publico: ', req.body.match_publico);
-    console.log('partida_gratuita: ', partida_gratuita);
 
     try {
         const result = await matchpool.query(

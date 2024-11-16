@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './encontrar.css';
 import Navbar from '../Navbar';
-import { TextField, Select, MenuItem, FormControl, InputLabel, Checkbox, FormControlLabel, Button, Grid, Box, Typography, List, ListItem, ListItemText } from '@mui/material';
+import { TextField, Select, MenuItem, FormControl, InputLabel, CircularProgress, Checkbox, FormControlLabel, Button, Grid, Box, Typography, List, ListItem, ListItemText } from '@mui/material';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
@@ -21,6 +21,24 @@ function FindMatch() {
 
   const [matches, setMatches] = useState([]);
   const [filteredMatches, setFilteredMatches] = useState([]);
+  const [center, setCenter] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const newLocation = [position.coords.latitude, position.coords.longitude];
+          setCenter(newLocation);
+        },
+        (error) => {
+          console.error('Error obtaining location', error);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+    }
+  }, []);
 
   useEffect(() => {
     const fetchMatches = async () => {
@@ -31,12 +49,14 @@ function FindMatch() {
           throw new Error('Token not found');
         }
         const response = await axios.get('/api/partida/', {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         setMatches(response.data);
         setFilteredMatches(response.data);
       } catch (error) {
         console.error('There was an error fetching the matches!', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchMatches();
@@ -87,6 +107,10 @@ function FindMatch() {
     iconAnchor: [16, 32],
   });
 
+  if (!center) {
+    return <div>Carregando mapa...</div>;
+  }
+
   return (
     <>
       <nav id="navbar">
@@ -94,6 +118,12 @@ function FindMatch() {
       </nav>
       <Box sx={{ maxWidth: "sm", mx: "auto", mt: 4, p: 2, border: "1px solid #ccc", borderRadius: 2, marginTop: 10 }} id="main-box">
         <Typography variant="h6" gutterBottom id="title">Encontre uma partida próxima a você</Typography>
+
+        {loading ? ( // Exibe o spinner enquanto carrega
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
 
         <Grid container spacing={2} id="filters-grid">
           <Grid item xs={12} sm={6} id="sport-filter">
@@ -206,38 +236,52 @@ function FindMatch() {
             />
           </Grid>
 
-          <Grid item xs={12} id="map-container">
-            <Typography variant="subtitle1" id="map-title">Selecione uma partida:</Typography>
-            <Box sx={{ height: 300, backgroundColor: '#f0f0f0', borderRadius: 1, mt: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid black' }} id="map-box">
-              <MapContainer center={[-22.4142733, -45.4495993]} zoom={14} id="map">
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  id="tile-layer"
-                />
-                {filteredMatches.map((match, index) => (
-                  <Marker key={index} position={[match.match_local]} icon={customIcon} id={`marker-${index}`}>
-                    <Popup id={`popup-${index}`}>
-                      <div>
-                        {match.sport} - {match.participants} pessoas
-                      </div>
-                    </Popup>
-                  </Marker>
-                ))}
-              </MapContainer>
-            </Box>
-          </Grid>
+            <Grid item xs={12} id="map-container">
+              <Typography variant="subtitle1" id="map-title">Selecione uma partida:</Typography>
+              <Box sx={{ height: 300, backgroundColor: '#f0f0f0', borderRadius: 1, mt: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid black' }} id="map-box">
+                <MapContainer center={center} zoom={14} id="map">
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    id="tile-layer"
+                  />
+                 {filteredMatches.map((match, index) => {
+                    const coordinates = match.match_local
+                      .split(',')
+                      .map(coord => parseFloat(coord.trim()));
 
-          <Grid item xs={12} id="matches-list">
-            <Typography variant="subtitle1" id="list-title">Lista de partidas:</Typography>
-            <List id="matches-list">
-              {filteredMatches.map((match, index) => (
-                <ListItem key={index} id={`list-item-${index}`}>
-                  <ListItemText primary={`${match.sport} - ${match.participants} pessoas`} secondary={`Local: ${match.location}`} />
-                </ListItem>
-              ))}
-            </List>
-          </Grid>
+                    return (
+                      <Marker
+                        key={index}
+                        position={coordinates}
+                        icon={customIcon}
+                        id={`marker-${index}`}
+                      >
+                        <Popup id={`popup-${index}`}>
+                          <div>
+                            <div>{match.esporte} - {match.numero_total_pessoas} pessoas</div>
+                            <div>Faixa de idade: {match.faixa_idade_min} - {match.faixa_idade_max} anos</div>
+                            <div>Data: {match.faixa_idade_min} - {match.faixa_idade_max} anos</div>
+                            <div>Preço: {match.partida_gratuita ? 'gratuito' : `R$${match.match_valor}`}</div>
+                          </div>
+                        </Popup>
+                      </Marker>
+                    );
+                  })}
+                </MapContainer>
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} id="matches-list">
+              <Typography variant="subtitle1" id="list-title">Lista de partidas:</Typography>
+              <List id="matches-list">
+                {filteredMatches.map((match, index) => (
+                  <ListItem key={index} id={`list-item-${index}`}>
+                    <ListItemText primary={`${match.esporte} - ${match.numero_total_pessoas} pessoas`} secondary={`Local: ${match.partida_gratuita ? 'gratuito' : 'paga'}`} />
+                  </ListItem>
+                ))}
+              </List>
+            </Grid>
 
           <Grid item xs={12} id="action-buttons">
             <Button variant="contained" color="success" fullWidth sx={{ mb: 1 }} id="subscribe-button">
@@ -248,6 +292,7 @@ function FindMatch() {
             </Button>
           </Grid>
         </Grid>
+      )}
       </Box>
     </>
   );

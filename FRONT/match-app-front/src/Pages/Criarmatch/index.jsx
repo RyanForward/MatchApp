@@ -19,15 +19,16 @@ L.Icon.Default.mergeOptions({
 });
 
 const MapComponent = ({ marker, setMarker }) => {
-  const [userLocation, setUserLocation] = useState(null);
-  const center = userLocation || [-22.4142733, -45.4495993];
-  const zoom = 13;
+  const [center, setCenter] = useState(null);
+
+  const zoom = 14;
 
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setUserLocation([position.coords.latitude, position.coords.longitude]);
+          const newLocation = [position.coords.latitude, position.coords.longitude];
+          setCenter(newLocation);
         },
         (error) => {
           console.error('Error obtaining location', error);
@@ -49,6 +50,10 @@ const MapComponent = ({ marker, setMarker }) => {
   function MapClickHandler() {
     useMapEvents({ click: addMarker });
     return null;
+  }
+
+  if (!center) {
+    return <div>Carregando mapa...</div>;
   }
 
   return (
@@ -180,9 +185,9 @@ function CreateMatch() {
                 control={control}
                 render={({ field }) => (
                   <Select {...field}>
-                    <MenuItem value="vôlei">Vôlei</MenuItem>
-                    <MenuItem value="futebol">Futebol</MenuItem>
-                    <MenuItem value="basquete">Basquete</MenuItem>
+                    <MenuItem value="Vôlei">Vôlei</MenuItem>
+                    <MenuItem value="Futebol">Futebol</MenuItem>
+                    <MenuItem value="Basquete">Basquete</MenuItem>
                   </Select>
                 )}
               />
@@ -197,8 +202,8 @@ function CreateMatch() {
                 control={control}
                 render={({ field }) => (
                   <Select {...field}>
-                    <MenuItem value="amador">Amador</MenuItem>
-                    <MenuItem value="profissional">Profissional</MenuItem>
+                    <MenuItem value="Amador">Amador</MenuItem>
+                    <MenuItem value="Profissional">Profissional</MenuItem>
                   </Select>
                 )}
               />
@@ -213,9 +218,9 @@ function CreateMatch() {
                 control={control}
                 render={({ field }) => (
                   <Select {...field}>
-                    <MenuItem value="masculino">Masculino</MenuItem>
-                    <MenuItem value="feminino">Feminino</MenuItem>
-                    <MenuItem value="misto">Misto</MenuItem>
+                    <MenuItem value="Masculino">Masculino</MenuItem>
+                    <MenuItem value="Feminino">Feminino</MenuItem>
+                    <MenuItem value="Misto">Misto</MenuItem>
                   </Select>
                 )}
               />
@@ -266,11 +271,11 @@ function CreateMatch() {
                 control={control}
                 render={({ field }) => (
                   <Select {...field}>
-                    <MenuItem value="novato">Novato</MenuItem>
-                    <MenuItem value="iniciante">Iniciante</MenuItem>
-                    <MenuItem value="amador">Amador</MenuItem>
-                    <MenuItem value="experiente">Experiente</MenuItem>
-                    <MenuItem value="profissional">Profissional</MenuItem>
+                    <MenuItem value="Novato">Novato</MenuItem>
+                    <MenuItem value="Iniciante">Iniciante</MenuItem>
+                    <MenuItem value="Amador">Amador</MenuItem>
+                    <MenuItem value="Experiente">Experiente</MenuItem>
+                    <MenuItem value="Profissional">Profissional</MenuItem>
                   </Select>
                 )}
               />
@@ -326,7 +331,7 @@ function CreateMatch() {
               label={
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   Gratuito para jogar
-                  <Tooltip title="Marque esta opção se a partida for gratuita. O valor será automaticamente definido como 0.">
+                  <Tooltip title="Marque esta opção se a partida for gratuita">
                     <IconButton size="small" style={{ marginLeft: 4, fontSize: '150px' }}>
                       <InfoOutlined fontSize="small" />
                     </IconButton>

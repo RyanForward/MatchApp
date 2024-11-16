@@ -83,7 +83,11 @@ function RoutesApp() {
       />
       <Route
       path='*'
-      element={ <NotFound/>}
+      element={ 
+        <ProtectedRoute>
+          <NotFound/>
+        </ProtectedRoute>
+      }
       />
     </Routes>
       </AuthProvider>

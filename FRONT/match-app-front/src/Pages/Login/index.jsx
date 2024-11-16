@@ -34,15 +34,12 @@ const Login = () => {
                 user_email: data.email,
                 user_senha: data.senha
             });
-            console.log('Token de autenticação: ', response);
             localStorage.setItem('token', response.data.token);
             setMsg('Login efetuado com sucesso!');
-            console.log(msg);
             login();
             navigate('/home');
         } catch (error) {
             setError(error.response.data.message);
-            console.log(error.response.data);
         }
     };
 
@@ -50,7 +47,6 @@ const Login = () => {
         try {
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
-            console.log('Usuário logado com Google: ', result.user.accessToken);
             localStorage.setItem('token', result.user.accessToken);
             login();
             navigate('/home');

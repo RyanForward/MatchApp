@@ -10,7 +10,7 @@ const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
     database: 'match',
-    password: 'admin',
+    password: 'barbara',
     port: 5432, 
 });
 
@@ -47,7 +47,14 @@ app.post('/api/usuario', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
         console.log(err);
+        
     }
+    console.log('next');
+    res.redirect('/login');
+});
+
+app.get('/login', (req, res) => {
+    res.send("Página de Login");
 });
 
 

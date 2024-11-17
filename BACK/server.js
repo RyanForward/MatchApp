@@ -207,11 +207,12 @@ app.post("/api/login", async (req, res) => {
             return res.status(404).send('Usuário não encontrado.');
         }
         const user = result.rows[0];
+        const userID = user.user_id;
         const passwordValidado = await bcrypt.compare(user_senha, user.user_senha);
         if (passwordValidado) {
             const token = jwt.sign({ userId: user.user_id }, 'secret_key', { expiresIn: '1h' });
             console.log(token);
-            return res.status(200).json({ token });
+            return res.status(200).json({ token, userID});
         } else {
             return res.status(422).send('Usuário ou senha incorretos.');
         }
@@ -238,40 +239,6 @@ app.get('/api/', async (req, res) => { //raiz da aplicação
     try {
         const result = await matchpool.query('SELECT * FROM Usuario');
         res.status(200).json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// ROTAS DAS QUADRAS *********************
-
-// Inserir uma nova quadra
-app.post('/api/quadra', async (req, res) => {
-    const { user_id, calendario, valor, publico } = req.body;
-    try {
-        const result = await matchpool.query(
-            'INSERT INTO Quadras (user_id, calendario, valor, publico) VALUES ($1, $2, $3, $4) RETURNING *',
-            [user_id, calendario, valor, publico]
-        );
-        res.status(201).json(result.rows[0]);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Editar informações de uma quadra existente
-app.put('/api/quadra/:id', async (req, res) => {
-    const { id } = req.params;
-    const { calendario, valor, publico } = req.body;
-    try {
-        const result = await matchpool.query(
-            'UPDATE Quadras SET calendario = $1, valor = $2, publico = $3 WHERE quadra_id = $4 RETURNING *',
-            [calendario, valor, publico, id]
-        );
-        if (result.rows.length === 0) {
-            return res.status(404).json({ message: 'Quadra não encontrada' });
-        }
-        res.status(200).json(result.rows[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -403,6 +370,16 @@ app.get('/api/grupo', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+});
+
+app.get('/api/grupo/historico/:userId', async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const result = await matchpool.query('SELECT p.esporte, p.match_local, p.match_data FROM Grupo g INNER JOIN Partida p ON g.match_id = p.match_id WHERE g.user_id = $1', [userId]) 
+        res.status(200).json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }   
 });
 
 // Editar informações de um grupo existente

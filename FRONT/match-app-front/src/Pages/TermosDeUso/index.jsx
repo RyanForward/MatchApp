@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Typography, Box } from '@mui/material';
-import Navbar from '../Navbar'; // Importando o componente Navbar
+import Navbar from '../Navbar';
 import logo from '../../Assets/imgs/logo-completo.png';
 
 const TermsOfUse = () => {

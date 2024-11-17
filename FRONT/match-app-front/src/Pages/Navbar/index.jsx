@@ -65,8 +65,9 @@ function NavBar() {
       sx={{ maxWidth: "sm" }}
       role="presentation"
       onKeyDown={toggleDrawer(false)}
+      id="drawer-content"
     >
-      <List>
+      <List id="drawer-list">
         {[{ text: 'Início', link: '/home' },
           { text: 'Histórico', link: '/historico' },
           { text: 'Perfil', link: '/perfil' },
@@ -78,13 +79,14 @@ function NavBar() {
             to={item.link} 
             key={index}
             onClick={toggleDrawer(false)} // Fecha a sidebar para os links normais
+            id={`list-item-${index}`}
           >
             <ListItemText primary={item.text} />
           </ListItem>
         ))}
       </List>
-      <Divider />
-      <List>
+      <Divider id="drawer-divider" />
+      <List id="drawer-bottom-list">
         {[{ text: 'Política de privacidade', link: '/privacy' },
           { text: 'Termos de serviço', link: '/terms' },
           { text: 'Sair', action: handleLogoutClick }
@@ -95,6 +97,7 @@ function NavBar() {
             to={item.link || undefined} 
             key={index}
             onClick={item.action || toggleDrawer(false)} // Se tiver `action`, usa handleLogoutClick
+            id={`list-item-bottom-${index}`}
           >
             <ListItemText primary={item.text} />
           </ListItem>
@@ -105,18 +108,19 @@ function NavBar() {
       <Dialog
         open={openLogoutDialog}
         onClose={handleCloseDialog}
+        id="logout-dialog"
       >
-        <DialogTitle>Confirmar Logout</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
+        <DialogTitle id="logout-dialog-title">Confirmar Logout</DialogTitle>
+        <DialogContent id="logout-dialog-content">
+          <DialogContentText id="logout-dialog-text">
             Você realmente deseja sair?
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
+        <DialogActions id="logout-dialog-actions">
+          <Button onClick={handleCloseDialog} color="primary" id="cancel-logout-button">
             Cancelar
           </Button>
-          <Button onClick={confirmLogout} color="primary" autoFocus>
+          <Button onClick={confirmLogout} color="primary" autoFocus id="confirm-logout-button">
             Sair
           </Button>
         </DialogActions>
@@ -126,27 +130,28 @@ function NavBar() {
 
   return (
     <div>
-      <AppBar className='AppBar' position="fixed" style={{ backgroundColor: '#ffffff', color: '#000', marginBottom: '20px' }}>
-        <Toolbar>
+      <AppBar className='AppBar' position="fixed" style={{ backgroundColor: '#ffffff', color: '#000', marginBottom: '20px' }} id="app-bar">
+        <Toolbar id="toolbar">
           {/* Menu Hamburguer para telas menores */}
           {isMobile && (
-            <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
-              <MenuIcon />
+            <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)} id="menu-icon-button">
+              <MenuIcon id="menu-icon" />
             </IconButton>
           )}
 
           {/* Logo */}
-          <Typography variant="h3" component="div" sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', width: '10px'}}>
+          <Typography variant="h3" component="div" sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', width: '10px'}} id="logo-container">
             <img 
               src={logo} 
               alt="Descrição da imagem"
               style={{ width: '80px', height: 'auto', margin: -20 }}
+              id="logo-img"
             />
           </Typography>
 
           {/* Navbar Links visíveis apenas em telas grandes */}
           {!isMobile && (
-            <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-around' }}>
+            <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-around' }} id="navbar-links">
               <Button
                 component={Link}
                 to="/home"
@@ -158,6 +163,7 @@ function NavBar() {
                   color: 'black',
                   '&:not(:last-child)': { marginRight: 0 }
                 }}
+                id="home-button"
               >
                 Início
               </Button>
@@ -171,6 +177,7 @@ function NavBar() {
                   color: 'black',
                   '&:not(:last-child)': { marginRight: 0 }
                 }}
+                id="historico-button"
               >
                 Histórico
               </Button>
@@ -184,6 +191,7 @@ function NavBar() {
                   color: 'black',
                   '&:not(:last-child)': { marginRight: 0 }
                 }}
+                id="perfil-button"
               >
                 Perfil
               </Button>
@@ -197,6 +205,7 @@ function NavBar() {
                   color: 'black',
                   '&:not(:last-child)': { marginRight: 0 }
                 }}
+                id="nextmatch-button"
               >
                 Próximas partidas
               </Button>
@@ -210,6 +219,7 @@ function NavBar() {
                   color: 'black',
                   '&:not(:last-child)': { marginRight: 0 }
                 }}
+                id="privacy-button"
               >
                 Política de privacidade
               </Button>
@@ -223,6 +233,7 @@ function NavBar() {
                   color: 'black',
                   '&:not(:last-child)': { marginRight: 0 }
                 }}
+                id="terms-button"
               >
                 Termos de serviço
               </Button>
@@ -233,7 +244,7 @@ function NavBar() {
 
       {/* Drawer para o menu lateral em telas menores */}
       {isMobile && (
-        <Drawer className="Drawer" anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+        <Drawer className="Drawer" anchor="left" open={drawerOpen} onClose={toggleDrawer(false)} id="mobile-drawer">
           {drawerContent}
         </Drawer>
       )}

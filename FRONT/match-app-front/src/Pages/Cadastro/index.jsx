@@ -31,22 +31,19 @@ const Cadastro = () => {
   const { login } = useAuth();
 
   const generateRandomNumber = () => {
-    return Math.floor(Math.random() * 1000000); // Gera um número aleatório entre 0 e 999999
+    return Math.floor(Math.random() * 1000000);
   };
 
   const onSubmit = async (data) => {
     try {
       const randomNumber = generateRandomNumber();
       const userData = { randomNumber, ...data };
-      console.log('Dados do usuário: ', userData);
-      console.log('teste 1')
       await axios.post('/api/usuario', {
         user_id: randomNumber,
         user_nome: data.nome,
         user_email: data.email,
         user_senha: data.senha,
       });
-      console.log('teste 2') //nao chega aqui
       alert('Cadastrado com sucesso! Redirecionando para a página de login...')
       navigate('/login');
     } catch (error) {
@@ -61,7 +58,6 @@ const Cadastro = () => {
         prompt: 'select_account'
       });
       const result = await signInWithPopup(auth, provider);
-      console.log('Usuário logado com Google: ', result.user);
       login();
       navigate('/home');
     } catch (error) {
@@ -70,15 +66,15 @@ const Cadastro = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ backgroundColor: '#ffffff', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" flexGrow={1} padding={2} sx={{ overflowY: 'auto' }}>
-        <Box mb={2} sx={{ flexShrink: 0, width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <img src={logo} alt="Descrição da imagem" style={{ width: '100%', height: 'auto', maxWidth: '250px' }} />
+    <Container id="cadastro-container" maxWidth="sm" sx={{ backgroundColor: '#ffffff', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Box id="cadastro-box" display="flex" justifyContent="center" alignItems="center" flexDirection="column" flexGrow={1} padding={2} sx={{ overflowY: 'auto' }}>
+        <Box id="logo-box" mb={2} sx={{ flexShrink: 0, width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <img id="logo-image" src={logo} alt="Descrição da imagem" style={{ width: '100%', height: 'auto', maxWidth: '250px' }} />
         </Box>
-        <Typography variant="h4" component="h1" gutterBottom paddingBottom={2} sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
+        <Typography id="welcome-message" variant="h4" component="h1" gutterBottom paddingBottom={2} sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
           Seja bem-vindo!
         </Typography>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form id="cadastro-form" onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2} justifyContent="center" sx={{ width: '100%' }}>
             <Grid item xs={12}>
               <Controller
@@ -86,6 +82,7 @@ const Cadastro = () => {
                 control={control}
                 render={({ field }) => (
                   <TextField
+                    id="nome-input"
                     {...field}
                     label="Nome"
                     variant="outlined"
@@ -105,6 +102,7 @@ const Cadastro = () => {
                 control={control}
                 render={({ field }) => (
                   <TextField
+                    id="email-input"
                     {...field}
                     label="Email"
                     variant="outlined"
@@ -125,6 +123,7 @@ const Cadastro = () => {
                 control={control}
                 render={({ field }) => (
                   <TextField
+                    id="senha-input"
                     {...field}
                     label="Senha"
                     variant="outlined"
@@ -135,7 +134,7 @@ const Cadastro = () => {
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          <IconButton onClick={() => setShowSenha(!showSenha)} edge="end">
+                          <IconButton id="toggle-senha-visibility" onClick={() => setShowSenha(!showSenha)} edge="end">
                             {showSenha ? <VisibilityOff /> : <Visibility />}
                           </IconButton>
                         </InputAdornment>
@@ -153,6 +152,7 @@ const Cadastro = () => {
                 control={control}
                 render={({ field }) => (
                   <TextField
+                    id="confirmar-senha-input"
                     {...field}
                     label="Confirmar Senha"
                     variant="outlined"
@@ -169,6 +169,7 @@ const Cadastro = () => {
 
             <Grid item xs={12}>
               <Button 
+                id="submit-button" 
                 type="submit" 
                 variant="contained" 
                 color="primary" 
@@ -187,6 +188,7 @@ const Cadastro = () => {
 
             <Grid item xs={12}>
               <Button
+                id="google-login-button"
                 variant="outlined"
                 fullWidth
                 onClick={handleGoogleLogin}
@@ -208,6 +210,7 @@ const Cadastro = () => {
                 }}
               >
                 <Box
+                  id="google-logo-box"
                   component="img"
                   src={googleLogo}
                   alt="Google logo"
@@ -224,6 +227,7 @@ const Cadastro = () => {
         </form>
 
         <Typography
+          id="login-link"
           component={Link}
           to="/login" 
           sx={{

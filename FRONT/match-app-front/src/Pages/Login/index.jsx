@@ -35,6 +35,8 @@ const Login = () => {
                 user_senha: data.senha
             });
             localStorage.setItem('token', response.data.token);
+            localStorage.setItem('userId', response.data.userID); 
+    
             setMsg('Login efetuado com sucesso!');
             login();
             navigate('/home');
@@ -42,6 +44,7 @@ const Login = () => {
             setError(error.response.data.message);
         }
     };
+    
 
     const handleGoogleLogin = async () => {
         try {

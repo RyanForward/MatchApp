@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
 const cors = require('cors');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 
@@ -132,18 +132,27 @@ app.use(express.urlencoded({ extended: true }));
 
 // Middleware para verificar se o token é válido
 function verificaToken(req, res, next) {
+
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+   //const token = authHeader && authHeader.split(' ')[1];
     if (!token) {
         return res.status(401).send('Acesso negado. Token não fornecido.');
     }
-    try {
-        const decoded = jwt.verify(token, 'secret_key');
+    jwt.verify(token, 'secret_key', (err, decoded) => {
+        if (err) {
+            return res.status(401).send('Token inválido.');
+        }
         req.userId = decoded.userId;
         next();
-    } catch (err) {
-        res.status(400).send('Token inválido.');
-    }
+    });
+    //try {
+        //const decoded = jwt.verify(token, 'secret_key');
+        //req.userId = decoded.userId;
+        //next();
+    //} catch (err) {
+        //res.status(400).send('Token inválido.');
+   // }
 }
 
 // Middleware para autenticação do usuário
@@ -170,6 +179,13 @@ app.post('/api/usuario', async (req, res) => {
     console.log(req.body);
 
     try {
+
+        // Obtenha o último ID (maior valor) da tabela
+        const lastIdResult = await matchpool.query('SELECT MAX(user_id) as lastId FROM Usuario');
+        const lastId = lastIdResult.rows[0].lastid || 0; // Se não houver registros, inicie do zero
+
+        const newId = lastId + 1; // Incrementa para criar o próximo ID
+
         const hashedPassword = await bcrypt.hash(user_senha, 10);
         const result = await matchpool.query(
             'INSERT INTO Usuario (user_id, user_nome, user_email, user_senha) VALUES ($1, $2, $3, $4) RETURNING *',
@@ -180,6 +196,8 @@ app.post('/api/usuario', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+
 
 // Retorna as informações de um usuário específico
 app.get('/api/usuario/:id', async (req, res) => {
@@ -246,8 +264,8 @@ app.get('/api/', async (req, res) => { //raiz da aplicação
 
 // ROTAS DAS PARTIDAS *********************
 
-// Inserir uma nova partida
-app.post('/api/partida', async (req, res) => {
+// Inserir uma nova partida (necessita de token)
+app.post('/api/partida', verificaToken,async (req, res) => {
     const match_id = req.body.randomNumber;
     const {host_id} = req.body;
     const { match_local } = req.body;
@@ -410,6 +428,20 @@ app.delete('/api/grupo/:id', async (req, res) => {
         }
         res.status(200).json({ message: 'Grupo deletado com sucesso' });
     } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Rota para buscar todas as partidas
+app.get('/api/encontrarmatch', async (req, res) => {
+    try {
+        // Consulta para buscar todas as partidas
+        const result = await matchpool.query('SELECT * FROM Partidas ORDER BY partida_id ASC');
+
+        // Retorna as partidas como JSON
+        return res.status(200).json(result.rows);
+    } catch (err) {
+        // Em caso de erro, retorna o erro ao cliente
         res.status(500).json({ error: err.message });
     }
 });

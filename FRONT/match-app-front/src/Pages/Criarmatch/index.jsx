@@ -351,7 +351,8 @@ function CreateMatch() {
               }
               label={
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  Acessível
+                  Com acessibilidade 
+                  <span role="img" aria-label="com acessibilidade">♿</span>
                   <Tooltip title="Partidas acessíveis têm o objetivo de promover a inclusão, tornando possível a participação de deficientes físicos">
                     <IconButton size="small" style={{ marginLeft: 4, fontSize: '150px' }}>
                       <InfoOutlined fontSize="small" />

@@ -446,6 +446,63 @@ app.get('/api/encontrarmatch', async (req, res) => {
     }
 });
 
+
+const router = express.Router();
+const knex = require('../database/knex'); // Configuração do Knex.js para conexão com o banco
+
+// Rota para buscar partidas
+router.get('/buscar_partidas', async (req, res) => {
+  try {
+    // Obtém os filtros da query string
+    const {
+      host_id,
+      match_local,
+      match_data,
+      match_valor,
+      match_publico,
+      esporte,
+      tipo_competicao,
+      genero,
+      faixa_idade_min,
+      faixa_idade_max,
+      nivel_expertise,
+      numero_total_pessoas,
+      partida_gratuita,
+      acessivel,
+    } = req.query;
+
+    // Inicializa a query
+    let query = knex('Match').select('*');
+
+    // Aplica os filtros conforme forem enviados
+    if (host_id) query = query.where('host_id', host_id);
+    if (match_local) query = query.where('match_local', 'like', `%${match_local}%`);
+    if (match_data) query = query.where('match_data', match_data);
+    if (match_valor) query = query.where('match_valor', '<=', parseFloat(match_valor));
+    if (match_publico !== undefined) query = query.where('match_publico', match_publico === 'true');
+    if (esporte) query = query.where('esporte', esporte);
+    if (tipo_competicao) query = query.where('tipo_competicao', tipo_competicao);
+    if (genero) query = query.where('genero', genero);
+    if (faixa_idade_min) query = query.where('faixa_idade_min', '>=', parseInt(faixa_idade_min));
+    if (faixa_idade_max) query = query.where('faixa_idade_max', '<=', parseInt(faixa_idade_max));
+    if (nivel_expertise) query = query.where('nivel_expertise', nivel_expertise);
+    if (numero_total_pessoas) query = query.where('numero_total_pessoas', '<=', parseInt(numero_total_pessoas));
+    if (partida_gratuita !== undefined) query = query.where('partida_gratuita', partida_gratuita === 'true');
+    if (acessivel !== undefined) query = query.where('acessivel', acessivel === 'true');
+
+    // Executa a query
+    const matches = await query;
+
+    res.status(200).json(matches);
+  } catch (err) {
+    console.error('Erro ao buscar partidas:', err);
+    res.status(500).json({ error: 'Erro ao buscar partidas' });
+  }
+});
+
+module.exports = router;
+
+
 // Inicia o servidor na porta 5000
 const PORT = 5000;
 app.listen(PORT, () => {

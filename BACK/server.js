@@ -413,6 +413,188 @@ app.delete('/api/grupo/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+app.get('/perfil/:user_id', async (req, res) => {
+    const { user_id } = req.params;
+  
+    try {
+      const result = await pool.query('SELECT * FROM Usuario WHERE user_id = $1', [user_id]);
+  
+      if (result.rows.length > 0) {
+        console.log('Usuário encontrado:', result.rows[0]);
+        res.status(200).json(result.rows[0]); // Retorna o usuário encontrado
+      } else {
+        res.status(404).json({ message: 'Usuário não encontrado.' });
+      }
+    } catch (err) {
+      console.error('Erro ao buscar usuário:', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+  
+  // UPDATE - Atualizar informações do usuário
+  app.put('/perfil/:user_id', async (req, res) => {
+    const { user_id } = req.params;
+    const { user_nome, user_email, user_senha, user_age, user_fav_sport, user_bio } = req.body;
+  
+    try {
+      const result = await pool.query(
+        `UPDATE Usuario
+         SET user_nome = $1, user_email = $2, user_senha = $3, user_age = $4, user_fav_sport = $5, user_bio = $6
+         WHERE user_id = $7 RETURNING *`,
+        [user_nome, user_email, user_senha, user_age, user_fav_sport, user_bio, user_id]
+      );
+  
+      if (result.rows.length > 0) {
+        console.log('Usuário atualizado:', result.rows[0]);
+        res.status(200).json(result.rows[0]); // Retorna o usuário atualizado
+      } else {
+        res.status(404).json({ message: 'Usuário não encontrado.' });
+      }
+    } catch (err) {
+      console.error('Erro ao atualizar usuário:', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+  
+  // DELETE - Remover um usuário pelo ID
+  app.delete('/perfil/:user_id', async (req, res) => {
+    const { user_id } = req.params;
+  
+    try {
+      const result = await pool.query('DELETE FROM Usuario WHERE user_id = $1 RETURNING *', [user_id]);
+  
+      if (result.rows.length > 0) {
+        console.log('Usuário removido:', result.rows[0]);
+        res.status(200).json({ message: 'Usuário removido com sucesso.', usuario: result.rows[0] });
+      } else {
+        res.status(404).json({ message: 'Usuário não encontrado.' });
+      }
+    } catch (err) {
+      console.error('Erro ao remover usuário:', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/encontrarmatch', async (req, res) => {
+    try {
+      // Extrair filtros dos parâmetros da requisição
+      const {
+        match_id,
+        host_id,
+        match_local,
+        match_data,
+        match_valor,
+        match_publico,
+        esporte,
+        tipo_competicao,
+        genero,
+        faixa_idade_min,
+        faixa_idade_max,
+        nivel_expertise,
+        numero_total_pessoas,
+        partida_gratuita,
+        acessivel,
+      } = req.query;
+  
+      // Array para armazenar os filtros dinâmicos
+      const filters = [];
+      const values = [];
+  
+      // Verificar quais filtros foram enviados
+      if (match_id) {
+        filters.push(`match_id = $${filters.length + 1}`);
+        values.push(match_id);
+      }
+      if (host_id) {
+        filters.push(`host_id = $${filters.length + 1}`);
+        values.push(host_id);
+      }
+      if (match_local) {
+        filters.push(`match_local ILIKE $${filters.length + 1}`);
+        values.push(`%${match_local}%`);
+      }
+      if (match_data) {
+        filters.push(`match_data = $${filters.length + 1}`);
+        values.push(match_data);
+      }
+      if (match_valor) {
+        filters.push(`match_valor <= $${filters.length + 1}`);
+        values.push(match_valor);
+      }
+      if (match_publico !== undefined) {
+        filters.push(`match_publico = $${filters.length + 1}`);
+        values.push(match_publico === 'true');
+      }
+      if (esporte) {
+        filters.push(`esporte ILIKE $${filters.length + 1}`);
+        values.push(`%${esporte}%`);
+      }
+      if (tipo_competicao) {
+        filters.push(`tipo_competicao ILIKE $${filters.length + 1}`);
+        values.push(`%${tipo_competicao}%`);
+      }
+      if (genero) {
+        filters.push(`genero ILIKE $${filters.length + 1}`);
+        values.push(`%${genero}%`);
+      }
+      if (faixa_idade_min) {
+        filters.push(`faixa_idade_min >= $${filters.length + 1}`);
+        values.push(faixa_idade_min);
+      }
+      if (faixa_idade_max) {
+        filters.push(`faixa_idade_max <= $${filters.length + 1}`);
+        values.push(faixa_idade_max);
+      }
+      if (nivel_expertise) {
+        filters.push(`nivel_expertise ILIKE $${filters.length + 1}`);
+        values.push(`%${nivel_expertise}%`);
+      }
+      if (numero_total_pessoas) {
+        filters.push(`numero_total_pessoas = $${filters.length + 1}`);
+        values.push(numero_total_pessoas);
+      }
+      if (partida_gratuita !== undefined) {
+        filters.push(`partida_gratuita = $${filters.length + 1}`);
+        values.push(partida_gratuita === 'true');
+      }
+      if (acessivel !== undefined) {
+        filters.push(`acessivel = $${filters.length + 1}`);
+        values.push(acessivel === 'true');
+      }
+  
+      // Construir a query com filtros dinâmicos
+      let query = 'SELECT * FROM Partida';
+      if (filters.length > 0) {
+        query += ` WHERE ${filters.join(' AND ')}`;
+      }
+  
+      // Executar a consulta
+      const result = await pool.query(query, values);
+  
+      // Retornar as partidas encontradas
+      res.status(200).json(result.rows);
+    } catch (err) {
+      console.error('Erro ao buscar partidas:', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+  app.get('/nextmatch', async (req, res) => {
+    try {
+      // Construir a query para buscar partidas futuras
+      const query = 'SELECT * FROM Partida WHERE match_data > NOW() ORDER BY match_data ASC';
+  
+      // Executar a consulta
+      const result = await pool.query(query);
+  
+      // Retornar as partidas futuras
+      res.status(200).json(result.rows);
+    } catch (err) {
+      console.error('Erro ao buscar próximas partidas:', err);
+      res.status(500).json({ error: 'Erro ao buscar próximas partidas' });
+    }
+  });
+  
+  
 
 // Inicia o servidor na porta 5000
 const PORT = 5000;

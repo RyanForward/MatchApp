@@ -10,6 +10,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaf
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { InfoOutlined } from '@mui/icons-material';
+import LinearProgress from '@mui/material/LinearProgress';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -17,6 +18,16 @@ L.Icon.Default.mergeOptions({
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
+
+function LinearIndeterminate(){
+  return (
+    <Box sx={{ width: '100%', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'grey.900' }}>
+      <Box sx={{ width: '50%' }}>
+        <LinearProgress />
+      </Box>
+    </Box>
+  );
+}
 
 const MapComponent = ({ marker, setMarker }) => {
   const [center, setCenter] = useState(null);
@@ -161,6 +172,10 @@ function CreateMatch() {
         message: 'Partida criada com sucesso!',
         severity: 'success',
       });
+      setTimeout(() => {
+        window.location.href = '/home';
+      }, 5000);
+      return LinearIndeterminate();
     } catch (error) {
       setNotification({
         open: true,
@@ -170,6 +185,7 @@ function CreateMatch() {
       console.error('Error creating match:', error);
     }
   };
+  
 
   return (
     <>

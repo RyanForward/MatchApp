@@ -47,7 +47,7 @@ const ProfileCard = () => {
             });
             setUser(response.data);
             setEditValues({
-              favoriteSport: response.data.favoriteSport,
+              favoriteSport: response.data.fav_sport,
               nome: response.data.nome,
               age: response.data.age,
               bio: response.data.bio
@@ -111,13 +111,13 @@ const ProfileCard = () => {
             {isEditing ? (
               <TextField
                 label="Esporte favorito"
-                value={editValues.favoriteSport}
-                onChange={(e) => handleInputChange('favoriteSport', e.target.value)}
+                value={editValues.fav_sport}
+                onChange={(e) => handleInputChange('fav_sport', e.target.value)}
                 fullWidth
                 sx={{ mb: 1 }}
               />
             ) : (
-              <Typography id="profile-favorite-sport" variant="body2" sx={{ mb: 1 }}>Esporte favorito: {user.favoriteSport}</Typography>
+              <Typography id="profile-favorite-sport" variant="body2" sx={{ mb: 1 }}>Esporte favorito: {user.fav_sport}</Typography>
             )}
 
             {isEditing ? (

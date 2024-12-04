@@ -8,18 +8,6 @@ CREATE TABLE Usuario (
     user_bio char(100)
 );
 
-
-CREATE TABLE quadra (
-    quadra_id INT NOT NULL PRIMARY KEY,
-    user_id INT NOT NULL,
-	quadra_nome char(50),
-    calendario DATE NOT NULL,
-    valor CHAR(50),
-    publico boolean,
-    FOREIGN KEY (user_id) REFERENCES Usuario(user_id)
-);
-
-
 CREATE TABLE Partida (
     match_id SERIAL PRIMARY KEY,
     host_id INT REFERENCES Usuario(user_id), -- Assumindo que há uma tabela Usuario com user_id como chave primária

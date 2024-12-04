@@ -167,8 +167,6 @@ function verificaToken(req, res, next) {
 app.post('/api/usuario', async (req, res) => {
     const { user_id, user_nome, user_email, user_senha } = req.body;
 
-    console.log(req.body);
-
     try {
         const hashedPassword = await bcrypt.hash(user_senha, 10);
         const result = await matchpool.query(
@@ -202,7 +200,6 @@ app.post("/api/login", async (req, res) => {
 
     try {
         const result = await matchpool.query('SELECT * FROM Usuario WHERE user_email = $1', [user_email]);
-        console.log('result: ', result)
         if (result.rows.length === 0) {
             return res.status(404).send('Usuário não encontrado.');
         }
@@ -211,7 +208,6 @@ app.post("/api/login", async (req, res) => {
         const passwordValidado = await bcrypt.compare(user_senha, user.user_senha);
         if (passwordValidado) {
             const token = jwt.sign({ userId: user.user_id }, 'secret_key', { expiresIn: '1h' });
-            console.log(token);
             return res.status(200).json({ token, userID});
         } else {
             return res.status(422).send('Usuário ou senha incorretos.');
@@ -294,7 +290,6 @@ app.get('/api/partida/:id', async (req, res) => {
 app.get('/api/partida', verificaToken, async (req, res) => {
     try {
         const result = await matchpool.query('SELECT * FROM Partida');
-        console.log('result: ', result)
         res.status(200).json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -420,7 +415,6 @@ app.get('/perfil/:user_id', async (req, res) => {
       const result = await pool.query('SELECT * FROM Usuario WHERE user_id = $1', [user_id]);
   
       if (result.rows.length > 0) {
-        console.log('Usuário encontrado:', result.rows[0]);
         res.status(200).json(result.rows[0]); // Retorna o usuário encontrado
       } else {
         res.status(404).json({ message: 'Usuário não encontrado.' });
@@ -445,7 +439,6 @@ app.get('/perfil/:user_id', async (req, res) => {
       );
   
       if (result.rows.length > 0) {
-        console.log('Usuário atualizado:', result.rows[0]);
         res.status(200).json(result.rows[0]); // Retorna o usuário atualizado
       } else {
         res.status(404).json({ message: 'Usuário não encontrado.' });
@@ -464,7 +457,6 @@ app.get('/perfil/:user_id', async (req, res) => {
       const result = await pool.query('DELETE FROM Usuario WHERE user_id = $1 RETURNING *', [user_id]);
   
       if (result.rows.length > 0) {
-        console.log('Usuário removido:', result.rows[0]);
         res.status(200).json({ message: 'Usuário removido com sucesso.', usuario: result.rows[0] });
       } else {
         res.status(404).json({ message: 'Usuário não encontrado.' });
@@ -578,23 +570,32 @@ app.get('/perfil/:user_id', async (req, res) => {
       res.status(500).json({ error: err.message });
     }
   });
-  app.get('/nextmatch', async (req, res) => {
+
+app.get('/nextmatch/:userId', async (req, res) => {
     try {
-      // Construir a query para buscar partidas futuras
-      const query = 'SELECT * FROM Partida WHERE match_data > NOW() ORDER BY match_data ASC';
-  
-      // Executar a consulta
-      const result = await pool.query(query);
-  
-      // Retornar as partidas futuras
-      res.status(200).json(result.rows);
+        const userId = parseInt(req.params.userId);
+        console.log('userId recebido:', userId);
+
+    const query = `
+        SELECT * 
+        FROM public.Grupo g
+        INNER JOIN Partida p
+        ON p.match_id = g.match_id 
+        WHERE p.match_data > NOW() 
+        AND g.user_id = $1 
+        ORDER BY p.match_data ASC
+    `;
+
+        console.log('query: ', query)
+        const result = await pool.query(query, [userId]);
+
+        console.log('result: ', result)
+        res.status(200).json(result.rows);
     } catch (err) {
-      console.error('Erro ao buscar próximas partidas:', err);
-      res.status(500).json({ error: 'Erro ao buscar próximas partidas' });
+        console.error('Erro ao buscar próximas partidas:', err);
+        res.status(500).json({ error: 'Erro ao buscar próximas partidas' });
     }
-  });
-  
-  
+    });
 
 // Inicia o servidor na porta 5000
 const PORT = 5000;

@@ -20,6 +20,7 @@ function HomePage() {
 
   return (
     <>
+<<<<<<< HEAD
       <nav>
         <Navbar />
       </nav>
@@ -27,10 +28,25 @@ function HomePage() {
         {/* Saudação */}
         <Profile />
         <Typography variant="subtitle1" gutterBottom sx={{ fontSize: '1.4em', textAlign: 'center', margin: 6 }}>
+=======
+      <nav id="navbar">
+        <Navbar id="navbar-component" />
+      </nav>
+      <Container maxWidth="sm" sx={{ paddingTop: 2, marginTop: 8 }} id="container-home">
+        {/* Saudação */}
+        <Profile id="profile-component" />
+        <Typography 
+          variant="subtitle1" 
+          gutterBottom 
+          sx={{ fontSize: '1.4em', textAlign: 'center', margin: 6 }} 
+          id="greeting-text"
+        >
+>>>>>>> origin/matheus
           O que deseja?
         </Typography>
 
         {/* Botões */}
+<<<<<<< HEAD
         <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
           <Button variant="contained" color="success" fullWidth sx={{ marginTop: 2 }} component={Link} to="/encontrarmatch">
                   Encontrar uma partida
@@ -40,15 +56,52 @@ function HomePage() {
           </Typography>
           <Button variant="contained" color="success" fullWidth sx={{ marginTop: 2 }} component={Link} to="/criarmatch">
                   Organizar uma partida
+=======
+        <Box display="flex" flexDirection="column" alignItems="center" mb={3} id="action-buttons">
+          <Button 
+            variant="contained" 
+            color="success" 
+            fullWidth 
+            sx={{ marginTop: 2 }} 
+            component={Link} 
+            to="/encontrarmatch" 
+            id="find-match-button"
+          >
+            Encontrar uma partida
+          </Button>
+          <Typography variant="subtitle1" gutterBottom sx={{ marginY: 1 }} id="or-text">
+            ou
+          </Typography>
+          <Button 
+            variant="contained" 
+            color="success" 
+            fullWidth 
+            sx={{ marginTop: 2 }} 
+            component={Link} 
+            to="/criarmatch" 
+            id="organize-match-button"
+          >
+            Organizar uma partida
+>>>>>>> origin/matheus
           </Button>
         </Box>
 
         {/* Últimas partidas */}
+<<<<<<< HEAD
         <Typography variant="subtitle1" gutterBottom sx={{ marginY: 2 }}>
+=======
+        <Typography 
+          variant="subtitle1" 
+          gutterBottom 
+          sx={{ marginY: 2 }} 
+          id="last-matches-title"
+        >
+>>>>>>> origin/matheus
           Últimas 5 partidas:
         </Typography>
         
         {/* Box com rolagem horizontal para a tabela */}
+<<<<<<< HEAD
         <Box sx={{ overflowX: 'auto' }}>
           <TableContainer component={Paper} sx={{ maxWidth: '100%' }}>
             <Table aria-label="Ultimas partidas">
@@ -58,6 +111,23 @@ function HomePage() {
                     <TableCell align="left">{partida.esporte}</TableCell>
                     <TableCell align="left">{partida.local}</TableCell>
                     <TableCell align="left">{partida.data}</TableCell>
+=======
+        <Box sx={{ overflowX: 'auto' }} id="matches-table-box">
+          <TableContainer component={Paper} sx={{ maxWidth: '100%' }} id="matches-table-container">
+            <Table aria-label="Ultimas partidas" id="matches-table">
+              <TableBody id="matches-table-body">
+                {partidas.map((partida) => (
+                  <TableRow key={partida.id} id={`match-row-${partida.id}`}>
+                    <TableCell align="left" id={`match-sport-${partida.id}`}>
+                      {partida.esporte}
+                    </TableCell>
+                    <TableCell align="left" id={`match-location-${partida.id}`}>
+                      {partida.local}
+                    </TableCell>
+                    <TableCell align="left" id={`match-date-${partida.id}`}>
+                      {partida.data}
+                    </TableCell>
+>>>>>>> origin/matheus
                   </TableRow>
                 ))}
               </TableBody>

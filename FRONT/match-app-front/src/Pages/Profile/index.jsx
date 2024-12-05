@@ -27,6 +27,7 @@ const UserProfile = () => {
         fetchUser();
     }, []);
 
+<<<<<<< HEAD
     if (loading) return <div>Carregando...</div>;
 
     if (!user) return <div>Usuário não encontrado</div>;
@@ -34,8 +35,21 @@ const UserProfile = () => {
     return (
         <div>
             <h1>Olá, {user.user_nome}</h1>
+=======
+    if (loading) return <div id="loading-message">Carregando...</div>;
+
+    if (!user) return <div id="user-not-found-message">Usuário não encontrado</div>;
+
+    return (
+        <div id="user-profile">
+            <h1 id="user-greeting">Olá, {user.user_nome}</h1>
+>>>>>>> origin/matheus
         </div>
     );
 };
 
+<<<<<<< HEAD
 export default UserProfile;
+=======
+export default UserProfile;
+>>>>>>> origin/matheus

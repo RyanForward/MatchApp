@@ -45,12 +45,13 @@ const ProfileCard = () => {
             const response = await axios.get('/api/usuario_logado', {
                 headers: { Authorization: `Bearer ${token}` }
             });
+            console.log('response: ', response.data)
             setUser(response.data);
             setEditValues({
-              favoriteSport: response.data.favoriteSport,
-              nome: response.data.nome,
-              age: response.data.age,
-              bio: response.data.bio
+              favoriteSport: response.data.user_fav_sport,  // Ajustado para user_fav_sport
+              nome: response.data.user_nome,  // Ajustado para user_nome
+              age: response.data.user_age,   // Ajustado para user_age
+              bio: response.data.user_bio    // Ajustado para user_bio
             });
         } catch (err) {
             console.error(err);
@@ -97,17 +98,23 @@ const ProfileCard = () => {
       <Card id="profile-card" sx={{ maxWidth: 400, mx: 'auto', mt: 5, p: 2, textAlign: 'center', boxShadow: 3, marginTop: 10 }}>
         <Box id="profile-header" display="flex" flexDirection="column" alignItems="center">
           <Avatar id="profile-avatar" sx={{ width: 80, height: 80, mb: 2 }} src={user.avatarUrl} />
-          <Typography id="profile-name" variant="h6">{user.user_nome}</Typography>
-          <Box id="profile-rating" display="flex" alignItems="center" color="green" mb={1}>
-            <Typography id="profile-rating-value" variant="h4">{user.rating}</Typography>
-            <StarIcon id="profile-rating-icon" fontSize="large" color="primary" />
-            </Box>
+          <Typography id="profile-name" variant="h6">{user.user_nome.trim()}</Typography>
         </Box>
         <CardContent id="profile-content">
-          <Typography id="profile-games-played" variant="body2" sx={{ mb: 1 }}>Partidas jogadas: {user.gamesPlayed}</Typography>
-          <Typography id="profile-games-organized" variant="body2" sx={{ mb: 1 }}>Partidas organizadas: {user.gamesOrganized}</Typography>
-          <Divider id="profile-divider" sx={{ my: 2, backgroundColor: 'primary.main' }} />
           <Container sx={{textAlign: 'left'}}>
+          
+          {isEditing ? (
+              <TextField
+                label="Nome"
+                value={editValues.nome}
+                onChange={(e) => handleInputChange('nome', e.target.value)}
+                fullWidth
+                sx={{ mb: 1 }}
+              />
+            ) : (
+              <Typography id="profile-email" variant="body2" sx={{ mb: 1 }}>Nome: {user.user_nome}</Typography>
+            )}
+
             {isEditing ? (
               <TextField
                 label="Esporte favorito"
@@ -117,19 +124,7 @@ const ProfileCard = () => {
                 sx={{ mb: 1 }}
               />
             ) : (
-              <Typography id="profile-favorite-sport" variant="body2" sx={{ mb: 1 }}>Esporte favorito: {user.favoriteSport}</Typography>
-            )}
-
-            {isEditing ? (
-              <TextField
-                label="Nome"
-                value={editValues.nome}
-                onChange={(e) => handleInputChange('nome', e.target.value)}
-                fullWidth
-                sx={{ mb: 1 }}
-              />
-            ) : (
-              <Typography id="profile-email" variant="body2" sx={{ mb: 1 }}>Nome: {user.nome}</Typography>
+              <Typography id="profile-favorite-sport" variant="body2" sx={{ mb: 1 }}>Esporte favorito: {user.user_fav_sport}</Typography>
             )}
 
             {isEditing ? (
@@ -141,7 +136,7 @@ const ProfileCard = () => {
                 sx={{ mb: 1 }}
               />
             ) : (
-              <Typography id="profile-age" variant="body2" sx={{ mt: 2, mb: 1 }}>Idade: {user.age}</Typography>
+              <Typography id="profile-age" variant="body2" sx={{ mt: 2, mb: 1 }}>Idade: {user.user_age}</Typography>
             )}
 
             <Typography id="profile-bio-title" variant="body2" mt={2} sx={{ mb: 1 }}>Biografia:</Typography>
@@ -161,7 +156,7 @@ const ProfileCard = () => {
                 component="textarea"
                 rows="4"
                 style={{ width: '100%', marginTop: 8, padding: 8, resize: 'none', borderRadius: 4 }}
-                value={user.bio}
+                value={user.user_bio}
                 readOnly
               />
             )}

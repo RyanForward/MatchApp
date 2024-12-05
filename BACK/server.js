@@ -251,7 +251,7 @@ app.post('/api/partida', async (req, res) => {
     const { match_valor } = req.body;
     const { match_publico } = req.body;
     const { esporte } = req.body;
-    const tipo_competicao = req.body.tipoCompeticao;
+    const tipo_competicao = req.body.tipoCompeDticao;
     const { genero } = req.body;
     const faixa_idade_min = req.body.faixaIdadeMin;
     const faixa_idade_max = req.body.faixaIdadeMax;
@@ -510,6 +510,7 @@ app.get('/perfil/:user_id', async (req, res) => {
       const result = await pool.query('SELECT * FROM Usuario WHERE user_id = $1', [user_id]);
   
       if (result.rows.length > 0) {
+        console.log('result.rows: ', result.rows)
         res.status(200).json(result.rows[0]); // Retorna o usuário encontrado
       } else {
         res.status(404).json({ message: 'Usuário não encontrado.' });
@@ -564,10 +565,10 @@ app.get('/perfil/:user_id', async (req, res) => {
 
 
 
-app.get('/nextmatch/:userId', async (req, res) => {
+app.get('/nextmatch/:user_id', async (req, res) => {
     try {
-        const userId = parseInt(req.params.userId);
-        console.log('userId recebido:', userId);
+        const { user_id } = req.params;
+        console.log('userId recebido:', user_id);
 
     const query = `
         SELECT * 

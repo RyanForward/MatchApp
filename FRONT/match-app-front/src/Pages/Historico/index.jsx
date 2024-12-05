@@ -101,17 +101,6 @@ const HistoricoPartidas = () => {
             </TableBody>
           </Table>
         </TableContainer>
-        <Button
-          variant="contained"
-          fullWidth
-          sx={{
-            backgroundColor: "#FF0000",
-            marginTop: 4,
-            color: "white",
-          }}
-        >
-          Deletar histórico
-        </Button>
       </Container>
     </>
   );

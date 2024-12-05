@@ -39,7 +39,7 @@ const UpcomingMatches = () => {
     const fetchMatches = async () => {
       try {
         console.log('userId: ', userId)
-        const response = await fetch(`/nextmatch/${userId}`); // Chamada à API
+        const response = await axios.get(`/nextmatch/${userId}`); // Chamada à API
         if (!response.ok) {
           throw new Error('Erro ao buscar as partidas');
         }

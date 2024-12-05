@@ -65,8 +65,14 @@ function NavBar() {
       sx={{ maxWidth: "sm" }}
       role="presentation"
       onKeyDown={toggleDrawer(false)}
+<<<<<<< HEAD
     >
       <List>
+=======
+      id="drawer-content"
+    >
+      <List id="drawer-list">
+>>>>>>> origin/matheus
         {[{ text: 'Início', link: '/home' },
           { text: 'Histórico', link: '/historico' },
           { text: 'Perfil', link: '/perfil' },
@@ -78,13 +84,22 @@ function NavBar() {
             to={item.link} 
             key={index}
             onClick={toggleDrawer(false)} // Fecha a sidebar para os links normais
+<<<<<<< HEAD
+=======
+            id={`list-item-${index}`}
+>>>>>>> origin/matheus
           >
             <ListItemText primary={item.text} />
           </ListItem>
         ))}
       </List>
+<<<<<<< HEAD
       <Divider />
       <List>
+=======
+      <Divider id="drawer-divider" />
+      <List id="drawer-bottom-list">
+>>>>>>> origin/matheus
         {[{ text: 'Política de privacidade', link: '/privacy' },
           { text: 'Termos de serviço', link: '/terms' },
           { text: 'Sair', action: handleLogoutClick }
@@ -95,6 +110,10 @@ function NavBar() {
             to={item.link || undefined} 
             key={index}
             onClick={item.action || toggleDrawer(false)} // Se tiver `action`, usa handleLogoutClick
+<<<<<<< HEAD
+=======
+            id={`list-item-bottom-${index}`}
+>>>>>>> origin/matheus
           >
             <ListItemText primary={item.text} />
           </ListItem>
@@ -105,6 +124,7 @@ function NavBar() {
       <Dialog
         open={openLogoutDialog}
         onClose={handleCloseDialog}
+<<<<<<< HEAD
       >
         <DialogTitle>Confirmar Logout</DialogTitle>
         <DialogContent>
@@ -117,6 +137,21 @@ function NavBar() {
             Cancelar
           </Button>
           <Button onClick={confirmLogout} color="primary" autoFocus>
+=======
+        id="logout-dialog"
+      >
+        <DialogTitle id="logout-dialog-title">Confirmar Logout</DialogTitle>
+        <DialogContent id="logout-dialog-content">
+          <DialogContentText id="logout-dialog-text">
+            Você realmente deseja sair?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions id="logout-dialog-actions">
+          <Button onClick={handleCloseDialog} color="primary" id="cancel-logout-button">
+            Cancelar
+          </Button>
+          <Button onClick={confirmLogout} color="primary" autoFocus id="confirm-logout-button">
+>>>>>>> origin/matheus
             Sair
           </Button>
         </DialogActions>
@@ -126,27 +161,48 @@ function NavBar() {
 
   return (
     <div>
+<<<<<<< HEAD
       <AppBar className='AppBar' position="fixed" style={{ backgroundColor: '#ffffff', color: '#000', marginBottom: '20px' }}>
         <Toolbar>
           {/* Menu Hamburguer para telas menores */}
           {isMobile && (
             <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
               <MenuIcon />
+=======
+      <AppBar className='AppBar' position="fixed" style={{ backgroundColor: '#ffffff', color: '#000', marginBottom: '20px' }} id="app-bar">
+        <Toolbar id="toolbar">
+          {/* Menu Hamburguer para telas menores */}
+          {isMobile && (
+            <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)} id="menu-icon-button">
+              <MenuIcon id="menu-icon" />
+>>>>>>> origin/matheus
             </IconButton>
           )}
 
           {/* Logo */}
+<<<<<<< HEAD
           <Typography variant="h3" component="div" sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', width: '10px'}}>
+=======
+          <Typography variant="h3" component="div" sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', width: '10px'}} id="logo-container">
+>>>>>>> origin/matheus
             <img 
               src={logo} 
               alt="Descrição da imagem"
               style={{ width: '80px', height: 'auto', margin: -20 }}
+<<<<<<< HEAD
+=======
+              id="logo-img"
+>>>>>>> origin/matheus
             />
           </Typography>
 
           {/* Navbar Links visíveis apenas em telas grandes */}
           {!isMobile && (
+<<<<<<< HEAD
             <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-around' }}>
+=======
+            <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-around' }} id="navbar-links">
+>>>>>>> origin/matheus
               <Button
                 component={Link}
                 to="/home"
@@ -158,6 +214,10 @@ function NavBar() {
                   color: 'black',
                   '&:not(:last-child)': { marginRight: 0 }
                 }}
+<<<<<<< HEAD
+=======
+                id="home-button"
+>>>>>>> origin/matheus
               >
                 Início
               </Button>
@@ -171,6 +231,10 @@ function NavBar() {
                   color: 'black',
                   '&:not(:last-child)': { marginRight: 0 }
                 }}
+<<<<<<< HEAD
+=======
+                id="historico-button"
+>>>>>>> origin/matheus
               >
                 Histórico
               </Button>
@@ -184,6 +248,10 @@ function NavBar() {
                   color: 'black',
                   '&:not(:last-child)': { marginRight: 0 }
                 }}
+<<<<<<< HEAD
+=======
+                id="perfil-button"
+>>>>>>> origin/matheus
               >
                 Perfil
               </Button>
@@ -197,6 +265,10 @@ function NavBar() {
                   color: 'black',
                   '&:not(:last-child)': { marginRight: 0 }
                 }}
+<<<<<<< HEAD
+=======
+                id="nextmatch-button"
+>>>>>>> origin/matheus
               >
                 Próximas partidas
               </Button>
@@ -210,6 +282,10 @@ function NavBar() {
                   color: 'black',
                   '&:not(:last-child)': { marginRight: 0 }
                 }}
+<<<<<<< HEAD
+=======
+                id="privacy-button"
+>>>>>>> origin/matheus
               >
                 Política de privacidade
               </Button>
@@ -223,6 +299,10 @@ function NavBar() {
                   color: 'black',
                   '&:not(:last-child)': { marginRight: 0 }
                 }}
+<<<<<<< HEAD
+=======
+                id="terms-button"
+>>>>>>> origin/matheus
               >
                 Termos de serviço
               </Button>
@@ -233,7 +313,11 @@ function NavBar() {
 
       {/* Drawer para o menu lateral em telas menores */}
       {isMobile && (
+<<<<<<< HEAD
         <Drawer className="Drawer" anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+=======
+        <Drawer className="Drawer" anchor="left" open={drawerOpen} onClose={toggleDrawer(false)} id="mobile-drawer">
+>>>>>>> origin/matheus
           {drawerContent}
         </Drawer>
       )}

@@ -16,6 +16,10 @@
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.2",
+<<<<<<< HEAD
+=======
+    "nodemon": "^3.1.7",
+>>>>>>> origin/matheus
     "pg": "^8.13.1"
   }
 }

@@ -12,6 +12,10 @@ import Postmatch from '../Pages/postmatch';
 import Nextmacth from '../Pages/nextmatch';
 import Criarmatch from '../Pages/Criarmatch';
 import EncontrarMatch from '../Pages/Encontrarmatch';
+<<<<<<< HEAD
+=======
+import NotFound from '../Pages/NotFound';
+>>>>>>> origin/matheus
 
 function RoutesApp() {
   return (
@@ -80,6 +84,17 @@ function RoutesApp() {
           </ProtectedRoute>
         }
       />
+<<<<<<< HEAD
+=======
+      <Route
+      path='*'
+      element={ 
+        <ProtectedRoute>
+          <NotFound/>
+        </ProtectedRoute>
+      }
+      />
+>>>>>>> origin/matheus
     </Routes>
       </AuthProvider>
     </BrowserRouter>

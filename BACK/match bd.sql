@@ -2,28 +2,29 @@ CREATE TABLE Usuario (
     user_id INT NOT NULL PRIMARY KEY,
     user_nome CHAR(50) NOT NULL,
     user_email CHAR(50) NOT NULL,
-    user_senha TEXT NOT NULL
+    user_senha TEXT NOT NULL,
+    user_age INT,
+    user_fav_sport TEXT,
+    user_bio char(100)
 );
-
-
-CREATE TABLE Quadras (
-    quadra_id INT NOT NULL PRIMARY KEY,
-    user_id INT NOT NULL,
-    calendario DATE NOT NULL,
-    valor CHAR(50),
-    publico CHAR(50),
-    FOREIGN KEY (user_id) REFERENCES Usuario(user_id)
-);
-
 
 CREATE TABLE Partida (
-    match_id INT NOT NULL PRIMARY KEY,
-    user_id INT NOT NULL,
-    match_data DATE NOT NULL,
-    match_local CHAR(100) NOT NULL,
-    match_valor CHAR(50),
-    match_publico CHAR(100),
-    FOREIGN KEY (user_id) REFERENCES Usuario(user_id)
+    match_id SERIAL PRIMARY KEY,
+    host_id INT REFERENCES Usuario(user_id), 
+    match_local VARCHAR(255) NOT NULL,
+    match_data TIMESTAMP NOT NULL,
+    match_valor DECIMAL(10, 2) NOT NULL,
+    match_publico BOOLEAN NOT NULL,
+    esporte VARCHAR(50) NOT NULL,
+    tipo_competicao VARCHAR(50) NOT NULL,
+    genero VARCHAR(10) NOT NULL,
+    faixa_idade_min INT NOT NULL,
+    faixa_idade_max INT NOT NULL,
+    nivel_expertise VARCHAR(50) NOT NULL,
+    numero_total_pessoas INT NOT NULL,
+    partida_gratuita BOOLEAN NOT NULL,
+    acessivel BOOLEAN NOT NULL,
+    participantes TEXT[] NOT NULL
 );
 
 CREATE TABLE Grupo (

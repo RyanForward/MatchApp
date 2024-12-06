@@ -4,7 +4,6 @@ import { useAuth } from './AuthContext';
 
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, loading } = useAuth();
-    console.log('Autenticado? ', isAuthenticated);
 
     if (loading) return <div>Carregando...</div>; // Aguarda a verificação do token
     if (!isAuthenticated) return <Navigate to="/login" />; // Redireciona se não autenticado

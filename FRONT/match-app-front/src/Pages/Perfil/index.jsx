@@ -1,10 +1,10 @@
-import { 
-  Card, 
-  CardContent, 
-  Typography, 
-  Box, 
-  Button, 
-  Avatar, 
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Button,
+  Avatar,
   Divider,
   Dialog,
   DialogTitle,
@@ -15,7 +15,7 @@ import {
   Container,
 } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
-import Navbar from '../Navbar'; 
+import Navbar from '../Navbar';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
@@ -23,7 +23,7 @@ import { useAuth } from '../../Routes/AuthContext';
 import { useTheme } from '@mui/material/styles';
 
 const ProfileCard = () => {
-    
+
   const theme = useTheme();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,33 +31,33 @@ const ProfileCard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValues, setEditValues] = useState({});
   const navigate = useNavigate();
-  const { logout } = useAuth(); 
+  const { logout } = useAuth();
 
   useEffect(() => {
 
     const fetchUser = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                console.error('Token not found');
-                throw new Error('Token not found');
-            }
-            const response = await axios.get('/api/usuario_logado', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            console.log('response: ', response.data)
-            setUser(response.data);
-            setEditValues({
-              favoriteSport: response.data.user_fav_sport,  // Ajustado para user_fav_sport
-              nome: response.data.user_nome,  // Ajustado para user_nome
-              age: response.data.user_age,   // Ajustado para user_age
-              bio: response.data.user_bio    // Ajustado para user_bio
-            });
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('Token not found');
+          throw new Error('Token not found');
         }
+        const response = await axios.get('/api/usuario_logado', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        console.log('response: ', response.data)
+        setUser(response.data);
+        setEditValues({
+          favoriteSport: response.data.fav_sport,
+          nome: response.data.nome,
+          age: response.data.age,
+          bio: response.data.bio
+        });
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchUser();
@@ -94,16 +94,16 @@ const ProfileCard = () => {
     <>
       <nav id="navbar-container">
         <Navbar id="navbar" />
-      </nav>  
+      </nav>
       <Card id="profile-card" sx={{ maxWidth: 400, mx: 'auto', mt: 5, p: 2, textAlign: 'center', boxShadow: 3, marginTop: 10 }}>
         <Box id="profile-header" display="flex" flexDirection="column" alignItems="center">
           <Avatar id="profile-avatar" sx={{ width: 80, height: 80, mb: 2 }} src={user.avatarUrl} />
           <Typography id="profile-name" variant="h6">{user.user_nome.trim()}</Typography>
         </Box>
         <CardContent id="profile-content">
-          <Container sx={{textAlign: 'left'}}>
-          
-          {isEditing ? (
+          <Container sx={{ textAlign: 'left' }}>
+
+            {isEditing ? (
               <TextField
                 label="Nome"
                 value={editValues.nome}
@@ -118,13 +118,25 @@ const ProfileCard = () => {
             {isEditing ? (
               <TextField
                 label="Esporte favorito"
-                value={editValues.favoriteSport}
-                onChange={(e) => handleInputChange('favoriteSport', e.target.value)}
+                value={editValues.fav_sport}
+                onChange={(e) => handleInputChange('fav_sport', e.target.value)}
                 fullWidth
                 sx={{ mb: 1 }}
               />
             ) : (
-              <Typography id="profile-favorite-sport" variant="body2" sx={{ mb: 1 }}>Esporte favorito: {user.user_fav_sport}</Typography>
+              <Typography id="profile-favorite-sport" variant="body2" sx={{ mb: 1 }}>Esporte favorito: {user.fav_sport}</Typography>
+            )}
+
+            {isEditing ? (
+              <TextField
+                label="Nome"
+                value={editValues.nome}
+                onChange={(e) => handleInputChange('nome', e.target.value)}
+                fullWidth
+                sx={{ mb: 1 }}
+              />
+            ) : (
+              <Typography id="profile-email" variant="body2" sx={{ mb: 1 }}>Nome: {user.nome}</Typography>
             )}
 
             {isEditing ? (

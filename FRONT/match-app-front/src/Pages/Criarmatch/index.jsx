@@ -5,11 +5,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import './criapartida.css';
 import Navbar from '../Navbar';
 import axios from 'axios';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, set } from 'react-hook-form';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { InfoOutlined } from '@mui/icons-material';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -17,6 +20,7 @@ L.Icon.Default.mergeOptions({
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
+
 
 const MapComponent = ({ marker, setMarker }) => {
   const [center, setCenter] = useState(null);
@@ -90,9 +94,11 @@ function CreateMatch() {
     severity: 'success',
   });
 
+
   const handleClose = () => {
     setNotification((prev) => ({ ...prev, open: false }));
   };
+  
 
   const formValues = watch();
   const isFreeMatch = watch("match_publico");
@@ -161,6 +167,9 @@ function CreateMatch() {
         message: 'Partida criada com sucesso!',
         severity: 'success',
       });
+      setTimeout(() => {
+        window.location.href = '/home';
+      }, 5000);      
     } catch (error) {
       setNotification({
         open: true,
@@ -170,6 +179,7 @@ function CreateMatch() {
       console.error('Error creating match:', error);
     }
   };
+  
 
   return (
     <>
@@ -188,6 +198,17 @@ function CreateMatch() {
                     <MenuItem value="Vôlei">Vôlei</MenuItem>
                     <MenuItem value="Futebol">Futebol</MenuItem>
                     <MenuItem value="Basquete">Basquete</MenuItem>
+                    <MenuItem value="Tênis">Tênis</MenuItem>
+                    <MenuItem value="Futebol Americano">Futebol Americano</MenuItem>
+                    <MenuItem value="Handebol">Handebol</MenuItem>
+                    <MenuItem value="Rugby">Rugby</MenuItem>
+                    <MenuItem value="Beisebol">Beisebol</MenuItem>
+                    <MenuItem value="Hóquei">Hóquei</MenuItem>
+                    <MenuItem value="Golf">Golf</MenuItem>
+                    <MenuItem value="Skate">Skate</MenuItem>
+                    <MenuItem value="Surf">Surf</MenuItem>
+                    <MenuItem value="Natação">Natação</MenuItem>
+                    <MenuItem value="Ciclismo">Ciclismo</MenuItem>
                   </Select>
                 )}
               />
@@ -351,7 +372,8 @@ function CreateMatch() {
               }
               label={
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  Acessível
+                  Com acessibilidade 
+                  <span role="img" aria-label="com acessibilidade">♿</span>
                   <Tooltip title="Partidas acessíveis têm o objetivo de promover a inclusão, tornando possível a participação de deficientes físicos">
                     <IconButton size="small" style={{ marginLeft: 4, fontSize: '150px' }}>
                       <InfoOutlined fontSize="small" />

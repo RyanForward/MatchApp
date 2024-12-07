@@ -167,8 +167,6 @@ function verificaToken(req, res, next) {
 app.post('/api/usuario', async (req, res) => {
     const { user_id, user_nome, user_email, user_senha } = req.body;
 
-    console.log(req.body);
-
     try {
         const hashedPassword = await bcrypt.hash(user_senha, 10);
         const result = await matchpool.query(
@@ -202,7 +200,6 @@ app.post("/api/login", async (req, res) => {
 
     try {
         const result = await matchpool.query('SELECT * FROM Usuario WHERE user_email = $1', [user_email]);
-        console.log('result: ', result)
         if (result.rows.length === 0) {
             return res.status(404).send('Usuário não encontrado.');
         }
@@ -211,7 +208,6 @@ app.post("/api/login", async (req, res) => {
         const passwordValidado = await bcrypt.compare(user_senha, user.user_senha);
         if (passwordValidado) {
             const token = jwt.sign({ userId: user.user_id }, 'secret_key', { expiresIn: '1h' });
-            console.log(token);
             return res.status(200).json({ token, userID});
         } else {
             return res.status(422).send('Usuário ou senha incorretos.');
@@ -255,7 +251,7 @@ app.post('/api/partida', async (req, res) => {
     const { match_valor } = req.body;
     const { match_publico } = req.body;
     const { esporte } = req.body;
-    const tipo_competicao = req.body.tipoCompeticao;
+    const tipo_competicao = req.body.tipoCompeDticao;
     const { genero } = req.body;
     const faixa_idade_min = req.body.faixaIdadeMin;
     const faixa_idade_max = req.body.faixaIdadeMax;
@@ -293,12 +289,106 @@ app.get('/api/partida/:id', async (req, res) => {
 
 app.get('/api/partida', verificaToken, async (req, res) => {
     try {
-        const result = await matchpool.query('SELECT * FROM Partida');
-        console.log('result: ', result)
+        // Extrair filtros dos parâmetros da requisição
+        const {
+          match_id,
+          host_id,
+          match_local,
+          match_data,
+          match_valor,
+          match_publico,
+          esporte,
+          tipo_competicao,
+          genero,
+          faixa_idade_min,
+          faixa_idade_max,
+          nivel_expertise,
+          numero_total_pessoas,
+          partida_gratuita,
+          acessivel,
+        } = req.query;
+    
+        // Array para armazenar os filtros dinâmicos
+        const filters = [];
+        const values = [];
+    
+        // Verificar quais filtros foram enviados
+        if (match_id) {
+          filters.push(`match_id = $${filters.length + 1}`);
+          values.push(match_id);
+        }
+        if (host_id) {
+          filters.push(`host_id = $${filters.length + 1}`);
+          values.push(host_id);
+        }
+        if (match_local) {
+          filters.push(`match_local ILIKE $${filters.length + 1}`);
+          values.push(`%${match_local}%`);
+        }
+        if (match_data) {
+          filters.push(`match_data = $${filters.length + 1}`);
+          values.push(match_data);
+        }
+        if (match_valor) {
+          filters.push(`match_valor <= $${filters.length + 1}`);
+          values.push(match_valor);
+        }
+        if (match_publico !== undefined) {
+          filters.push(`match_publico = $${filters.length + 1}`);
+          values.push(match_publico === 'true');
+        }
+        if (esporte) {
+          filters.push(`esporte ILIKE $${filters.length + 1}`);
+          values.push(`%${esporte}%`);
+        }
+        if (tipo_competicao) {
+          filters.push(`tipo_competicao ILIKE $${filters.length + 1}`);
+          values.push(`%${tipo_competicao}%`);
+        }
+        if (genero) {
+          filters.push(`genero ILIKE $${filters.length + 1}`);
+          values.push(`%${genero}%`);
+        }
+        if (faixa_idade_min) {
+          filters.push(`faixa_idade_min >= $${filters.length + 1}`);
+          values.push(faixa_idade_min);
+        }
+        if (faixa_idade_max) {
+          filters.push(`faixa_idade_max <= $${filters.length + 1}`);
+          values.push(faixa_idade_max);
+        }
+        if (nivel_expertise) {
+          filters.push(`nivel_expertise ILIKE $${filters.length + 1}`);
+          values.push(`%${nivel_expertise}%`);
+        }
+        if (numero_total_pessoas) {
+          filters.push(`numero_total_pessoas = $${filters.length + 1}`);
+          values.push(numero_total_pessoas);
+        }
+        if (partida_gratuita !== undefined) {
+          filters.push(`partida_gratuita = $${filters.length + 1}`);
+          values.push(partida_gratuita === 'true');
+        }
+        if (acessivel !== undefined) {
+          filters.push(`acessivel = $${filters.length + 1}`);
+          values.push(acessivel === 'true');
+        }
+    
+        // Construir a query com filtros dinâmicos
+        let query = 'SELECT * FROM Partida';
+        if (filters.length > 0) {
+          query += ` WHERE ${filters.join(' AND ')}`;
+        }
+    
+        // Executar a consulta
+        const result = await pool.query(query, values);
+    
+        // Retornar as partidas encontradas
         res.status(200).json(result.rows);
-    } catch (err) {
+      } catch (err) {
+        console.error('Erro ao buscar partidas:', err);
         res.status(500).json({ error: err.message });
-    }
+      }
 });
 
 // Editar informações de uma partida existente
@@ -420,7 +510,7 @@ app.get('/perfil/:user_id', async (req, res) => {
       const result = await pool.query('SELECT * FROM Usuario WHERE user_id = $1', [user_id]);
   
       if (result.rows.length > 0) {
-        console.log('Usuário encontrado:', result.rows[0]);
+        console.log('result.rows: ', result.rows)
         res.status(200).json(result.rows[0]); // Retorna o usuário encontrado
       } else {
         res.status(404).json({ message: 'Usuário não encontrado.' });
@@ -445,7 +535,6 @@ app.get('/perfil/:user_id', async (req, res) => {
       );
   
       if (result.rows.length > 0) {
-        console.log('Usuário atualizado:', result.rows[0]);
         res.status(200).json(result.rows[0]); // Retorna o usuário atualizado
       } else {
         res.status(404).json({ message: 'Usuário não encontrado.' });
@@ -464,7 +553,6 @@ app.get('/perfil/:user_id', async (req, res) => {
       const result = await pool.query('DELETE FROM Usuario WHERE user_id = $1 RETURNING *', [user_id]);
   
       if (result.rows.length > 0) {
-        console.log('Usuário removido:', result.rows[0]);
         res.status(200).json({ message: 'Usuário removido com sucesso.', usuario: result.rows[0] });
       } else {
         res.status(404).json({ message: 'Usuário não encontrado.' });
@@ -475,126 +563,33 @@ app.get('/perfil/:user_id', async (req, res) => {
     }
   });
 
-  app.get('/encontrarmatch', async (req, res) => {
+
+
+app.get('/nextmatch/:user_id', async (req, res) => {
     try {
-      // Extrair filtros dos parâmetros da requisição
-      const {
-        match_id,
-        host_id,
-        match_local,
-        match_data,
-        match_valor,
-        match_publico,
-        esporte,
-        tipo_competicao,
-        genero,
-        faixa_idade_min,
-        faixa_idade_max,
-        nivel_expertise,
-        numero_total_pessoas,
-        partida_gratuita,
-        acessivel,
-      } = req.query;
-  
-      // Array para armazenar os filtros dinâmicos
-      const filters = [];
-      const values = [];
-  
-      // Verificar quais filtros foram enviados
-      if (match_id) {
-        filters.push(`match_id = $${filters.length + 1}`);
-        values.push(match_id);
-      }
-      if (host_id) {
-        filters.push(`host_id = $${filters.length + 1}`);
-        values.push(host_id);
-      }
-      if (match_local) {
-        filters.push(`match_local ILIKE $${filters.length + 1}`);
-        values.push(`%${match_local}%`);
-      }
-      if (match_data) {
-        filters.push(`match_data = $${filters.length + 1}`);
-        values.push(match_data);
-      }
-      if (match_valor) {
-        filters.push(`match_valor <= $${filters.length + 1}`);
-        values.push(match_valor);
-      }
-      if (match_publico !== undefined) {
-        filters.push(`match_publico = $${filters.length + 1}`);
-        values.push(match_publico === 'true');
-      }
-      if (esporte) {
-        filters.push(`esporte ILIKE $${filters.length + 1}`);
-        values.push(`%${esporte}%`);
-      }
-      if (tipo_competicao) {
-        filters.push(`tipo_competicao ILIKE $${filters.length + 1}`);
-        values.push(`%${tipo_competicao}%`);
-      }
-      if (genero) {
-        filters.push(`genero ILIKE $${filters.length + 1}`);
-        values.push(`%${genero}%`);
-      }
-      if (faixa_idade_min) {
-        filters.push(`faixa_idade_min >= $${filters.length + 1}`);
-        values.push(faixa_idade_min);
-      }
-      if (faixa_idade_max) {
-        filters.push(`faixa_idade_max <= $${filters.length + 1}`);
-        values.push(faixa_idade_max);
-      }
-      if (nivel_expertise) {
-        filters.push(`nivel_expertise ILIKE $${filters.length + 1}`);
-        values.push(`%${nivel_expertise}%`);
-      }
-      if (numero_total_pessoas) {
-        filters.push(`numero_total_pessoas = $${filters.length + 1}`);
-        values.push(numero_total_pessoas);
-      }
-      if (partida_gratuita !== undefined) {
-        filters.push(`partida_gratuita = $${filters.length + 1}`);
-        values.push(partida_gratuita === 'true');
-      }
-      if (acessivel !== undefined) {
-        filters.push(`acessivel = $${filters.length + 1}`);
-        values.push(acessivel === 'true');
-      }
-  
-      // Construir a query com filtros dinâmicos
-      let query = 'SELECT * FROM Partida';
-      if (filters.length > 0) {
-        query += ` WHERE ${filters.join(' AND ')}`;
-      }
-  
-      // Executar a consulta
-      const result = await pool.query(query, values);
-  
-      // Retornar as partidas encontradas
-      res.status(200).json(result.rows);
+        const { user_id } = req.params;
+        console.log('userId recebido:', user_id);
+
+    const query = `
+        SELECT * 
+        FROM Grupo g
+        INNER JOIN Partida p
+        ON p.match_id = g.match_id 
+        WHERE p.match_data > NOW() 
+        AND g.user_id = $1 
+        ORDER BY p.match_data ASC
+    `;
+
+        console.log('query: ', query)
+        const result = await pool.query(query, [userId]);
+
+        console.log('result: ', result)
+        res.status(200).json(result.rows);
     } catch (err) {
-      console.error('Erro ao buscar partidas:', err);
-      res.status(500).json({ error: err.message });
+        console.error('Erro ao buscar próximas partidas:', err);
+        res.status(500).json({ error: 'Erro ao buscar próximas partidas' });
     }
-  });
-  app.get('/nextmatch', async (req, res) => {
-    try {
-      // Construir a query para buscar partidas futuras
-      const query = 'SELECT * FROM Partida WHERE match_data > NOW() ORDER BY match_data ASC';
-  
-      // Executar a consulta
-      const result = await pool.query(query);
-  
-      // Retornar as partidas futuras
-      res.status(200).json(result.rows);
-    } catch (err) {
-      console.error('Erro ao buscar próximas partidas:', err);
-      res.status(500).json({ error: 'Erro ao buscar próximas partidas' });
-    }
-  });
-  
-  
+    });
 
 // Inicia o servidor na porta 5000
 const PORT = 5000;

@@ -1,10 +1,10 @@
-import { 
-  Card, 
-  CardContent, 
-  Typography, 
-  Box, 
-  Button, 
-  Avatar, 
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Button,
+  Avatar,
   Divider,
   Dialog,
   DialogTitle,
@@ -15,7 +15,7 @@ import {
   Container,
 } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
-import Navbar from '../Navbar'; 
+import Navbar from '../Navbar';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
@@ -23,7 +23,7 @@ import { useAuth } from '../../Routes/AuthContext';
 import { useTheme } from '@mui/material/styles';
 
 const ProfileCard = () => {
-    
+
   const theme = useTheme();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,32 +31,33 @@ const ProfileCard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValues, setEditValues] = useState({});
   const navigate = useNavigate();
-  const { logout } = useAuth(); 
+  const { logout } = useAuth();
 
   useEffect(() => {
 
     const fetchUser = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                console.error('Token not found');
-                throw new Error('Token not found');
-            }
-            const response = await axios.get('/api/usuario_logado', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setUser(response.data);
-            setEditValues({
-              favoriteSport: response.data.fav_sport,
-              nome: response.data.nome,
-              age: response.data.age,
-              bio: response.data.bio
-            });
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('Token not found');
+          throw new Error('Token not found');
         }
+        const response = await axios.get('/api/usuario_logado', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        console.log('response: ', response.data)
+        setUser(response.data);
+        setEditValues({
+          favoriteSport: response.data.fav_sport,
+          nome: response.data.nome,
+          age: response.data.age,
+          bio: response.data.bio
+        });
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchUser();
@@ -93,21 +94,27 @@ const ProfileCard = () => {
     <>
       <nav id="navbar-container">
         <Navbar id="navbar" />
-      </nav>  
+      </nav>
       <Card id="profile-card" sx={{ maxWidth: 400, mx: 'auto', mt: 5, p: 2, textAlign: 'center', boxShadow: 3, marginTop: 10 }}>
         <Box id="profile-header" display="flex" flexDirection="column" alignItems="center">
           <Avatar id="profile-avatar" sx={{ width: 80, height: 80, mb: 2 }} src={user.avatarUrl} />
-          <Typography id="profile-name" variant="h6">{user.user_nome}</Typography>
-          <Box id="profile-rating" display="flex" alignItems="center" color="green" mb={1}>
-            <Typography id="profile-rating-value" variant="h4">{user.rating}</Typography>
-            <StarIcon id="profile-rating-icon" fontSize="large" color="primary" />
-            </Box>
+          <Typography id="profile-name" variant="h6">{user.user_nome.trim()}</Typography>
         </Box>
         <CardContent id="profile-content">
-          <Typography id="profile-games-played" variant="body2" sx={{ mb: 1 }}>Partidas jogadas: {user.gamesPlayed}</Typography>
-          <Typography id="profile-games-organized" variant="body2" sx={{ mb: 1 }}>Partidas organizadas: {user.gamesOrganized}</Typography>
-          <Divider id="profile-divider" sx={{ my: 2, backgroundColor: 'primary.main' }} />
-          <Container sx={{textAlign: 'left'}}>
+          <Container sx={{ textAlign: 'left' }}>
+
+            {isEditing ? (
+              <TextField
+                label="Nome"
+                value={editValues.nome}
+                onChange={(e) => handleInputChange('nome', e.target.value)}
+                fullWidth
+                sx={{ mb: 1 }}
+              />
+            ) : (
+              <Typography id="profile-email" variant="body2" sx={{ mb: 1 }}>Nome: {user.user_nome}</Typography>
+            )}
+
             {isEditing ? (
               <TextField
                 label="Esporte favorito"
@@ -141,7 +148,7 @@ const ProfileCard = () => {
                 sx={{ mb: 1 }}
               />
             ) : (
-              <Typography id="profile-age" variant="body2" sx={{ mt: 2, mb: 1 }}>Idade: {user.age}</Typography>
+              <Typography id="profile-age" variant="body2" sx={{ mt: 2, mb: 1 }}>Idade: {user.user_age}</Typography>
             )}
 
             <Typography id="profile-bio-title" variant="body2" mt={2} sx={{ mb: 1 }}>Biografia:</Typography>
@@ -161,7 +168,7 @@ const ProfileCard = () => {
                 component="textarea"
                 rows="4"
                 style={{ width: '100%', marginTop: 8, padding: 8, resize: 'none', borderRadius: 4 }}
-                value={user.bio}
+                value={user.user_bio}
                 readOnly
               />
             )}

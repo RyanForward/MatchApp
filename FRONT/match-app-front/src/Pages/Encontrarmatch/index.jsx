@@ -23,6 +23,7 @@ function FindMatch() {
   const [filteredMatches, setFilteredMatches] = useState([]);
   const [center, setCenter] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedMatch, setSelectedMatch] = useState(null);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -99,6 +100,40 @@ function FindMatch() {
 
   const handleFilterChange = (field, value) => {
     setFilters({ ...filters, [field]: value });
+  };
+
+  const handleMatchSelect = (match) => {
+    setSelectedMatch(match);
+  };
+
+  const handleSubscribe = async () => {
+    if (!selectedMatch) {
+      alert('Selecione uma partida primeiro!');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('Token not found');
+        throw new Error('Token not found');
+      }
+
+      const userId = localStorage.getItem('user_id'); // Assuming user_id is stored in localStorage
+      const response = await axios.post('/api/grupo', {
+        shipment_id: selectedMatch.shipment_id,
+        match_id: selectedMatch.id,
+        user_id: userId,
+        subscription_time: new Date().toISOString()
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      alert('Inscrição realizada com sucesso!');
+    } catch (error) {
+      console.error('There was an error subscribing to the match!', error);
+      alert('Erro ao realizar inscrição!');
+    }
   };
 
   const customIcon = new Icon({
@@ -256,6 +291,9 @@ function FindMatch() {
                         position={coordinates}
                         icon={customIcon}
                         id={`marker-${index}`}
+                        eventHandlers={{
+                          click: () => handleMatchSelect(match),
+                        }}
                       >
                         <Popup id={`popup-${index}`}>
                           <div>
@@ -276,7 +314,13 @@ function FindMatch() {
               <Typography variant="subtitle1" id="list-title">Lista de partidas:</Typography>
               <List id="matches-list">
                 {filteredMatches.map((match, index) => (
-                  <ListItem key={index} id={`list-item-${index}`}>
+                  <ListItem 
+                    key={index} 
+                    id={`list-item-${index}`} 
+                    button 
+                    selected={selectedMatch && selectedMatch.id === match.id}
+                    onClick={() => handleMatchSelect(match)}
+                  >
                     <ListItemText primary={`${match.esporte} - ${match.numero_total_pessoas} pessoas`} secondary={`Local: ${match.partida_gratuita ? 'gratuito' : 'paga'}`} />
                   </ListItem>
                 ))}
@@ -284,7 +328,14 @@ function FindMatch() {
             </Grid>
 
           <Grid item xs={12} id="action-buttons">
-            <Button variant="contained" color="success" fullWidth sx={{ mb: 1 }} id="subscribe-button">
+            <Button 
+              variant="contained" 
+              color="success" 
+              fullWidth 
+              sx={{ mb: 1 }} 
+              id="subscribe-button"
+              onClick={handleSubscribe}
+            >
               inscrever-se
             </Button>
             <Button variant="contained" color="success" fullWidth style={{ marginTop: 10 }} id="organize-button">

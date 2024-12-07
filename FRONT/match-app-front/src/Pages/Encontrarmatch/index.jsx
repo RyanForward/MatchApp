@@ -285,7 +285,7 @@ function FindMatch() {
 
           <Grid item xs={12} id="action-buttons">
             <Button variant="contained" color="success" fullWidth sx={{ mb: 1 }} id="subscribe-button">
-              Se inscrever
+              inscrever-se
             </Button>
             <Button variant="contained" color="success" fullWidth style={{ marginTop: 10 }} id="organize-button">
               <a href="/criarmatch" style={{ color: 'inherit', textDecoration: 'none' }}>Organizar uma partida</a>

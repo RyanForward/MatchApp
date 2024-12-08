@@ -106,6 +106,10 @@ function FindMatch() {
     setSelectedMatch(match);
   };
 
+  const generateRandomNumber = () => {
+    return Math.floor(Math.random() * 1000000);
+  };
+
   const handleSubscribe = async () => {
     if (!selectedMatch) {
       alert('Selecione uma partida primeiro!');

@@ -25,6 +25,16 @@ function FindMatch() {
   const [loading, setLoading] = useState(true);
   const [selectedMatch, setSelectedMatch] = useState(null);
   const [user, setUser] = useState(null);
+  const [notification, setNotification] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
+
+
+  const handleClose = () => {
+    setNotification((prev) => ({ ...prev, open: false }));
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -153,11 +163,15 @@ function FindMatch() {
         match_id: selectedMatch.match_id,
         user_id: user.user_id,
         horario: currentDate
-      },
-       {
+      }, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      setNotification({
+        open: true,
+        message: 'Incrição feita com sucesso!',
+        severity: 'success',
+      });
       alert('Inscrição realizada com sucesso!');
     } catch (error) {
       console.error('There was an error subscribing to the match!', error);

@@ -120,8 +120,9 @@ function FindMatch() {
       }
 
       const userId = localStorage.getItem('user_id'); // Assuming user_id is stored in localStorage
+      const randomNumber = generateRandomNumber();
       await axios.post('/api/grupo', {
-        shipment_id: selectedMatch.shipment_id,
+        shipment_id: randomNumber,
         match_id: selectedMatch.id,
         user_id: userId,
         subscription_time: new Date().toISOString()

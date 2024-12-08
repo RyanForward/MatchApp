@@ -24,6 +24,39 @@ function FindMatch() {
   const [center, setCenter] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedMatch, setSelectedMatch] = useState(null);
+  const [user, setUser] = useState(null);
+  const [notification, setNotification] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
+
+
+  const handleClose = () => {
+    setNotification((prev) => ({ ...prev, open: false }));
+  };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('Token not found');
+                throw new Error('Token not found');
+            }
+            const response = await axios.get('/api/usuario_logado', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setUser(response.data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchUser();
+}, []);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -106,6 +139,10 @@ function FindMatch() {
     setSelectedMatch(match);
   };
 
+  const generateRandomNumber = () => {
+    return Math.floor(Math.random() * 1000000);
+  };
+
   const handleSubscribe = async () => {
     if (!selectedMatch) {
       alert('Selecione uma partida primeiro!');
@@ -119,18 +156,22 @@ function FindMatch() {
         throw new Error('Token not found');
       }
 
-      const userId = localStorage.getItem('user_id'); // Assuming user_id is stored in localStorage
       const randomNumber = generateRandomNumber();
+      const currentDate = new Date().toLocaleDateString('pt-BR');
       await axios.post('/api/grupo', {
         shipment_id: randomNumber,
-        match_id: selectedMatch.id,
-        user_id: userId,
-        subscription_time: new Date().toISOString()
-      },
-       {
+        match_id: selectedMatch.match_id,
+        user_id: user.user_id,
+        horario: currentDate
+      }, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      setNotification({
+        open: true,
+        message: 'Incrição feita com sucesso!',
+        severity: 'success',
+      });
       alert('Inscrição realizada com sucesso!');
     } catch (error) {
       console.error('There was an error subscribing to the match!', error);

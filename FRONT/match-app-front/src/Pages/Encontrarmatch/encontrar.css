@@ -1,3 +1,7 @@
 .customGridItem {
     padding-left: 0;
 }
+
+.selected-match {
+    background-color: #d3d3d3; /* Cor de fundo para destacar a partida selecionada */
+  }

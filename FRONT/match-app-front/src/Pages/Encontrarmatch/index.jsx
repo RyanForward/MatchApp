@@ -68,28 +68,28 @@ function FindMatch() {
       let filtered = matches;
 
       if (filters.sport) {
-        filtered = filtered.filter(match => match.sport === filters.sport);
+        filtered = filtered.filter(match => match.esporte === filters.sport);
       }
       if (filters.competitionType) {
-        filtered = filtered.filter(match => match.competitionType === filters.competitionType);
+        filtered = filtered.filter(match => match.tipo_competicao === filters.competitionType);
       }
       if (filters.gender) {
-        filtered = filtered.filter(match => match.gender === filters.gender);
+        filtered = filtered.filter(match => match.genero === filters.gender);
       }
       if (filters.expertiseLevel) {
-        filtered = filtered.filter(match => match.expertiseLevel === filters.expertiseLevel);
+        filtered = filtered.filter(match => match.nivel_expertise === filters.expertiseLevel);
       }
       if (filters.minAge) {
-        filtered = filtered.filter(match => match.age >= filters.minAge);
+        filtered = filtered.filter(match => match.faixa_idade_min >= filters.minAge);
       }
       if (filters.maxAge) {
-        filtered = filtered.filter(match => match.age <= filters.maxAge);
+        filtered = filtered.filter(match => match.faixa_idade_max <= filters.maxAge);
       }
       if (filters.isFree) {
-        filtered = filtered.filter(match => match.isFree);
+        filtered = filtered.filter(match => match.partida_gratuita);
       }
       if (filters.isAccessible) {
-        filtered = filtered.filter(match => match.isAccessible);
+        filtered = filtered.filter(match => match.acessivel);
       }
 
       setFilteredMatches(filtered);
@@ -120,12 +120,13 @@ function FindMatch() {
       }
 
       const userId = localStorage.getItem('user_id'); // Assuming user_id is stored in localStorage
-      const response = await axios.post('/api/grupo', {
+      await axios.post('/api/grupo', {
         shipment_id: selectedMatch.shipment_id,
         match_id: selectedMatch.id,
         user_id: userId,
         subscription_time: new Date().toISOString()
-      }, {
+      },
+       {
         headers: { Authorization: `Bearer ${token}` },
       });
 

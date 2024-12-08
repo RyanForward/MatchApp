@@ -427,7 +427,11 @@ app.delete('/api/partida/:id', async (req, res) => {
 
 // Inserir um novo grupo
 app.post('/api/grupo', async (req, res) => {
-    const { shipment_id, match_id, user_id, horario } = req.body;
+    const { shipment_id } = req.body;
+    const { match_id } = req.body;
+    const { user_id } = req.body;
+    const { horario } = req.body;
+    
     try {
         const result = await matchpool.query(
             'INSERT INTO Grupo (shipment_id, match_id, user_id, horario) VALUES ($1, $2, $3, $4) RETURNING *',

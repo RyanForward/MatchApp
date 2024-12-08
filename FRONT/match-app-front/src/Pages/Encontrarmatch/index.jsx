@@ -335,6 +335,7 @@ function FindMatch() {
               sx={{ mb: 1 }} 
               id="subscribe-button"
               onClick={handleSubscribe}
+              disabled={!selectedMatch}
             >
               inscrever-se
             </Button>

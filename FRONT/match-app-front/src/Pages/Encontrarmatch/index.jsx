@@ -172,9 +172,20 @@ function FindMatch() {
                 labelId="sport-label"
                 id="sport-select"
               >
-                <MenuItem value="vôlei">Vôlei</MenuItem>
-                <MenuItem value="futebol">Futebol</MenuItem>
-                <MenuItem value="basquete">Basquete</MenuItem>
+                <MenuItem value="Vôlei">Vôlei</MenuItem>
+                <MenuItem value="Futebol">Futebol</MenuItem>
+                <MenuItem value="Basquete">Basquete</MenuItem>
+                <MenuItem value="Tênis">Tênis</MenuItem>
+                <MenuItem value="Futebol Americano">Futebol Americano</MenuItem>
+                <MenuItem value="Handebol">Handebol</MenuItem>
+                <MenuItem value="Rugby">Rugby</MenuItem>
+                <MenuItem value="Beisebol">Beisebol</MenuItem>
+                <MenuItem value="Hóquei">Hóquei</MenuItem>
+                <MenuItem value="Golf">Golf</MenuItem>
+                <MenuItem value="Skate">Skate</MenuItem>
+                <MenuItem value="Surf">Surf</MenuItem>
+                <MenuItem value="Natação">Natação</MenuItem>
+                <MenuItem value="Ciclismo">Ciclismo</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -301,8 +312,13 @@ function FindMatch() {
                           <div>
                             <div>{match.esporte} - {match.numero_total_pessoas} pessoas</div>
                             <div>Faixa de idade: {match.faixa_idade_min} - {match.faixa_idade_max} anos</div>
-                            <div>Data: {match.faixa_idade_min} - {match.faixa_idade_max} anos</div>
-                            <div>Preço: {match.partida_gratuita ? 'gratuito' : `R$${match.match_valor}`}</div>
+                            <div>Data: {new Date(match.match_data).toLocaleDateString('pt-BR', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            }).replace(/\//g, '-')} 
+                          </div>                            
+                          <div>Preço: {match.partida_gratuita ? 'gratuito' : `R$${match.match_valor}`}</div>
                           </div>
                         </Popup>
                       </Marker>

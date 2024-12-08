@@ -381,7 +381,7 @@ app.get('/api/partida', verificaToken, async (req, res) => {
         }
     
         // Executar a consulta
-        const result = await pool.query(query, values);
+        const result = await matchpool.query(query, values);
     
         // Retornar as partidas encontradas
         res.status(200).json(result.rows);
@@ -511,7 +511,7 @@ app.get('/perfil/:user_id', async (req, res) => {
     const { user_id } = req.params;
   
     try {
-      const result = await pool.query('SELECT * FROM Usuario WHERE user_id = $1', [user_id]);
+      const result = await matchpool.query('SELECT * FROM Usuario WHERE user_id = $1', [user_id]);
   
       if (result.rows.length > 0) {
         console.log('result.rows: ', result.rows)
@@ -531,7 +531,7 @@ app.get('/perfil/:user_id', async (req, res) => {
     const { user_nome, user_email, user_senha, user_age, user_fav_sport, user_bio } = req.body;
   
     try {
-      const result = await pool.query(
+      const result = await matchpool.query(
         `UPDATE Usuario
          SET user_nome = $1, user_email = $2, user_senha = $3, user_age = $4, user_fav_sport = $5, user_bio = $6
          WHERE user_id = $7 RETURNING *`,
@@ -554,7 +554,7 @@ app.get('/perfil/:user_id', async (req, res) => {
     const { user_id } = req.params;
   
     try {
-      const result = await pool.query('DELETE FROM Usuario WHERE user_id = $1 RETURNING *', [user_id]);
+      const result = await matchpool.query('DELETE FROM Usuario WHERE user_id = $1 RETURNING *', [user_id]);
   
       if (result.rows.length > 0) {
         res.status(200).json({ message: 'Usuário removido com sucesso.', usuario: result.rows[0] });
@@ -585,7 +585,7 @@ app.get('/nextmatch/:user_id', async (req, res) => {
     `;
 
         console.log('query: ', query)
-        const result = await pool.query(query, [userId]);
+        const result = await matchpool.query(query, [userId]);
 
         console.log('result: ', result)
         res.status(200).json(result.rows);

@@ -251,7 +251,7 @@ app.post('/api/partida', async (req, res) => {
     const { match_valor } = req.body;
     const { match_publico } = req.body;
     const { esporte } = req.body;
-    const tipo_competicao = req.body.tipoCompeDticao;
+    const tipo_competicao = req.body.tipoCompeticao;
     const { genero } = req.body;
     const faixa_idade_min = req.body.faixaIdadeMin;
     const faixa_idade_max = req.body.faixaIdadeMax;
@@ -289,7 +289,6 @@ app.get('/api/partida/:id', async (req, res) => {
 
 app.get('/api/partida', verificaToken, async (req, res) => {
     try {
-        // Extrair filtros dos parâmetros da requisição
         const {
           match_id,
           host_id,
@@ -308,11 +307,9 @@ app.get('/api/partida', verificaToken, async (req, res) => {
           acessivel,
         } = req.query;
     
-        // Array para armazenar os filtros dinâmicos
         const filters = [];
         const values = [];
     
-        // Verificar quais filtros foram enviados
         if (match_id) {
           filters.push(`match_id = $${filters.length + 1}`);
           values.push(match_id);
@@ -349,13 +346,13 @@ app.get('/api/partida', verificaToken, async (req, res) => {
           filters.push(`genero ILIKE $${filters.length + 1}`);
           values.push(`%${genero}%`);
         }
-        if (faixa_idade_min) {
-          filters.push(`faixa_idade_min >= $${filters.length + 1}`);
-          values.push(faixa_idade_min);
+        if (faixa_idade_min !== undefined) {
+            filters.push(`faixa_idade_min = $${filters.length + 1}`);
+            values.push(faixa_idade_min);
         }
-        if (faixa_idade_max) {
-          filters.push(`faixa_idade_max <= $${filters.length + 1}`);
-          values.push(faixa_idade_max);
+        if (faixa_idade_max !== undefined) {
+            filters.push(`faixa_idade_max = $${filters.length + 1}`);
+            values.push(faixa_idade_max);
         }
         if (nivel_expertise) {
           filters.push(`nivel_expertise ILIKE $${filters.length + 1}`);
@@ -374,16 +371,13 @@ app.get('/api/partida', verificaToken, async (req, res) => {
           values.push(acessivel === 'true');
         }
     
-        // Construir a query com filtros dinâmicos
         let query = 'SELECT * FROM Partida';
         if (filters.length > 0) {
           query += ` WHERE ${filters.join(' AND ')}`;
         }
     
-        // Executar a consulta
-        const result = await pool.query(query, values);
+        const result = await matchpool.query(query, values);
     
-        // Retornar as partidas encontradas
         res.status(200).json(result.rows);
       } catch (err) {
         console.error('Erro ao buscar partidas:', err);
@@ -511,7 +505,7 @@ app.get('/perfil/:user_id', async (req, res) => {
     const { user_id } = req.params;
   
     try {
-      const result = await pool.query('SELECT * FROM Usuario WHERE user_id = $1', [user_id]);
+      const result = await matchpool.query('SELECT * FROM Usuario WHERE user_id = $1', [user_id]);
   
       if (result.rows.length > 0) {
         console.log('result.rows: ', result.rows)
@@ -531,7 +525,7 @@ app.get('/perfil/:user_id', async (req, res) => {
     const { user_nome, user_email, user_senha, user_age, user_fav_sport, user_bio } = req.body;
   
     try {
-      const result = await pool.query(
+      const result = await matchpool.query(
         `UPDATE Usuario
          SET user_nome = $1, user_email = $2, user_senha = $3, user_age = $4, user_fav_sport = $5, user_bio = $6
          WHERE user_id = $7 RETURNING *`,
@@ -554,7 +548,7 @@ app.get('/perfil/:user_id', async (req, res) => {
     const { user_id } = req.params;
   
     try {
-      const result = await pool.query('DELETE FROM Usuario WHERE user_id = $1 RETURNING *', [user_id]);
+      const result = await matchpool.query('DELETE FROM Usuario WHERE user_id = $1 RETURNING *', [user_id]);
   
       if (result.rows.length > 0) {
         res.status(200).json({ message: 'Usuário removido com sucesso.', usuario: result.rows[0] });
@@ -585,7 +579,7 @@ app.get('/nextmatch/:user_id', async (req, res) => {
     `;
 
         console.log('query: ', query)
-        const result = await pool.query(query, [userId]);
+        const result = await matchpool.query(query, [userId]);
 
         console.log('result: ', result)
         res.status(200).json(result.rows);

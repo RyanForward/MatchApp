@@ -201,10 +201,13 @@ function FindMatch() {
       <Box sx={{ maxWidth: "sm", mx: "auto", mt: 4, p: 2, border: "1px solid #ccc", borderRadius: 2, marginTop: 10 }} id="main-box">
         <Typography variant="h6" gutterBottom id="title">Encontre uma partida próxima a você</Typography>
 
-        {loading ? ( // Exibe o spinner enquanto carrega
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
-            <CircularProgress />
-          </Box>
+        {loading ? ( 
+         <Box id="loading-container" sx={{ textAlign: 'center', mt: 5 }}>
+         <CircularProgress />
+         <Typography id="loading-text" variant="body1" sx={{ mt: 2 }}>
+           Carregando partidas...
+         </Typography>
+         </Box>
         ) : (
 
         <Grid container spacing={2} id="filters-grid">

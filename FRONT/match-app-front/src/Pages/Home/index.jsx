@@ -64,38 +64,6 @@ function HomePage() {
           </Button>
         </Box>
 
-        {/* Últimas partidas */}
-        <Typography 
-          variant="subtitle1" 
-          gutterBottom 
-          sx={{ marginY: 2 }} 
-          id="last-matches-title"
-        >
-          Últimas 5 partidas:
-        </Typography>
-        
-        {/* Box com rolagem horizontal para a tabela */}
-        <Box sx={{ overflowX: 'auto' }} id="matches-table-box">
-          <TableContainer component={Paper} sx={{ maxWidth: '100%' }} id="matches-table-container">
-            <Table aria-label="Ultimas partidas" id="matches-table">
-              <TableBody id="matches-table-body">
-                {partidas.map((partida) => (
-                  <TableRow key={partida.id} id={`match-row-${partida.id}`}>
-                    <TableCell align="left" id={`match-sport-${partida.id}`}>
-                      {partida.esporte}
-                    </TableCell>
-                    <TableCell align="left" id={`match-location-${partida.id}`}>
-                      {partida.local}
-                    </TableCell>
-                    <TableCell align="left" id={`match-date-${partida.id}`}>
-                      {partida.data}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
       </Container>
     </>
   );

@@ -375,14 +375,20 @@ function FindMatch() {
 
             <Grid item xs={12} id="matches-list">
               <Typography variant="subtitle1" id="list-title">Lista de partidas:</Typography>
-              <List id="matches-list">
+              <List id="matches-list" className='selected-match'>
                 {filteredMatches.map((match, index) => (
                   <ListItem 
                     key={index} 
                     id={`list-item-${index}`} 
                     button 
                     selected={selectedMatch && selectedMatch.id === match.id}
-                    onClick={() => handleMatchSelect(match)}
+                    onClick={() => handleMatchSelect(selectedMatch && selectedMatch.match_id === match.match_id ? null : match)}
+                    sx={{
+                      backgroundColor: selectedMatch && selectedMatch.match_id === match.match_id ? 'rgba(0, 123, 255, 0.5)' : 'transparent',
+                      '&:hover': {
+                        backgroundColor: selectedMatch && selectedMatch.match_id === match.match_id ? 'rgba(0, 123, 255, 0.6)' : 'transparent',
+                      },
+                    }}
                   >
                     <ListItemText primary={`${match.esporte} - ${match.numero_total_pessoas} pessoas`} secondary={`Local: ${match.partida_gratuita ? 'gratuito' : 'paga'}`} />
                   </ListItem>
@@ -395,14 +401,14 @@ function FindMatch() {
               variant="contained" 
               color="success" 
               fullWidth 
-              sx={{ mb: 1 }} 
+              sx={{ mb: 1, backgroundColor: 'rgb(46, 125, 50)' }} 
               id="subscribe-button"
               onClick={handleSubscribe}
               disabled={!selectedMatch}
             >
               inscrever-se
             </Button>
-            <Button variant="contained" color="success" fullWidth style={{ marginTop: 10 }} id="organize-button">
+            <Button variant="contained" color="success" fullWidth style={{ marginTop: 10, backgroundColor: 'rgb(46, 125, 50)' }} id="organize-button">
               <a href="/criarmatch" style={{ color: 'inherit', textDecoration: 'none' }}>Organizar uma partida</a>
             </Button>
             <Snackbar

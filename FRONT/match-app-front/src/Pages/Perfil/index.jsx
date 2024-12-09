@@ -18,13 +18,13 @@ import StarIcon from '@mui/icons-material/Star';
 import Navbar from '../Navbar';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useAuth } from '../../Routes/AuthContext';
 import { useTheme } from '@mui/material/styles';
 
 const ProfileCard = () => {
+
   const theme = useTheme();
-  const { user_id } = useParams();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
@@ -34,6 +34,7 @@ const ProfileCard = () => {
   const { logout } = useAuth();
 
   useEffect(() => {
+
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -41,7 +42,7 @@ const ProfileCard = () => {
           console.error('Token not found');
           throw new Error('Token not found');
         }
-        const response = await axios.get(`/api/usuario/${user_id}`, {
+        const response = await axios.get('/api/usuario_logado', {
           headers: { Authorization: `Bearer ${token}` }
         });
         console.log('response: ', response.data)
@@ -60,28 +61,13 @@ const ProfileCard = () => {
     };
 
     fetchUser();
-  }, [user_id]);
+  }, []);
 
   if (loading) return <div id="loading-message">Carregando...</div>;
 
   if (!user) return <div id="user-not-found-message">Usuário não encontrado</div>;
 
-  const handleEditClick = async () => {
-    if (isEditing) {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          console.error('Token not found');
-          throw new Error('Token not found');
-        }
-        await axios.put(`/api/usuario/${user_id}`, editValues, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setUser((prev) => ({ ...prev, ...editValues }));
-      } catch (err) {
-        console.error(err);
-      }
-    }
+  const handleEditClick = () => {
     setIsEditing((prev) => !prev);
   };
 
@@ -139,6 +125,18 @@ const ProfileCard = () => {
               />
             ) : (
               <Typography id="profile-favorite-sport" variant="body2" sx={{ mb: 1 }}>Esporte favorito: {user.fav_sport}</Typography>
+            )}
+
+            {isEditing ? (
+              <TextField
+                label="Nome"
+                value={editValues.nome}
+                onChange={(e) => handleInputChange('nome', e.target.value)}
+                fullWidth
+                sx={{ mb: 1 }}
+              />
+            ) : (
+              <Typography id="profile-email" variant="body2" sx={{ mb: 1 }}>Nome: {user.nome}</Typography>
             )}
 
             {isEditing ? (

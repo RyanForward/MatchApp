@@ -167,9 +167,11 @@ function CreateMatch() {
         message: 'Partida criada com sucesso!',
         severity: 'success',
       });
+      document.body.style.pointerEvents = 'none';
+      document.body.style.opacity = '0.5';
       setTimeout(() => {
         window.location.href = '/home';
-      }, 5000);      
+      }, 5000);     
     } catch (error) {
       setNotification({
         open: true,

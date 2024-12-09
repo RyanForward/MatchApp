@@ -172,6 +172,11 @@ function FindMatch() {
         message: 'Incrição realizada com sucesso!',
         severity: 'success',
       });
+      document.body.style.pointerEvents = 'none';
+      document.body.style.opacity = '0.5';
+      setTimeout(() => {
+        window.location.href = '/home';
+      }, 5000);
 
     } catch (error) {
       console.error('There was an error subscribing to the match!', error);

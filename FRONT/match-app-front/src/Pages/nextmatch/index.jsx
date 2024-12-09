@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, Typography, Box, Button, CircularProgress, Alert } from '@mui/material';
-import Navbar from '../Navbar'; // Importando o componente Navbar
+import { Card, CardContent, Typography, Box, Button, CircularProgress, Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import Navbar from '../Navbar';
+import axios from 'axios';
 
-const MatchCard = ({ sport, location, date }) => {
+const MatchCard = ({ sport, location, date, shipmentId, onDesistir }) => {
   return (
     <Box id="match-card-container" display="flex" flexDirection={{ xs: 'column', sm: 'row' }} alignItems="center" justifyContent="space-between" mb={2}>
       <Card id="match-card" sx={{ backgroundColor: '#42845c', color: 'white', p: 1, flex: 1, mb: { xs: 2, sm: 0 }, mr: { sm: 2 } }}>
@@ -13,20 +14,44 @@ const MatchCard = ({ sport, location, date }) => {
           <Typography id="match-date" variant="body2">{date}</Typography>
         </CardContent>
       </Card>
-      <Button id="desistir-button" variant="contained" color="error" fullWidth={false}>
+      <Button
+        id="desistir-button"
+        variant="contained"
+        color="error"
+        fullWidth={false}
+        onClick={() => onDesistir(shipmentId)}
+      >
         Desistir
       </Button>
     </Box>
   );
 };
 
+const fetchAddressFromCoordinates = async (lat, lng) => {
+  try {
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.REACT_APP_MAPS_API_KEY}`
+    );
+    const data = await response.json();
+    if (data.results && data.results.length > 0) {
+      return data.results[0].formatted_address;
+    } else {
+      return 'Endereço não encontrado';
+    }
+  } catch (error) {
+    console.error('Erro ao buscar endereço:', error);
+    return 'Erro ao buscar endereço';
+  }
+};
+
 const UpcomingMatches = () => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedMatchId, setSelectedMatchId] = useState(null);
 
   useEffect(() => {
-    // Buscar o userId do localStorage
     const userId = localStorage.getItem('userId');
 
     if (!userId) {
@@ -35,18 +60,38 @@ const UpcomingMatches = () => {
       return;
     }
 
-    // Fazer a requisição para buscar as próximas partidas
     const fetchMatches = async () => {
       try {
-        console.log('userId: ', userId)
-        const response = await axios.get(`/nextmatch/${userId}`); // Chamada à API
+        const response = await fetch(`/api/grupo/nextmatch/${userId}`);
         if (!response.ok) {
           throw new Error('Erro ao buscar as partidas');
         }
-        console.log('response: ', response)
+
         const data = await response.json();
-        console.log('data: ', data)
-        setMatches(data); // Atualizar o estado com as partidas
+
+        if (Array.isArray(data)) {
+          const partidasComEnderecos = await Promise.all(
+            data.map(async (partida) => {
+              if (typeof partida.match_local === 'string' && partida.match_local.includes(',')) {
+                const [lat, lng] = partida.match_local.split(',');
+                const address = await fetchAddressFromCoordinates(lat, lng);
+                return {
+                  ...partida,
+                  match_local: address,
+                };
+              } else {
+                console.warn('Coordenadas inválidas ou ausentes:', partida);
+                return {
+                  ...partida,
+                  match_local: 'Localização não encontrada',
+                };
+              }
+            })
+          );
+          setMatches(partidasComEnderecos);
+        } else {
+          setMatches([]);
+        }
       } catch (err) {
         console.error(err);
         setError('Erro ao carregar as partidas');
@@ -57,6 +102,35 @@ const UpcomingMatches = () => {
 
     fetchMatches();
   }, []);
+
+  const handleDesistirClick = (id) => {
+    setSelectedMatchId(id);
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    setSelectedMatchId(null);
+  };
+
+  const handleConfirmDesistir = async () => {
+    if (!selectedMatchId) return;
+
+    try {
+      const response = await axios.delete(`/api/grupo/${selectedMatchId}`);
+      if (response.status === 200) {
+        setMatches(matches.filter((match) => match.shipment_id !== selectedMatchId));
+        alert('Você desistiu da partida com sucesso!');
+      } else {
+        alert('Erro ao desistir da partida.');
+      }
+    } catch (error) {
+      console.error('Erro ao deletar o grupo:', error);
+      alert('Erro ao desistir da partida.');
+    } finally {
+      handleDialogClose();
+    }
+  };
 
   if (loading) {
     return (
@@ -89,10 +163,12 @@ const UpcomingMatches = () => {
         {matches.length > 0 ? (
           matches.map((match) => (
             <MatchCard
-              key={match.match_id}
-              sport={match.sport} // Ajuste conforme o nome do campo retornado pela API
-              location={match.location} // Ajuste conforme o nome do campo retornado pela API
-              date={new Date(match.match_data).toLocaleDateString('pt-BR')} // Formata a data
+              key={match.shipment_id}
+              sport={match.esporte}
+              location={match.match_local}
+              date={new Date(match.match_data).toLocaleDateString('pt-BR')}
+              shipmentId={match.shipment_id}
+              onDesistir={handleDesistirClick}
             />
           ))
         ) : (
@@ -101,6 +177,23 @@ const UpcomingMatches = () => {
           </Typography>
         )}
       </Box>
+
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>Confirmação</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Deseja mesmo desistir da partida?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleConfirmDesistir} color="error">
+            Desistir
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

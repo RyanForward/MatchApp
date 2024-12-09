@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableRow, Typography, Paper, Button, Container } from '@mui/material';
+import { Table, TableBody, TableCell, Box, CircularProgress, TableContainer, TableRow, Typography, Paper, Button, Container } from '@mui/material';
 import NavBar from '../Navbar';
 import { useAuth } from '../../Routes/AuthContext';
 
@@ -72,7 +72,38 @@ const HistoricoPartidas = () => {
   }, [userId]);
 
   if (loading) {
-    return <Typography variant="h6" align="center">Carregando partidas...</Typography>;
+    return(
+      <Box id="loading-container" sx={{ textAlign: 'center', mt: 5 }}>
+        <CircularProgress />
+        <Typography id="loading-text" variant="body1" sx={{ mt: 2 }}>
+          Carregando suas próximas partidas...
+        </Typography>
+      </Box>
+    );
+  }
+
+  if(partidas.length == 0){
+    return(
+      <>
+      <NavBar />
+      <Container
+        maxWidth="sm"
+        sx={{
+          backgroundColor: "#ffffff",
+          marginTop: { xs: 10, md: 12, lg: 14 },
+        }}
+      >
+        <Typography variant="h5" align="center" sx={{ marginTop: 2, fontSize: '30px' }}>
+          <strong>Histórico de partidas</strong>
+        </Typography>
+        <Typography variant="h5" align="center" sx={{ marginTop: 2, fontSize: '18px' }}>
+          Ainda não há partidas
+        </Typography>
+       
+      </Container>
+      
+    </>
+    )
   }
 
   return (
@@ -85,7 +116,7 @@ const HistoricoPartidas = () => {
           marginTop: { xs: 10, md: 12, lg: 14 },
         }}
       >
-        <Typography variant="h5" align="center" sx={{ marginTop: 2 }}>
+        <Typography variant="h5" align="center" sx={{ marginTop: 2, fontSize: '30px' }}>
           <strong>Histórico de partidas</strong>
         </Typography>
         <TableContainer component={Paper} sx={{ marginTop: 4 }}>
@@ -94,7 +125,11 @@ const HistoricoPartidas = () => {
               {partidas.map((partida, index) => (
                 <TableRow key={index}>
                   <TableCell align="center">
-                    {`${partida.esporte} - ${partida.match_local} - ${partida.match_data}`}
+                    {`${partida.esporte} - ${partida.match_local} - ${new Date(partida.match_data).toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  }).replace(/\//g, '-')}`}
                   </TableCell>
                 </TableRow>
               ))}

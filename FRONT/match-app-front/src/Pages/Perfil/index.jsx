@@ -21,20 +21,26 @@ import axios from 'axios';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../../Routes/AuthContext';
 import { useTheme } from '@mui/material/styles';
+import { useForm, Controller } from 'react-hook-form';
 
 const ProfileCard = () => {
-
   const theme = useTheme();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editValues, setEditValues] = useState({});
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { control, handleSubmit, reset } = useForm({
+    defaultValues: {
+      nome: '',
+      fav_sport: '',
+      age: '',
+      bio: ''
+    }
+  });
 
   useEffect(() => {
-
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -47,11 +53,11 @@ const ProfileCard = () => {
         });
         console.log('response: ', response.data)
         setUser(response.data);
-        setEditValues({
-          favoriteSport: response.data.fav_sport,
-          nome: response.data.nome,
-          age: response.data.age,
-          bio: response.data.bio
+        reset({
+          nome: response.data.user_nome,
+          fav_sport: response.data.fav_sport,
+          age: response.data.user_age,
+          bio: response.data.user_bio
         });
       } catch (err) {
         console.error(err);
@@ -61,7 +67,7 @@ const ProfileCard = () => {
     };
 
     fetchUser();
-  }, []);
+  }, [reset]);
 
   if (loading) return <div id="loading-message">Carregando...</div>;
 
@@ -69,10 +75,6 @@ const ProfileCard = () => {
 
   const handleEditClick = () => {
     setIsEditing((prev) => !prev);
-  };
-
-  const handleInputChange = (field, value) => {
-    setEditValues((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleLogoutClick = (event) => {
@@ -90,8 +92,25 @@ const ProfileCard = () => {
     navigate('/login');
   };
 
+  const onSubmit = async (data) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('Token not found');
+        throw new Error('Token not found');
+      }
+      await axios.put(`/perfil/${user.user_id}`, data, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUser((prev) => ({ ...prev, ...data }));
+      setIsEditing(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
-    <>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <nav id="navbar-container">
         <Navbar id="navbar" />
       </nav>
@@ -102,50 +121,52 @@ const ProfileCard = () => {
         </Box>
         <CardContent id="profile-content">
           <Container sx={{ textAlign: 'left' }}>
-
             {isEditing ? (
-              <TextField
-                label="Nome"
-                value={editValues.nome}
-                onChange={(e) => handleInputChange('nome', e.target.value)}
-                fullWidth
-                sx={{ mb: 1 }}
+              <Controller
+                name="nome"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Nome"
+                    fullWidth
+                    sx={{ mb: 1 }}
+                  />
+                )}
               />
             ) : (
               <Typography id="profile-email" variant="body2" sx={{ mb: 1 }}>Nome: {user.user_nome}</Typography>
             )}
 
             {isEditing ? (
-              <TextField
-                label="Esporte favorito"
-                value={editValues.fav_sport}
-                onChange={(e) => handleInputChange('fav_sport', e.target.value)}
-                fullWidth
-                sx={{ mb: 1 }}
+              <Controller
+                name="fav_sport"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Esporte favorito"
+                    fullWidth
+                    sx={{ mb: 1 }}
+                  />
+                )}
               />
             ) : (
               <Typography id="profile-favorite-sport" variant="body2" sx={{ mb: 1 }}>Esporte favorito: {user.fav_sport}</Typography>
             )}
 
             {isEditing ? (
-              <TextField
-                label="Nome"
-                value={editValues.nome}
-                onChange={(e) => handleInputChange('nome', e.target.value)}
-                fullWidth
-                sx={{ mb: 1 }}
-              />
-            ) : (
-              <Typography id="profile-email" variant="body2" sx={{ mb: 1 }}>Nome: {user.nome}</Typography>
-            )}
-
-            {isEditing ? (
-              <TextField
-                label="Idade"
-                value={editValues.age}
-                onChange={(e) => handleInputChange('age', e.target.value)}
-                fullWidth
-                sx={{ mb: 1 }}
+              <Controller
+                name="age"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Idade"
+                    fullWidth
+                    sx={{ mb: 1 }}
+                  />
+                )}
               />
             ) : (
               <Typography id="profile-age" variant="body2" sx={{ mt: 2, mb: 1 }}>Idade: {user.user_age}</Typography>
@@ -153,14 +174,19 @@ const ProfileCard = () => {
 
             <Typography id="profile-bio-title" variant="body2" mt={2} sx={{ mb: 1 }}>Biografia:</Typography>
             {isEditing ? (
-              <TextField
-                label="Biografia"
-                value={editValues.bio}
-                onChange={(e) => handleInputChange('bio', e.target.value)}
-                multiline
-                rows={4}
-                fullWidth
-                sx={{ mb: 1 }}
+              <Controller
+                name="bio"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Biografia"
+                    multiline
+                    rows={4}
+                    fullWidth
+                    sx={{ mb: 1 }}
+                  />
+                )}
               />
             ) : (
               <Box
@@ -179,7 +205,7 @@ const ProfileCard = () => {
             id="edit-button"
             variant="contained"
             color="success"
-            onClick={handleEditClick}
+            onClick={isEditing ? handleSubmit(onSubmit) : handleEditClick}
             sx={{ mb: { xs: 2, sm: 0 } }}
           >
             {isEditing ? 'Salvar' : 'Editar'}
@@ -204,7 +230,7 @@ const ProfileCard = () => {
           </DialogActions>
         </Dialog>
       </Card>
-    </>
+    </form>
   );
 };
 

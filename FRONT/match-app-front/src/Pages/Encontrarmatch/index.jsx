@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './encontrar.css';
 import Navbar from '../Navbar';
-import { TextField, Select, MenuItem, FormControl, InputLabel, CircularProgress, Checkbox, FormControlLabel, Button, Grid, Box, Typography, List, ListItem, ListItemText } from '@mui/material';
+import { TextField, Snackbar, Alert, Select, MenuItem, FormControl, InputLabel, CircularProgress, Checkbox, FormControlLabel, Button, Grid, Box, Typography, List, ListItem, ListItemText } from '@mui/material';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
@@ -169,13 +169,17 @@ function FindMatch() {
 
       setNotification({
         open: true,
-        message: 'Incrição feita com sucesso!',
+        message: 'Incrição realizada com sucesso!',
         severity: 'success',
       });
-      alert('Inscrição realizada com sucesso!');
+
     } catch (error) {
       console.error('There was an error subscribing to the match!', error);
-      alert('Erro ao realizar inscrição!');
+      setNotification({
+        open: true,
+        message: 'Incrição falhou!',
+        severity: 'error',
+      });
     }
   };
 
@@ -401,6 +405,17 @@ function FindMatch() {
             <Button variant="contained" color="success" fullWidth style={{ marginTop: 10 }} id="organize-button">
               <a href="/criarmatch" style={{ color: 'inherit', textDecoration: 'none' }}>Organizar uma partida</a>
             </Button>
+            <Snackbar
+              open={notification.open}
+              autoHideDuration={6000}
+              onClose={handleClose}
+              color='primary'
+              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+              <Alert onClose={handleClose} severity={notification.severity} sx={{ width: '100%' }}>
+                {notification.message}
+              </Alert>
+            </Snackbar>
           </Grid>
         </Grid>
       )}

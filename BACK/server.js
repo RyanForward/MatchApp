@@ -463,7 +463,14 @@ app.get('/api/grupo', async (req, res) => {
 app.get('/api/grupo/historico/:userId', async (req, res) => {
     const { userId } = req.params;
     try {
-        const result = await matchpool.query('SELECT p.esporte, p.match_local, p.match_data FROM Grupo g INNER JOIN Partida p ON g.match_id = p.match_id WHERE g.user_id = $1', [userId]) 
+        const newDate = new Date();
+        const result = await matchpool.query(`
+            SELECT p.esporte, p.match_local, p.match_data 
+            FROM Grupo g 
+            INNER JOIN Partida p 
+            ON g.match_id = p.match_id 
+            WHERE g.user_id = $1 
+            AND p.match_data < $2`, [userId, newDate]) 
         res.status(200).json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -528,7 +535,7 @@ app.get('/perfil/:user_id', async (req, res) => {
       const result = await matchpool.query(
         `UPDATE Usuario
          SET user_nome = $1, user_email = $2, user_senha = $3, user_age = $4, user_fav_sport = $5, user_bio = $6
-         WHERE user_id = $7 RETURNING *`,
+         WHERE user_id = $7`,
         [user_nome, user_email, user_senha, user_age, user_fav_sport, user_bio, user_id]
       );
   
@@ -561,35 +568,23 @@ app.get('/perfil/:user_id', async (req, res) => {
     }
   });
 
-
-
-app.get('/nextmatch/:user_id', async (req, res) => {
+app.get('/api/grupo/nextmatch/:userId', async (req, res) => {
+    const { userId } = req.params;
     try {
-        const { user_id } = req.params;
-        console.log('userId recebido:', user_id);
-
-    const query = `
-        SELECT * 
-        FROM Grupo g
-        INNER JOIN Partida p
-        ON p.match_id = g.match_id 
-        WHERE p.match_data > NOW() 
-        AND g.user_id = $1 
-        ORDER BY p.match_data ASC
-    `;
-
-        console.log('query: ', query)
-        const result = await matchpool.query(query, [userId]);
-
-        console.log('result: ', result)
+        const newDate = new Date();
+        const result = await matchpool.query(`
+            SELECT * 
+            FROM Grupo g 
+            INNER JOIN Partida p 
+            ON g.match_id = p.match_id 
+            WHERE g.user_id = $1 
+            AND p.match_data > $2`, [userId, newDate]) 
         res.status(200).json(result.rows);
     } catch (err) {
-        console.error('Erro ao buscar próximas partidas:', err);
-        res.status(500).json({ error: 'Erro ao buscar próximas partidas' });
-    }
-    });
+        res.status(500).json({ error: err.message });
+    }   
+});
 
-// Inicia o servidor na porta 5000
 const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);

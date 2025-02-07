@@ -589,3 +589,137 @@ const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
+// ROTAS DO CHAT *********************
+
+// Cria a tabela de Chat se não existir
+(async () => {
+    const client = await matchpool.connect();
+    try {
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS Chat (
+                chat_id SERIAL PRIMARY KEY,
+                sender_id INT REFERENCES Usuario(user_id),
+                receiver_id INT REFERENCES Usuario(user_id),
+                message TEXT NOT NULL,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+        console.log('Tabela Chat criada/verificada com sucesso.');
+    } catch (err) {
+        console.error('Erro ao verificar/criar tabela Chat:', err);
+    } finally {
+        client.release();
+    }
+})();
+
+// Enviar uma mensagem
+app.post('/api/chat', verificaToken, async (req, res) => {
+    const { receiver_id, message } = req.body;
+    const sender_id = req.userId;
+
+    try {
+        const encryptedMessage = await bcrypt.hash(message, 10);
+        const result = await matchpool.query(
+            'INSERT INTO Chat (sender_id, receiver_id, message) VALUES ($1, $2, $3) RETURNING *',
+            [sender_id, receiver_id, encryptedMessage]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Obter mensagens entre dois usuários
+app.get('/api/chat/:userId', verificaToken, async (req, res) => {
+    const { userId } = req.params;
+    const currentUserId = req.userId;
+
+    try {
+        const result = await matchpool.query(
+            'SELECT * FROM Chat WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $2 AND receiver_id = $1) ORDER BY timestamp',
+            [currentUserId, userId]
+        );
+
+        const messages = await Promise.all(result.rows.map(async (row) => {
+            const decryptedMessage = await bcrypt.compare(row.message, message);
+            return { ...row, message: decryptedMessage };
+        }));
+
+        res.status(200).json(messages);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ROTAS DE AMIZADES *********************
+
+// Cria a tabela de Amizades se não existir
+(async () => {
+    const client = await matchpool.connect();
+    try {
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS Amizade (
+                amizade_id SERIAL PRIMARY KEY,
+                user_id1 INT REFERENCES Usuario(user_id),
+                user_id2 INT REFERENCES Usuario(user_id),
+                status VARCHAR(50) NOT NULL,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+        console.log('Tabela Amizade criada/verificada com sucesso.');
+    } catch (err) {
+        console.error('Erro ao verificar/criar tabela Amizade:', err);
+    } finally {
+        client.release();
+    }
+})();
+
+// Enviar solicitação de amizade
+app.post('/api/amizade', verificaToken, async (req, res) => {
+    const { user_id2 } = req.body;
+    const user_id1 = req.userId;
+
+    try {
+        const result = await matchpool.query(
+            'INSERT INTO Amizade (user_id1, user_id2, status) VALUES ($1, $2, $3) RETURNING *',
+            [user_id1, user_id2, 'pending']
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Aceitar solicitação de amizade
+app.put('/api/amizade/:id', verificaToken, async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    try {
+        const result = await matchpool.query(
+            'UPDATE Amizade SET status = $1 WHERE amizade_id = $2 RETURNING *',
+            [status, id]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Solicitação de amizade não encontrada' });
+        }
+        res.status(200).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Obter lista de amigos
+app.get('/api/amizade', verificaToken, async (req, res) => {
+    const userId = req.userId;
+
+    try {
+        const result = await matchpool.query(
+            'SELECT * FROM Amizade WHERE (user_id1 = $1 OR user_id2 = $1) AND status = $2',
+            [userId, 'accepted']
+        );
+        res.status(200).json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});

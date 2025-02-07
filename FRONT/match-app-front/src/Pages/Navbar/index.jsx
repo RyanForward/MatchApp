@@ -71,7 +71,8 @@ function NavBar() {
         {[{ text: 'Início', link: '/home' },
           { text: 'Histórico', link: '/historico' },
           { text: 'Perfil', link: '/perfil' },
-          { text: 'Próximas partidas', link: '/nextmatch' }
+          { text: 'Próximas partidas', link: '/nextmatch' },
+          { text: 'Amigos', link: '/amigos' }
         ].map((item, index) => (
           <ListItem 
             button 
@@ -208,6 +209,20 @@ function NavBar() {
                 id="nextmatch-button"
               >
                 Próximas partidas
+              </Button>
+              <Button
+                component={Link}
+                to="/amigos"
+                sx={{
+                  textTransform: 'none',
+                  border: 'none',
+                  fontSize: '1.1rem',
+                  color: 'black',
+                  '&:not(:last-child)': { marginRight: 0 }
+                }}
+                id="amigos-button"
+              >
+                Amigos
               </Button>
               <Button
                 component={Link}

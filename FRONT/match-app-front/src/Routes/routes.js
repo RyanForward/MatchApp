@@ -13,6 +13,7 @@ import Nextmacth from '../Pages/nextmatch';
 import Criarmatch from '../Pages/Criarmatch';
 import EncontrarMatch from '../Pages/Encontrarmatch';
 import NotFound from '../Pages/NotFound';
+import Amigos from '../Pages/Amigos';
 
 function RoutesApp() {
   return (
@@ -78,6 +79,14 @@ function RoutesApp() {
         element={
           <ProtectedRoute>
             <HistoricoPartidas />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/amigos"
+        element={
+          <ProtectedRoute>
+            <Amigos />
           </ProtectedRoute>
         }
       />

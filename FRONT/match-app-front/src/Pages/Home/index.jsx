@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Container, Button, Box, Table, TableBody, TableCell, TableContainer, TableRow, Paper } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Typography, Container, Button, Box, Card, CardActionArea, CardContent, Table, TableBody, TableCell, TableContainer, TableRow, Paper } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import Navbar from '../Navbar'; // Importando o componente Navbar
 import Perfil from '../Perfil'; // Importando o componente Perfil
@@ -32,36 +32,32 @@ function HomePage() {
           sx={{ fontSize: '1.4em', textAlign: 'center', margin: 6 }} 
           id="greeting-text"
         >
-          O que deseja?
+          O que deseja fazer?
         </Typography>
 
-        {/* Botões */}
-        <Box display="flex" flexDirection="column" alignItems="center" mb={3} id="action-buttons">
-          <Button 
-            variant="contained" 
-            color="success" 
-            fullWidth 
-            sx={{ marginTop: 2 }} 
-            component={Link} 
-            to="/encontrarmatch" 
-            id="find-match-button"
-          >
-            Encontrar uma partida
-          </Button>
+        {/* Cards */}
+        <Box display="flex" flexDirection="column" alignItems="center" mb={3} id="action-cards">
+          <Card sx={{ width: '100%', marginTop: 2, backgroundColor: 'success.main' }} id="find-match-card">
+            <CardActionArea component={Link} to="/encontrarmatch">
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Typography variant="h6" component="div" sx={{ color: 'white' }}>
+                  Encontrar uma partida
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+          </Card>
           <Typography variant="subtitle1" gutterBottom sx={{ marginY: 1 }} id="or-text">
             ou
           </Typography>
-          <Button 
-            variant="contained" 
-            color="success" 
-            fullWidth 
-            sx={{ marginTop: 2 }} 
-            component={Link} 
-            to="/criarmatch" 
-            id="organize-match-button"
-          >
-            Organizar uma partida
-          </Button>
+          <Card sx={{ width: '100%', marginTop: 2, backgroundColor: 'success.main' }} id="organize-match-card">
+            <CardActionArea component={Link} to="/criarmatch">
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Typography variant="h6" component="div" sx={{ color: 'white' }}>
+                  Organizar uma partida
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+          </Card>
         </Box>
 
       </Container>
